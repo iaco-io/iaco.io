@@ -5,9 +5,9 @@
     <description>Build your Lifestyles. Build YOU.</description>
     <link></link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 18 Jul 2023 13:33:06 +0200</pubDate>
-    <lastBuildDate>Tue, 18 Jul 2023 13:33:06 +0200</lastBuildDate>
-    <generator>Jekyll v3.9.0</generator>
+    <pubDate>Tue, 18 Jul 2023 23:35:59 +0200</pubDate>
+    <lastBuildDate>Tue, 18 Jul 2023 23:35:59 +0200</lastBuildDate>
+    <generator>Jekyll v4.3.2</generator>
     <webfeeds:cover image="/assets/media/bg/iaco-logo-share-yt.jpg" />
     <webfeeds:icon>/assets/media/logo/power-alpha.svg</webfeeds:icon>
     <webfeeds:logo>/assets/media/logo/power-alpha.svg</webfeeds:logo>
@@ -60,6 +60,8 @@ Back then I was looking for PhD’s, because to be 100% honest with you… I had
         
         <category>nutrition</category>
         
+        <category>fitness</category>
+        
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/articles/cronometer.jpg'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/articles/cronometer.jpg'/>
         <summary>
@@ -103,6 +105,8 @@ Back then I was looking for PhD’s, because to be 100% honest with you… I had
         
         
         <category>nutrition</category>
+        
+        <category>fitness</category>
         
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/articles/cronometer.jpg'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/articles/cronometer.jpg'/>
@@ -204,7 +208,7 @@ important.</p>
         <guid isPermaLink="true">/article/vegan</guid>
         
         
-        <category>gym</category>
+        <category>fitness</category>
         
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/friends-toast.jpg'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/friends-toast.jpg'/>
@@ -250,7 +254,7 @@ I can even give you myself as an example: I always call myself “vegan”, that
         <guid isPermaLink="true">/article/day-21</guid>
         
         
-        <category>gym</category>
+        <category>fitness</category>
         
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/default.jpg'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/default.jpg'/>
@@ -291,7 +295,7 @@ Sometimes it is a long and fun adventure, othertimes (more often than we
         <guid isPermaLink="true">/article/day-1</guid>
         
         
-        <category>gym</category>
+        <category>fitness</category>
         
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/iaco-logo-share-yt.jpg'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/iaco-logo-share-yt.jpg'/>
@@ -355,7 +359,7 @@ tiktok: 6801989263727578373
         <guid isPermaLink="true">/article/002</guid>
         
         
-        <category>gym</category>
+        <category>fitness</category>
         
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/phone.jpg'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/phone.jpg'/>
@@ -479,9 +483,15 @@ tiktok: 6801989263727578373
         <guid isPermaLink="true">/article/001</guid>
         
         
-        <category>gym</category>
+        <category>fitness</category>
         
         <category>productivity</category>
+        
+        <category>sleep</category>
+        
+        <category>social-responsibility</category>
+        
+        <category>wellbeing</category>
         
         <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/rain.gif'/>
         <media:content xmlns:media="http://search.yahoo.com/mrss/" url='/assets/media/bg/rain.gif'/>

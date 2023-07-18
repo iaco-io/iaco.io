@@ -692,10 +692,18 @@ input:focus::placeholder {
 .button.tag:hover,
 .button.tag:focus,
 .button.tag.selected {
-    border-radius: 10px;
     background: var(--fg-blue) !important;
     color: var(--bg) !important;
-    font-weight: normal;
+}
+
+.button.tag.selected,
+.button.tag.disabled {
+    cursor: unset;
+}
+
+.button.tag.disabled {
+    background: var(--fg-alpha) !important;
+    color: var(--bg) !important;
 }
 
 .button.small {

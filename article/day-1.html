@@ -28,8 +28,8 @@
     <!-- STATISTICS -->
     <script src='https://cdn.counter.dev/script.js' data-id='9d3a0066-9b07-4ef0-bab4-fc9a3e7bf1e6' data-utcoffset='0'></script>
 
-    <!-- Begin Jekyll SEO tag v2.7.1 -->
-<meta name="generator" content="Jekyll v3.9.0" />
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<meta name="generator" content="Jekyll v4.3.2" />
 <meta property="og:title" content="Day 1" />
 <meta name="author" content="IACO.io" />
 <meta property="og:locale" content="en" />
@@ -43,7 +43,7 @@
 <meta property="twitter:image" content="/assets/media/bg/iaco-logo-share-yt.jpg" />
 <meta property="twitter:title" content="Day 1" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","url":"/article/day-1","description":"Building a good life is challenging, let’s start by doing it together!","headline":"Day 1","dateModified":"2022-04-01T00:00:00+02:00","datePublished":"2022-04-01T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"/article/day-1"},"image":"/assets/media/bg/iaco-logo-share-yt.jpg","author":{"@type":"Person","name":"IACO.io"},"@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"IACO.io"},"dateModified":"2022-04-01T00:00:00+02:00","datePublished":"2022-04-01T00:00:00+02:00","description":"Building a good life is challenging, let’s start by doing it together!","headline":"Day 1","image":"/assets/media/bg/iaco-logo-share-yt.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"/article/day-1"},"url":"/article/day-1"}</script>
 <!-- End Jekyll SEO tag -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -157,7 +157,10 @@
 
                             <h3 class="animate-this">Build YOU.</h3>
                             <h1 class="animate-this">Day 1</h1>
-                            <h2 class="animate-this"><p>Building a good life is challenging, let's start by doing it together!</p></h2>
+                            <h2 class="animate-this">
+                                Building a good life is challenging, let's start by doing it together!
+                                
+                            </h2>
 
                             <ul class="links-home animate-this">
                                 
@@ -448,26 +451,30 @@
     <!-- JS -->
     <script>
         $('#main')
-            .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
-            .addClass('animate-this');
+                .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
+                .addClass('animate-this');
 
-        $.expr[':'].linkexternal = function(obj){ return (obj.hostname != location.hostname) && obj.href.startsWith("http"); };
-        $('a:linkexternal').attr('target', '_blank');
+        function formatPage() {
+            $.expr[':'].linkexternal = function(obj){ return (obj.hostname != location.hostname) && obj.href.startsWith("http"); };
+            $('a:linkexternal').attr('target', '_blank');
 
-        $('#main p,#main form').has('input').css('text-align', 'center');
-        $('#main p,#main form').has('a.button').css('text-align', 'center');
+            $('#main p,#main form').has('input').css('text-align', 'center');
+            $('#main p,#main form').has('a.button').css('text-align', 'center');
 
-        $.expr[':'].lastshowroom = function(obj){ return !$(obj).next().hasClass('showroom'); };
-        $('.showroom:lastshowroom').after('<div style="clear: both;"></div>');
+            $.expr[':'].lastshowroom = function(obj){ return !$(obj).next().hasClass('showroom'); };
+            $('.showroom:lastshowroom').after('<div style="clear: both;"></div>');
 
-        $('tok').each(function() {
-            $(this).attr('title', $(this).text());
-            $(this).html(
-                "<span style='all: unset; white-space: nowrap;'>" +
-                $(this).text().replace(/ /g, "</span> <span style='all: unset; white-space: nowrap;'>") +
-                "</span>"
-            );
-        });
+            $('tok').each(function() {
+                $(this).attr('title', $(this).text());
+                $(this).html(
+                    "<span style='all: unset; white-space: nowrap;'>" +
+                    $(this).text().replace(/ /g, "</span> <span style='all: unset; white-space: nowrap;'>") +
+                    "</span>"
+                );
+            });
+        }
+
+        formatPage();
     </script>
     <script src="assets/js/plugins.js"></script>
     <script src="assets/js/main.js"></script>
