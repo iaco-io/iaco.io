@@ -417,7 +417,7 @@
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        &copy;
+                        <span onclick="copyRawContent();">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -484,6 +484,11 @@
         }
 
         formatPage();
+
+        function copyRawContent() {
+            navigator.clipboard.writeText(``);
+            window.location.reload();
+        }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>
     <script src="https://iaco.io/assets/js/main.js"></script>

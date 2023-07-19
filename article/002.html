@@ -327,7 +327,7 @@ tiktok: 6801989263727578373
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        &copy;
+                        <span onclick="copyRawContent();">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -394,6 +394,36 @@ tiktok: 6801989263727578373
         }
 
         formatPage();
+
+        function copyRawContent() {
+            navigator.clipboard.writeText(`<!--
+igtv: CBDz5sIIDbT
+tweet: 1268973865746776068
+tiktok: 6801989263727578373
+-->
+
+{% include yt id="HY5WaiBv1so" %}
+
+We all procrastinate... But how can we avoid that? One answer: your own system! 😱💤
+
+In our lives there are things we want to do (because we like, or even love them ❤️), and things we have to do (because they are important, or mandatory ⚠️).
+
+The idea is simple: to have more time and energy for the things that matter the most, it is important to have a system in place, a system that supports you!
+
+The 5 tips to help you avoiding procrastination, managing your time and getting things done:
+
+- Your calendar reminds you about what you need to do;
+- Your timers allow you to have control of your time and progress;
+- By delegating you give tasks to those best suited for the job;
+- Entering a Flow State allows you to be more focused and make better use of your time;
+- And by paying attention to your health triangle you will have more energy and focus because your body and mind are working at their best capacity.
+
+___
+
+And you, tell me, how do you avoid procrastination?
+`);
+            window.location.reload();
+        }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>
     <script src="https://iaco.io/assets/js/main.js"></script>

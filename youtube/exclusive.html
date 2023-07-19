@@ -565,7 +565,7 @@ eNsmxM4TVUMVYeK4QDFmNijkxIRcJLcN6p1QuciYLU0gliUX7Xaq0oZs4GGQ
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        &copy;
+                        <span onclick="copyRawContent();">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -632,6 +632,11 @@ eNsmxM4TVUMVYeK4QDFmNijkxIRcJLcN6p1QuciYLU0gliUX7Xaq0oZs4GGQ
         }
 
         formatPage();
+
+        function copyRawContent() {
+            navigator.clipboard.writeText(``);
+            window.location.reload();
+        }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>
     <script src="https://iaco.io/assets/js/main.js"></script>

@@ -410,7 +410,7 @@
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        &copy;
+                        <span onclick="copyRawContent();">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -477,6 +477,17 @@
         }
 
         formatPage();
+
+        function copyRawContent() {
+            navigator.clipboard.writeText(`Everything has a *Day 1*,  the beginning of a journey. Every project and desire, every romance and friendship, every dream and 1-million-dollars idea. Everything has a beginning in this universe.
+
+Sometimes it is a long and fun adventure, othertimes (more often than we would like perhaps) just a short and meaningless euphoric and ephemeral glimpse, long ago forgotten.
+
+Even you, my dear reader, had a *Day1*. It is only a question of taste whether you choose your *Day 1* as your birth day, as your egg-spermatozoid conception day, or "the day I discovered my purpose in life" day.
+
+`);
+            window.location.reload();
+        }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>
     <script src="https://iaco.io/assets/js/main.js"></script>
