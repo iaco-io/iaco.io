@@ -5,8 +5,8 @@
     <description>Build your Lifestyles. Build YOU.</description>
     <link>https://iaco.io/</link>
     <atom:link href="https://iaco.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 19 Jul 2023 02:59:49 +0200</pubDate>
-    <lastBuildDate>Wed, 19 Jul 2023 02:59:49 +0200</lastBuildDate>
+    <pubDate>Thu, 20 Jul 2023 14:25:13 +0200</pubDate>
+    <lastBuildDate>Thu, 20 Jul 2023 14:25:13 +0200</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     <webfeeds:cover image="https://iaco.io/assets/media/bg/iaco-logo-share-yt.jpg" />
     <webfeeds:icon>https://iaco.io/assets/media/logo/power-alpha.svg</webfeeds:icon>
@@ -24,11 +24,10 @@
             <img class="webfeedsFeaturedVisual" src='https://iaco.io/assets/media/articles/cronometer.jpg' alt="My Evidence-Based Diet - How to Eat Healthy? (and Enjoy it!)">
             
             </a>
-            <!-- 
+            
 <div class="video-wrapper">
-    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/cronometer?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/eat-healthy?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </div>
- -->
 
 <p>In 2018 I was <del>just graduated and unemployed</del> <em>on vacation</em>.
 Back then I was looking for PhD’s, because to be 100% honest with you… I had <em>no idea</em> of what I wanted to do with my life, and PhD seemed a good and productive way to postpone such a decision for a few more years :)</p>
@@ -122,8 +121,11 @@ Back then I was looking for PhD’s, because to be 100% honest with you… I had
         <summary>
 
 
+    
+
+
 In 2018 I was just graduated and unemployed on vacation.
-Back then I was looking for PhD’s, because to be 100% honest with you… I had no idea of what I wanted to do with my life, and PhD seemed a good and productive way to postpone such a
+Back then I was looking for PhD’s, because to be 100% honest with you… I had no idea of what I wanted to do with my life, and PhD seemed a good and productive way to postpone
 [...]
 +👉 https://iaco.io/article/eat-healthy
         </summary>
