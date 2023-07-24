@@ -207,7 +207,6 @@ a-out:before {
 h1, h2, h3 {
     font-family: "notos-bold", serif;
     font-weight: bold;
-    font-style: italic !important;
     color: var(--fg);
     font-style: normal;
     text-rendering: optimizeLegibility;
@@ -1214,7 +1213,7 @@ header .header-logo .icon {
 }
 
 .home-content-tablecell h1 {
-    font-family: "notos", serif;
+    font-family: "noto", sans-serif;
     font-size: 5.5rem;
     line-height: 1.2;
     text-shadow: 0 0 6px var(--bg);
