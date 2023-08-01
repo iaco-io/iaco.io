@@ -128,9 +128,9 @@ body {
     --iwhite:    rgb(255,255,255);
 
     --fg:        rgb(  8,  8,  8);
-    --bg:        rgb(220,220,220);
+    --bg:        rgb(236,236,236);
     --fg-alpha:  rgba(  8,  8,  8,.5);
-    --bg-alpha:  rgba(220,220,220,.5);
+    --bg-alpha:  rgba(236,236,236,.5);
 }
 
 body {
