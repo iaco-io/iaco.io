@@ -1216,7 +1216,10 @@ header .header-logo .icon {
     font-family: "noto", sans-serif;
     font-size: 5.5rem;
     line-height: 1.2;
-    text-shadow: 0 0 6px var(--bg);
+    /* text-shadow: 0 0 6px var(--bg); */
+    background: var(--bg-alpha);
+    padding: 0 3px;
+    width: fit-content;
 }
 
 .home-content-tablecell h2 {
@@ -1224,18 +1227,24 @@ header .header-logo .icon {
     font-weight: normal;
     font-size: 17.5px;
     line-height: 1.5;
-    text-shadow: 0 0 6px var(--bg);
     max-width: 600px;
+    /* text-shadow: 0 0 6px var(--bg); */
+    background: var(--bg-alpha);
+    padding: 0 3px;
+    width: fit-content;
 }
 
 .home-content-tablecell h3 {
     font-family: "noto", sans-serif;
     font-weight: bold;
     font-size: 2.2rem;
-    text-shadow: 0 0 6px var(--bg);
     letter-spacing: .15rem;
-    margin: 0 0 0 .3rem;
+    margin: 0;
     color: var(--fg-blue-a);
+    /* text-shadow: 0 0 6px var(--bg); */
+    background: var(--bg-alpha);
+    padding: 0 3px;
+    width: fit-content;
 }
 
 .home-content-tablecell .links-home {
