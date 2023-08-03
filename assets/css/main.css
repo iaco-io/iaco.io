@@ -1215,10 +1215,13 @@ header .header-logo .icon {
 .home-content-tablecell h1 {
     font-family: "noto", sans-serif;
     font-size: 5.5rem;
-    line-height: 1.2;
+    line-height: normal; /* 1.2 */
     /* text-shadow: 0 0 6px var(--bg); */
+}
+
+.home-content-tablecell h1 > span {
     background: var(--bg-alpha);
-    padding: 0 3px;
+    padding: 0;
     width: fit-content;
 }
 
