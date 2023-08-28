@@ -43,7 +43,7 @@ var documents = [{
     "id": 8,
     "url": "https://iaco.io/",
     "title": "Hello people &mdash;",
-    "body": "You can follow and enjoy the journey with me 🙂: iaco. io                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
+    "body": "     Remember to follow and enjoy the journey with me 🙂: iaco. io                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
     }, {
     "id": 9,
     "url": "https://iaco.io/2",
