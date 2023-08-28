@@ -42,7 +42,13 @@
 <loc>https://iaco.io/ctrl</loc>
 </url>
 <url>
+<loc>https://iaco.io/category/habits</loc>
+</url>
+<url>
 <loc>https://iaco.io/</loc>
+</url>
+<url>
+<loc>https://iaco.io/2</loc>
 </url>
 <url>
 <loc>https://iaco.io/newsletter</loc>
@@ -91,9 +97,6 @@
 </url>
 <url>
 <loc>https://iaco.io/category/nutrition/</loc>
-</url>
-<url>
-<loc>https://iaco.io/category/habits/</loc>
 </url>
 <url>
 <loc>https://iaco.io/assets/media/flags/Flag%20of%20Earth%202.0%20-%20Feuille%201.pdf</loc>
