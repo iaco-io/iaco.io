@@ -1216,12 +1216,11 @@ header .header-logo .icon {
     font-family: "noto", sans-serif;
     font-size: 5.5rem;
     line-height: normal; /* 1.2 */
-    /* text-shadow: 0 0 6px var(--bg); */
 }
 
-.home-content-tablecell h1 > span {
+.home-title-bg {
     background: var(--bg-alpha);
-    padding: 0;
+    padding: 0 3px;
     width: fit-content;
 }
 
@@ -1231,10 +1230,6 @@ header .header-logo .icon {
     font-size: 17.5px;
     line-height: 1.5;
     max-width: 600px;
-    /* text-shadow: 0 0 6px var(--bg); */
-    background: var(--bg-alpha);
-    padding: 0 3px;
-    width: fit-content;
 }
 
 .home-content-tablecell h3 {
@@ -1244,10 +1239,6 @@ header .header-logo .icon {
     letter-spacing: .15rem;
     margin: 0;
     color: var(--fg-blue-a);
-    /* text-shadow: 0 0 6px var(--bg); */
-    background: var(--bg-alpha);
-    padding: 0 3px;
-    width: fit-content;
 }
 
 .home-content-tablecell .links-home {
