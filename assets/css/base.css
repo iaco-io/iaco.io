@@ -144,11 +144,13 @@ samp {
 	font-size: 1em;
 }
 
-tok {
-	font-family: "linja-sike";
+tok,
+tok > span {
+	font-family: "linja-sike" !important;
 	text-transform: none !important;
 	letter-spacing: normal !important;
 	font-weight: normal !important;
+	font-size: max(1em, 25px);
 }
 
 button,

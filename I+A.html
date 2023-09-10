@@ -130,7 +130,7 @@
                                 
                                     
                                     <li>
-                                        <a href="https://www.youtube.com/playlist?list=PL4K6mvsV5xWZ5yJWtmVo7SbQ7_0ZEjRPS" title="Our Playlist" class="text" target="_blank" >
+                                        <a href="https://www.youtube.com/playlist?list=PL4K6mvsV5xWavIfjcdId7Q6PcUFDNgrxF&jct=2LIk7nIIcPKGhmC4ShgDHig1WxDpSg" title="Our Playlist" class="text" target="_blank" >
                                             Our Playlist
                                             <span><i class="fa fa-headphones-alt"></i></span>
                                         </a>
@@ -260,8 +260,8 @@
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
                 $(this).html(
-                    "<span style='all: unset; white-space: nowrap;'>" +
-                    $(this).text().replace(/ /g, "</span> <span style='all: unset; white-space: nowrap;'>") +
+                    "<span style='white-space: nowrap;'>" +
+                    $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
             });

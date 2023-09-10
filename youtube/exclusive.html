@@ -632,8 +632,8 @@ wUmbXy6PFgM8zkefeuZ/McbcZ1pdiwSLoDX65YVJKb02ptKBkbNAkDBakR3G
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
                 $(this).html(
-                    "<span style='all: unset; white-space: nowrap;'>" +
-                    $(this).text().replace(/ /g, "</span> <span style='all: unset; white-space: nowrap;'>") +
+                    "<span style='white-space: nowrap;'>" +
+                    $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
             });
