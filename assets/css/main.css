@@ -904,7 +904,7 @@ header .header-logo .icon {
     font-size: 2.5rem;
     font-family: 'Font Awesome 5 Free';
     color: var(--bg) !important;
-	text-shadow: 0 0 1px var(--fg) !important;
+	text-shadow: 0 0 4px var(--fg) !important;
 }
 
 /******************************/
