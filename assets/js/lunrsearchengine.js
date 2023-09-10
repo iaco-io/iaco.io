@@ -6,12 +6,12 @@ var documents = [{
     "body": ""
     }, {
     "id": 1,
-    "url": "https://iaco.io/airdrop",
+    "url": "https://iaco.io/airdrop/",
     "title": "IACO - AirDrop",
     "body": ""
     }, {
     "id": 2,
-    "url": "https://iaco.io/archive",
+    "url": "https://iaco.io/archive/",
     "title": "IACO.io 🗂️ Articles",
     "body": ""
     }, {
@@ -26,22 +26,22 @@ var documents = [{
     "body": ""
     }, {
     "id": 5,
-    "url": "https://iaco.io/ctrl",
+    "url": "https://iaco.io/ctrl/",
     "title": "b",
     "body": "    📆 _&nbsp;&nbsp;_    📆 w&nbsp;&nbsp;w   🌟 _ _    💪 _ 🌱 _  "
     }, {
     "id": 6,
-    "url": "https://iaco.io/dot",
+    "url": "https://iaco.io/dot/",
     "title": "IACO.io 🔵 The Pale Blue Dot",
     "body": ""
     }, {
     "id": 7,
-    "url": "https://iaco.io/erotaractbeyondfrontiers",
+    "url": "https://iaco.io/erotaractbeyondfrontiers/",
     "title": "e-Rotaract",
     "body": ""
     }, {
     "id": 8,
-    "url": "https://iaco.io/I+A",
+    "url": "https://iaco.io/I+A/",
     "title": "I ❤️ A",
     "body": ""
     }, {
@@ -51,47 +51,47 @@ var documents = [{
     "body": "     Remember to follow and enjoy the journey with me 🙂: iaco. io                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
     }, {
     "id": 10,
-    "url": "https://iaco.io/2",
+    "url": "https://iaco.io/2/",
     "title": "Hello people &mdash;",
     "body": "  Hope you enjoy my content 🙂:                         HABITS With this app I was finally able to eat healthier - and it is 100% free!:                                     My Evidence-Based Diet – How to Eat Healthy? (and Enjoy it!):                                     With this app I was finally able to eat healthier - and it is 100% free!:                                     Veganism:             Read more articles                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
     }, {
     "id": 11,
-    "url": "https://iaco.io/mastodon",
+    "url": "https://iaco.io/mastodon/",
     "title": "@iaco 🐘 (masto.ai)",
     "body": ""
     }, {
     "id": 12,
-    "url": "https://iaco.io/newsletter",
+    "url": "https://iaco.io/newsletter/",
     "title": "You found my exclusive WhatsApp content",
     "body": "aaa hhh "
     }, {
     "id": 13,
-    "url": "https://iaco.io/norsk",
+    "url": "https://iaco.io/norsk/",
     "title": "Vi skal lære norsk!",
     "body": "Index Index Series Miscellaneous LinksSeriesExit Skam / (local) Velkommen til jorda Space Nova Idefix og de ukuelige UXA - Thomas Seltzers Amerika Da Macron ringte Putin Flus Mummidalen Modige kaniner Kjælosaurus Hokus Pokus, Albert Åberg Pip og Poppy Fantorangen Fantus og maskinene Jævla homo Miscellaneous Linkshttps://www. instagram. com/nordic. tale https://www. instagram. com/norwegian. with. tor https://www. instagram. com/norwegianclass101 https://www. instagram. com/badnorwegiantranslations https://www. instagram. com/speaknorwegian https://www. instagram. com/norwegian_jo https://www. instagram. com/learnnorwegiannow https://www. instagram. com/oslovegetarfestival https://www. instagram. com/norsklaerer_karense https://www. instagram. com/norsksonen https://duckduckgo. com/?q=kardemomme+by&amp;t=iphone&amp;ia=web https://aunivers. lokus. no/fagpakker/norsk/god-i-norsk-1/velkommen/til-kapitlene/1-vi-blir-kjent https://grammatikk. com https://grammatikk. com/pdf/VerbLita. pdf https://uttale. no/%C3%B8v-hjemme https://handbokigrammatikk. portfolio. no/read/75c9bf20-06ea-4524-bbfe-9e5ce5989841 https://aunivers. lokus. no/fagpakker/norsk/god-i-norsk-1/velkommen https://deichman. no/min-side https://duckduckgo. com/?q=gr%C3%B8nnsakspisersangen+tekst&amp;t=iphone&amp;ia=web "
     }, {
     "id": 14,
-    "url": "https://iaco.io/pini",
+    "url": "https://iaco.io/pini/",
     "title": "",
     "body": ""
     }, {
     "id": 15,
-    "url": "https://iaco.io/podcast",
+    "url": "https://iaco.io/podcast/",
     "title": "IACO.io 🎙️ podcast",
     "body": ""
     }, {
     "id": 16,
-    "url": "https://iaco.io/policies",
+    "url": "https://iaco.io/policies/",
     "title": "Our Policies",
     "body": "   Back to Homepage  Terms and Conditions Privacy Policy ChangesTerms and ConditionsFor the moment, this page does not list our terms and conditions related to our services. For more information, please contact us. Privacy PolicyWe care about your privacy, as much as we care about ours. Lawyer-ish texts are confusing, that is why our Privacy Policy uses simple language. We do not sell any personal data, at all. This Privacy Policy applies to all our services. When using some of our systems we may ask for personal information, such as your name and e-mail address. The sole purpose is to provide the services you are requesting, e. g. help on a topic, support using our website, newsletter subscription. We also store some settings (which DOES NOT contain personally identifiable data) in the local storage of your browser (a. k. a. cookies). These are adjustments to improve the browsing experience, such as not displaying an alert banner if it was already viewed by the user. Some anonymous usage data is gathered using an analytics tool (counter. dev). The data DOES NOT contain personal information, and its main purpose is to study the web traffic of the website. We may use third party partners in order to be able to provide you with our services. We own all rights to the information related to our services (e. g. images, videos, texts, codes, databases), and you retain all rights to your personal data (e. g. name and e-mail address used to subscribe to newsletter). ChangesChanges to our Our Policies will be done directly on this page, and will be made at our own discretion. Continuing to use our services constitute your acceptance of our current policies. If you have any questions, please contact us.    Back to Homepage "
     }, {
     "id": 17,
-    "url": "https://iaco.io/speakeat",
+    "url": "https://iaco.io/speakeat/",
     "title": "SpeakEat",
     "body": ""
     }, {
     "id": 18,
-    "url": "https://iaco.io/template",
+    "url": "https://iaco.io/template/",
     "title": "Title",
     "body": "{% include yt id=page. youtube %} {% comment %}  # Title 1 {#anchor}     ## Title 2 {#anchor}         ### Title 3 {#anchor}          {% endcomment %} # Title 1 {#anchor}## Title 2 {#anchor}: ### Title 3 {#anchor}:       [link](url) link   [link &lt;a-out/&gt;](url) link        * text italic text *   ** text bold text **       *** text highlight text ***   ~~ text strike text ~~       &lt; hr &gt; ---   ` code `    &gt; Quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote quote ``` ↵ block ↵ ``` 1block list with dots starts with - or * list with numbers starts with 1. Input: &lt;input type= text  name= name  placeholder=  &amp;#xF007; Name /&gt; Textarea: &lt;textarea type= text  name= msg  placeholder= &amp;#xF075; Message. . .  &gt;&lt;/textarea&gt; Button: &lt;a href= /  class= button &gt;Button a&lt;/a&gt; &lt;input type= submit  class= button  name= submit  value= Button input &gt; Button a Button with big icon: &lt;a class= button secondary large  href= /youtube/join  target= _blank &gt;&lt;i class= fab fa-youtube fa-2x middle &gt;&lt;/i&gt; Subscribe&lt;/a&gt; Subscribe Image: { % include img src= assets/media/bg/default. jpg  alt= Alt text  %} {% include img src=”assets/media/bg/default. jpg” alt=”Alt text” %} YouTube Video: { % include yt id=   %} {% include yt id=”JLTk1jksamk” %} {% include newsletter %} "
     }, {
@@ -101,42 +101,42 @@ var documents = [{
     "body": "   pona     IΛCO 🌟 _  IΛCO 🌟 _  "
     }, {
     "id": 20,
-    "url": "https://iaco.io/toolkits",
+    "url": "https://iaco.io/toolkits/",
     "title": "My Personal Recommendations",
     "body": "{% comment %}  Apps     Title 2 #    Title 3 # My current level of familiarity with some technologies     5 tips   Les Tips         Les Tips Two           This is the title post{% endcomment %} {% include yt id=”nXhxMjtquus” %} Apps TickTick Bitwarden DuckDuckGo{ % include img src=”default-bg. jpg” %} Title 2 #: Bold 2 * : bold Italic 1 * : italic Highlight 3 * : highlight Title 3 # Quote 1 &gt; Code 1 ` : code Block 3 ` 1blockWe all procrastinate… But how can we avoid that? One answer: your own system! 😱💤 My current level of familiarity with some technologiesIn our lives there are things we want to do (because we like, or even love them ❤️), and things we have to do (because they are important, or mandatory ⚠️).  The idea is simple: to have more ==time== and energy for the things that matter the most, it is important to have a system in place, a system that supports you! 5 tips: {% include img src=”default-bg. jpg” %} The 5 tips to help you avoiding procrastination, managing your time and getting things done: Les Tips:  Your calendar reminds you about what you need to do; Your timers allow you to have control of your time and progress;Les Tips Two:  By delegating you give tasks to those best suited for the job; Entering a Flow State allows you to be more focused and make better use of your time; And by paying attention to your health triangle you will have more energy and focus because your body and mind are working at their best capacity. This is the title postAnd you, tell me, how do you avoid Cmd+C procrastination? 123And you, tell me, how do you avoid procrastination? And you, tell me, how do you avoid procrastination? And you, tell me, how do you avoid procrastination?hi"
     }, {
     "id": 21,
-    "url": "https://iaco.io/whatsapp/join",
+    "url": "https://iaco.io/whatsapp/join/",
     "title": "IACO.io 💬 WhatsApp",
     "body": ""
     }, {
     "id": 22,
-    "url": "https://iaco.io/whatsapp",
+    "url": "https://iaco.io/whatsapp/",
     "title": "Insight of the Week",
     "body": "Joining the group will also give you access to exclusive content: {% include showroom url=”/whatsapp/join” newtab=true image=”assets/media/categories/productivity. jpg” title=”The 5 apps for REAL productivity I use! (fast and easy to use)” %}{% include showroom url=”/whatsapp/join” newtab=true image=”assets/media/categories/nutrition. jpg” title=”1-2-3 of how to create the MOST NUTRITIOUS diet” %}{% include showroom url=”/whatsapp/join” newtab=true image=”assets/media/categories/gym. jpg” title=”My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)” %}{% include showroom url=”/whatsapp/join” newtab=true image=”assets/media/logos/whatsapp. jpg” title=”Join Insight of the Week for free!” %} All these contents are 100% free, but only for those joining the group And by joining Insight of the Week you get concise articles with the most important tool or strategy I studied in the week Join Insight of the Week {% include newsletter %} "
     }, {
     "id": 23,
-    "url": "https://iaco.io/whatsapp/exclusive",
+    "url": "https://iaco.io/whatsapp/exclusive/",
     "title": "You found my exclusive WhatsApp content",
     "body": "{% include showroom url=”/whatsapp/free/productivity” newtab=true image=”assets/media/categories/productivity. jpg” title=”The 5 apps for REAL productivity I use! (fast and easy to use)” %} {% include showroom url=”/whatsapp/free/nutrition” newtab=true image=”assets/media/categories/nutrition. jpg” title=”1-2-3 of how to create the MOST NUTRITIOUS diet” %} {% include showroom url=”/whatsapp/free/fitness” newtab=true image=”assets/media/categories/fitness. jpg” title=”My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)” %} The Fabulous YouTube Template(locked): {% include img url=”/whatsapp/join” newtab=true src=”assets/media/bg/friends-camping. jpg” %} This content is locked, but you can unlock it by simply sharing a recommendation message with a friend on WhatsAppTo share it and unlock the content, just click the button below: Share on WhatsApp to Unlock "
     }, {
     "id": 24,
-    "url": "https://iaco.io/youtube/join",
+    "url": "https://iaco.io/youtube/join/",
     "title": "youtube.com/@iaco ▶️",
     "body": ""
     }, {
     "id": 25,
-    "url": "https://iaco.io/youtube/exclusive",
+    "url": "https://iaco.io/youtube/exclusive/",
     "title": "Title",
     "body": "{% include yt id=page. youtube %} {% comment %}  # Title 1 {#anchor}     ## Title 2 {#anchor}         ### Title 3 {#anchor}          {% endcomment %} # Title 1 {#anchor}## Title 2 {#anchor}: ### Title 3 {#anchor}:       [link](url) link   [link &lt;a-out/&gt;](url) link        * italic *   ** bold **       *** highlight ***   ~~ strike ~~       &lt; hr &gt; ---   ` code `    &gt; Quote ``` ↵ block ↵ ``` 1block list with dots starts with - or * list with numbers starts with 1. Input: &lt;input type= text  name= name  placeholder=  &amp;#xF007; Name /&gt; Textarea: &lt;textarea type= text  name= msg  placeholder= &amp;#xF075; Message. . .  &gt;&lt;/textarea&gt; Button: &lt;a href= /  class= button &gt;Button a&lt;/a&gt; &lt;input type= submit  class= button  name= submit  value= Button input &gt; Button a Image: { % include img src= assets/media/bg/default. jpg  alt= Alt text  %} {% include img src=”assets/media/bg/default. jpg” alt=”Alt text” %} YouTube Video: { % include yt id=   %} {% include yt id=”JLTk1jksamk” %} {% include newsletter %} "
     }, {
     "id": 26,
-    "url": "https://iaco.io/youtube",
+    "url": "https://iaco.io/youtube/",
     "title": "youtube.com/@iaco ▶️",
     "body": ""
     }, {
     "id": 27,
-    "url": "https://iaco.io/yt/gym",
+    "url": "https://iaco.io/yt/gym/",
     "title": "IACO - YouTube Gym Playlist",
     "body": ""
     }, {
@@ -333,7 +333,7 @@ var documents = [{
     "id": 66,
     "url": "https://iaco.io/redirects.json",
     "title": "",
-    "body": "{“/404. html”:”https://iaco. io/”,”/airdrop☁️”:”https://iaco. io/airdrop”,”/inbox”:”https://iaco. io/airdrop”,”/inbox📥”:”https://iaco. io/airdrop”,”/airdrop”:”https://forms. gle/mWzhyjbCwcJAGUQP6”,”/articles”:”https://iaco. io/category/habits”,”/blog”:”https://iaco. io/archive”,”/🗂️”:”https://iaco. io/archive”,”/cruelty-free”:”https://iaco. io/archive”,”/fitness”:”https://iaco. io/archive”,”/gym”:”https://iaco. io/archive”,”/health”:”https://iaco. io/archive”,”/nutrition”:”https://iaco. io/archive”,”/productivity”:”https://iaco. io/archive”,”/sleep”:”https://iaco. io/archive”,”/social-responsibility”:”https://iaco. io/archive”,”/wellbeing”:”https://iaco. io/archive”,”/archive”:”https://iaco. io/articles”,”/🔵”:”https://iaco. io/dot”,”/dot”:”https://youtu. be/CO_DTntg9zc”,”/erotaractbeyondfrontiers”:”https://e-rotaract. com/dmo”,”/i❤️a”:”https://iaco. io/I+A”,”/i-love-a”:”https://iaco. io/I+A”,”/ilovea”:”https://iaco. io/I+A”,”/ig”:”https://iaco. io/instagram”,”/insta”:”https://iaco. io/instagram”,”/instagram📸”:”https://iaco. io/instagram”,”/ig📸”:”https://iaco. io/instagram”,”/insta📸”:”https://iaco. io/instagram”,”/instagram”:”https://instagram. com/IACO. io”,”/masto”:”https://iaco. io/mastodon”,”/mastodon🐘”:”https://iaco. io/mastodon”,”/masto🐘”:”https://iaco. io/mastodon”,”/mastodon”:”https://masto. ai/@iaco”,”/🎙️”:”https://iaco. io/podcast”,”/podcast🎙️”:”https://iaco. io/podcast”,”/podcast”:”https://iaco. io”,”/speakeat”:”https://e-rotaract. com/speakeat”,”/whatsapp/join”:”https://chat. whatsapp. com/ExBYT8NjrDo4a1LRmjvqeV”,”/yt/join”:”https://iaco. io/youtube/join”,”/channel/join”:”https://iaco. io/youtube/join”,”/youtube/subscribe”:”https://iaco. io/youtube/join”,”/yt/subscribe”:”https://iaco. io/youtube/join”,”/channel/subscribe”:”https://iaco. io/youtube/join”,”/youtube/join”:”https://www. youtube. com/@iaco?sub_confirmation=1”,”/yt”:”https://iaco. io/youtube”,”/channel”:”https://iaco. io/youtube”,”/youtube📺”:”https://iaco. io/youtube”,”/yt📺”:”https://iaco. io/youtube”,”/channel📺”:”https://iaco. io/youtube”,”/youtube”:”https://www. youtube. com/@iaco”,”/youtube/gym”:”https://iaco. io/yt/gym”,”/yt/gym”:”https://youtube. com/playlist?list=PL4K6mvsV5xWZ_reMhHBc342arC_HwLz0K”} "
+    "body": "{“/404. html”:”https://iaco. io/”,”/airdrop☁️”:”https://iaco. io/airdrop/”,”/inbox”:”https://iaco. io/airdrop/”,”/inbox📥”:”https://iaco. io/airdrop/”,”/airdrop/”:”https://forms. gle/mWzhyjbCwcJAGUQP6”,”/articles/”:”https://iaco. io/category/habits”,”/blog”:”https://iaco. io/archive/”,”/🗂️”:”https://iaco. io/archive/”,”/cruelty-free”:”https://iaco. io/archive/”,”/fitness”:”https://iaco. io/archive/”,”/gym”:”https://iaco. io/archive/”,”/health”:”https://iaco. io/archive/”,”/nutrition”:”https://iaco. io/archive/”,”/productivity”:”https://iaco. io/archive/”,”/sleep”:”https://iaco. io/archive/”,”/social-responsibility”:”https://iaco. io/archive/”,”/wellbeing”:”https://iaco. io/archive/”,”/archive/”:”https://iaco. io/articles”,”/🔵”:”https://iaco. io/dot/”,”/dot/”:”https://youtu. be/CO_DTntg9zc”,”/erotaractbeyondfrontiers/”:”https://e-rotaract. com/dmo”,”/i❤️a”:”https://iaco. io/I+A/”,”/i-love-a”:”https://iaco. io/I+A/”,”/ilovea”:”https://iaco. io/I+A/”,”/ig”:”https://iaco. io/instagram/”,”/insta”:”https://iaco. io/instagram/”,”/instagram📸”:”https://iaco. io/instagram/”,”/ig📸”:”https://iaco. io/instagram/”,”/insta📸”:”https://iaco. io/instagram/”,”/instagram/”:”https://instagram. com/IACO. io”,”/masto”:”https://iaco. io/mastodon/”,”/mastodon🐘”:”https://iaco. io/mastodon/”,”/masto🐘”:”https://iaco. io/mastodon/”,”/mastodon/”:”https://masto. ai/@iaco”,”/🎙️”:”https://iaco. io/podcast/”,”/podcast🎙️”:”https://iaco. io/podcast/”,”/podcast/”:”https://iaco. io”,”/speakeat/”:”https://e-rotaract. com/speakeat”,”/whatsapp/join/”:”https://chat. whatsapp. com/ExBYT8NjrDo4a1LRmjvqeV”,”/yt/join”:”https://iaco. io/youtube/join/”,”/channel/join”:”https://iaco. io/youtube/join/”,”/youtube/subscribe”:”https://iaco. io/youtube/join/”,”/yt/subscribe”:”https://iaco. io/youtube/join/”,”/channel/subscribe”:”https://iaco. io/youtube/join/”,”/youtube/join/”:”https://www. youtube. com/@iaco?sub_confirmation=1”,”/yt”:”https://iaco. io/youtube/”,”/channel”:”https://iaco. io/youtube/”,”/youtube📺”:”https://iaco. io/youtube/”,”/yt📺”:”https://iaco. io/youtube/”,”/channel📺”:”https://iaco. io/youtube/”,”/youtube/”:”https://www. youtube. com/@iaco”,”/youtube/gym”:”https://iaco. io/yt/gym/”,”/yt/gym/”:”https://youtube. com/playlist?list=PL4K6mvsV5xWZ_reMhHBc342arC_HwLz0K”} "
     }, {
     "id": 67,
     "url": "https://iaco.io/robots.txt",
