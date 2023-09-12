@@ -12,7 +12,7 @@ var documents = [{
     }, {
     "id": 2,
     "url": "https://iaco.io/ami/",
-    "title": "I ❤️ A",
+    "title": "A ❤️ I",
     "body": ""
     }, {
     "id": 3,
