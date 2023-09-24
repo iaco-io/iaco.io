@@ -13,7 +13,7 @@
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
         @font-face { font-family: nasin-nanpa; src: url('https://iaco.io/assets/fonts/nasin-nanpa-2.5.1-lasina-kin.otf'); }
-        newsletter-readers:before { content: "400+"; }
+        .newsletter-readers:before { content: "400+"; }
     </style>
 
     <!-- JS -->
@@ -65,6 +65,8 @@
                 </img>
             </a>
         
+
+        
         </div>
 
         
@@ -107,9 +109,9 @@
                 </li>
                 
                 <li>
-                    <a href="/instagram" title="Instagram Insights" target="_blank">
+                    <a href="/instagram" title="Instagram Posts" target="_blank">
                         <i class="fab fa-instagram"></i>
-                        Instagram Insights
+                        Instagram Posts
                     </a>
                 </li>
                 
@@ -337,15 +339,6 @@
                     
                     
                     
-                    <li>
-                        <a href="/policies" target="_blank" class="gray">
-                            
-                            Privacy Policy | Terms and Conditions
-                        </a>
-                    </li>
-                    
-                    
-                    
                 </ul>
             </div>
             <div class="col-twelve tab-full">
@@ -354,7 +347,7 @@
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        <span onclick="copyRawContent();">&copy;</span>
+                        <span onclick="copyRawContent(this);">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -422,9 +415,14 @@
 
         formatPage();
 
-        function copyRawContent() {
-            navigator.clipboard.writeText(`https://iaco.io/newsletter/\n\nimage: "assets/media/bg/whatsapp.jpg"\nyoutube: ""\n\npre-title: "EXCLUSIVE AREA"\ntitle: "You found my exclusive WhatsApp content"\n\ndescription: "Type the code below to unlock it 🔐"\npost-description: "If you don't have a code, just join my WhatsApp group –  the code is on the first message in the group chat"\n\n---\n\n`);
-            window.location.reload();
+        function copyRawContent(element) {
+            
+            navigator.clipboard.writeText(`https://iaco.io/newsletter/\n\nimage: "assets/media/bg/whatsapp.jpg"\nyoutube: ""\n\npre-title: "EXCLUSIVE AREA"\ntitle: "You found my exclusive WhatsApp content"\n\ndescription: "Type the code below to unlock it 🔐"\npost-description: "If you don't have a code, just join my WhatsApp group –  the code is on the first message in the group chat"\n\n---\n\naaa
+
+hhh
+`);
+            element.prepend('\u00a0');
+            element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

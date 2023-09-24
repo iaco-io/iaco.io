@@ -13,7 +13,7 @@
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
         @font-face { font-family: nasin-nanpa; src: url('https://iaco.io/assets/fonts/nasin-nanpa-2.5.1-lasina-kin.otf'); }
-        newsletter-readers:before { content: "400+"; }
+        .newsletter-readers:before { content: "400+"; }
     </style>
 
     <!-- JS -->
@@ -65,6 +65,8 @@
                 </img>
             </a>
         
+
+        
         </div>
 
         
@@ -107,9 +109,9 @@
                 </li>
                 
                 <li>
-                    <a href="/instagram" title="Instagram Insights" target="_blank">
+                    <a href="/instagram" title="Instagram Posts" target="_blank">
                         <i class="fab fa-instagram"></i>
-                        Instagram Insights
+                        Instagram Posts
                     </a>
                 </li>
                 
@@ -568,15 +570,6 @@ wUmbXy6PFgM8zkefeuZ/McbcZ1pdiwSLoDX65YVJKb02ptKBkbNAkDBakR3G
                     
                     
                     
-                    <li>
-                        <a href="/policies" target="_blank" class="gray">
-                            
-                            Privacy Policy | Terms and Conditions
-                        </a>
-                    </li>
-                    
-                    
-                    
                 </ul>
             </div>
             <div class="col-twelve tab-full">
@@ -585,7 +578,7 @@ wUmbXy6PFgM8zkefeuZ/McbcZ1pdiwSLoDX65YVJKb02ptKBkbNAkDBakR3G
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        <span onclick="copyRawContent();">&copy;</span>
+                        <span onclick="copyRawContent(this);">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -653,9 +646,111 @@ wUmbXy6PFgM8zkefeuZ/McbcZ1pdiwSLoDX65YVJKb02ptKBkbNAkDBakR3G
 
         formatPage();
 
-        function copyRawContent() {
-            navigator.clipboard.writeText(`https://iaco.io/youtube/exclusive/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "JLTk1jksamk"\n\npre-title: "pre-title<br>With line-break"\ntitle: "Title"\n\ndescription: "Description<br>With line-break"\npost-description: ""\n\n---\n\n`);
-            window.location.reload();
+        function copyRawContent(element) {
+            
+            navigator.clipboard.writeText(`https://iaco.io/youtube/exclusive/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "JLTk1jksamk"\n\npre-title: "pre-title<br>With line-break"\ntitle: "Title"\n\ndescription: "Description<br>With line-break"\npost-description: ""\n\n---\n\n{% include yt id=page.youtube %}
+
+<!-- Start Chat:
+<form action="https://duck.us12.list-manage.com/subscribe/post" method="POST" target="_blank">
+  <input type="hidden" name="u" value="15b04556891fe8b87dc4d1344">
+  <input type="hidden" name="id" value="6f1f656e7c">
+  <input type="hidden" name="TICKET" id="ticket">
+
+  <input type="email" autocapitalize="none" autocorrect="off" name="EMAIL" placeholder="&#xF0E0;  E-mail">
+  <input type="text" name="FNAME" placeholder="&#xF007;  Name">
+  <textarea type="text" name="MSG" placeholder="&#xF075;  Message..."></textarea>
+  <input type="submit" class="button full" name="submit" value="Send Message">
+  <input type="submit" class="button primary large" name="submit" value="Send Message">
+  <input type="submit" class="button secondary large full" name="submit" value="Send Message">
+</form>
+<script>
+  document.getElementById("ticket").value = "IACO.io Chat Ticket " + new Date().toISOString();
+</script> -->
+
+{% comment %}
+
+- TOC
+{:toc}
+
+{% endcomment %}
+
+# \`#\` Title 1 \`{#anchor}\`
+
+## \`##\` Title 2 \`{#anchor}\`
+
+### \`###\` Title 3 \`{#anchor}\`
+
+\`[link]\`\`(url)\` [link](/) | \`[link <a-out/>]\`\`(url)\` [link <a-out/>](https://iaco.io)
+\`*\` *italic* \`*\` | \`**\` **bold** \`**\`
+\`***\` ***highlight*** \`***\` | \`~~\` ~~strike~~ \`~~\`
+< hr > \`---\` | \`\` \` \`\` \`code\` \`\` \` \`\`
+
+> \`>\` Quote
+
+\`\`\`\` \`\`\` \`\`\`\` \`↵\` \`block\` \`↵\` \`\`\`\` \`\`\` \`\`\`\`
+
+\`\`\`text
+block
+\`\`\`
+
+- list with dots
+- starts with \`-\` or \`*\`
+
+1. list with numbers
+1. starts with \`1.\`
+
+---
+
+Input:
+
+\`<input type="text" name="name" placeholder=" &#xF007; Name"/>\`
+
+<input type="text" name="name"  placeholder=" &#xF007; Name"/>
+<input type="text" name="email" placeholder=" &#xF0E0; E-mail"/>
+<input type="text" name="msg"   placeholder=" &#xF007; class += full" class="full"/>
+
+Textarea:
+
+\`<textarea type="text" name="msg" placeholder="&#xF075;  Message..."></textarea>\`
+
+<textarea type="text" name="msg" placeholder="&#xF075;  Message..."></textarea>
+<textarea type="text" name="msg" class="full" placeholder="&#xF075;  class += full"></textarea>
+
+Button:
+
+\`<a href="/" class="button">Button a</a>\`
+
+\`<input type="submit" class="button" name="submit" value="Button input">\`
+
+<a href="/" class="button">Button a</a>
+<input type="submit" name="submit" class="button" value="Button input">
+<input type="submit" name="submit" class="button primary" value="class += primary">
+<input type="submit" name="submit" class="button primary large" value="class += primary large">
+<input type="submit" name="submit" class="button secondary small full" value="class += secondary small full">
+
+---
+
+Image:
+
+\`{ % include img src="assets/media/bg/default.jpg" alt="Alt text" %}\`
+
+{% include img src="assets/media/bg/default.jpg" alt="Alt text" %}
+
+YouTube Video:
+
+\`{ % include yt id="" %}\`
+
+{% include yt id="JLTk1jksamk" %}
+
+<!--
+ig: B1OwTHPiG5M
+tiktok: 6801989263727578373
+-->
+
+{% include newsletter %}
+`);
+            element.prepend('\u00a0');
+            element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

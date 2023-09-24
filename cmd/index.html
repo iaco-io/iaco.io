@@ -13,7 +13,7 @@
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
         @font-face { font-family: nasin-nanpa; src: url('https://iaco.io/assets/fonts/nasin-nanpa-2.5.1-lasina-kin.otf'); }
-        newsletter-readers:before { content: "400+"; }
+        .newsletter-readers:before { content: "400+"; }
     </style>
 
     <!-- JS -->
@@ -65,6 +65,8 @@
                 </img>
             </a>
         
+
+        
         </div>
 
         
@@ -102,9 +104,9 @@
                 </li>
                 
                 <li>
-                    <a href="/instagram" title="Instagram Insights" target="_blank">
+                    <a href="/instagram" title="Instagram Posts" target="_blank">
                         <i class="fab fa-instagram"></i>
-                        Instagram Insights
+                        Instagram Posts
                     </a>
                 </li>
                 
@@ -266,9 +268,28 @@
 
         formatPage();
 
-        function copyRawContent() {
-            navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n`);
-            window.location.reload();
+        function copyRawContent(element) {
+            
+            navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n<style>
+.overlay { background-color: var(--fg) !important; }
+.gradient-overlay { display: none; }
+.home-content-table { background: none; }
+.home-bottom-text li > *,
+.home-bottom-text > * {
+  color: var(--bg) !important;
+  text-shadow: none !important;
+}
+</style>
+
+<script>
+  //window.onclick = () => { $('#bg-audio')[0].play(); window.onclick = null; }
+</script>
+
+<audio src="{{ site.baseurl }}/assets/media/rain.mp3" id="bg-audio" loop />
+<!-- <audio src="{{ site.baseurl }}/assets/media/rain.mp3" id="bg-audio" autoplay loop /> -->
+`);
+            element.prepend('\u00a0');
+            element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

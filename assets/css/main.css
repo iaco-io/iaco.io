@@ -283,7 +283,7 @@ em {
     color: var(--em-violet);
 }
 
-strong, b {
+strong {
     font-weight: bold;
     font-style: italic;
     font-variant: normal;
@@ -345,7 +345,7 @@ code, pre {
 }
 
 pre {
-    padding: 0 1rem;
+    padding: 0 .5rem;
     white-space: pre-wrap;
 }
 
@@ -386,10 +386,12 @@ s {
 }
 
 hr {
-    border: solid var(--fg);
-    border-width: 1px 0 0;
+    border-color: var(--fg-alpha);
+    border-style: dashed;
+    border-width: 1px 0 0 0;
+    width: 50%;
     clear: both;
-    margin: 2.4rem 0 1.5rem;
+    margin: auto;
     height: 0;
 }
 
@@ -531,7 +533,7 @@ th, td {
 }
 
 th {
-    color: var(--bg);
+    color: var(--fg);
     font-weight: bold;
 }
 
@@ -1172,14 +1174,15 @@ header .header-logo .icon {
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: .7;
+    opacity: .6;
     background-color: var(--bg);
 }
 
 .home-content-table {
     width: 100%;
     /* min-height: 100vh;
-    min-height: 100lvh; */
+    min-height: 100lvh;
+    */
     display: table;
     position: relative;
     padding-bottom: 5rem;
@@ -1227,8 +1230,8 @@ header .header-logo .icon {
 .home-content-tablecell h3 {
     font-family: "noto", sans-serif;
     font-weight: bold;
-    font-size: 2.2rem;
-    letter-spacing: .15rem;
+    font-size: 2rem;
+    letter-spacing: .06rem;
     margin: 0;
     color: var(--fg-blue-a);
 }
@@ -1418,6 +1421,23 @@ header .header-logo .icon {
     padding-right: 0;
 }
 
+.text-col {
+    display: table-cell;
+    float: none;
+    padding: 0 1rem;
+    border-image: linear-gradient(rgba(0,0,0,0) 20%, rgba(0,0,0,.5), rgba(0,0,0,.5), rgba(0,0,0,0) 80%) 30;
+    border-right: .5px dashed;
+}
+
+.text-col:first-child {
+    padding-left: 0;
+}
+
+.text-col:last-child {
+    padding-right: 0;
+    border-right: none;
+}
+
 @media only screen and (max-width:1024px) {
     #main [class="col-content"] {
         width: 100%;
@@ -1428,6 +1448,12 @@ header .header-logo .icon {
     #main [class="col-content"] {
         width: 100%;
         padding-right: 0;
+    }
+
+    .text-col {
+        display: block;
+        float: none;
+        border-right: none;
     }
 }
 
@@ -1810,8 +1836,44 @@ footer .footer-social li:last-child {
 }
 
 /******************************/
-/* GO TOP */
+/* MODALS */
 /******************************/
+
+#buttonmodal {
+    display: none;
+    position: fixed;
+    background: var(--fg-alpha);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;}
+
+#buttonmodal .modal {
+    max-width: 90vw;
+    max-height: 80vh;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg);
+    border: 1rem solid var(--bg);
+    overflow-y: scroll;
+}
+
+#buttonmodal .modal ul {
+    margin: 0;
+}
+
+#buttonmodal .modal ul li {
+    list-style: none;
+    display: block;
+    margin: 0.25rem 0;
+}
+
+#buttonmodal .modal ul li a {
+    display: block;
+}
 
 #corner {
     position: fixed;

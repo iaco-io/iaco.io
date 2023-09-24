@@ -13,7 +13,7 @@
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
         @font-face { font-family: nasin-nanpa; src: url('https://iaco.io/assets/fonts/nasin-nanpa-2.5.1-lasina-kin.otf'); }
-        newsletter-readers:before { content: "400+"; }
+        .newsletter-readers:before { content: "400+"; }
     </style>
 
     <!-- JS -->
@@ -33,8 +33,8 @@
 <meta property="og:title" content="A ❤️ I" />
 <meta name="author" content="iaco" />
 <meta property="og:locale" content="en" />
-<meta name="description" content="Today is day number #X since we first met!ami means lover :) and comes from ❝ a amor i ❞" />
-<meta property="og:description" content="Today is day number #X since we first met!ami means lover :) and comes from ❝ a amor i ❞" />
+<meta name="description" content="Today is day number #X since we first met! ami means lover :) and comes from ❝ a amor i ❞" />
+<meta property="og:description" content="Today is day number #X since we first met! ami means lover :) and comes from ❝ a amor i ❞" />
 <link rel="canonical" href="https://iaco.io/ami/" />
 <meta property="og:url" content="https://iaco.io/ami/" />
 <meta property="og:site_name" content="IACO.io" />
@@ -44,7 +44,7 @@
 <meta property="twitter:image" content="https://iaco.io/assets/media/bg/i-love-a.jpg" />
 <meta property="twitter:title" content="A ❤️ I" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"iaco"},"description":"Today is day number #X since we first met!ami means lover :) and comes from ❝ a amor i ❞","headline":"A ❤️ I","image":"https://iaco.io/assets/media/bg/i-love-a.jpg","url":"https://iaco.io/ami/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"iaco"},"description":"Today is day number #X since we first met! ami means lover :) and comes from ❝ a amor i ❞","headline":"A ❤️ I","image":"https://iaco.io/assets/media/bg/i-love-a.jpg","url":"https://iaco.io/ami/"}</script>
 <!-- End Jekyll SEO tag -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -59,7 +59,7 @@
 
         <div class="header-logo animate-this">
         
-            
+
         
         </div>
 
@@ -98,9 +98,9 @@
                 </li>
                 
                 <li>
-                    <a href="/instagram" title="Instagram Insights" target="_blank">
+                    <a href="/instagram" title="Instagram Posts" target="_blank">
                         <i class="fab fa-instagram"></i>
-                        Instagram Insights
+                        Instagram Posts
                     </a>
                 </li>
                 
@@ -134,7 +134,7 @@
                             <h3 class="animate-this"></h3>
                             <h1 class="animate-this"><span >A ❤️ I</span></h1>
                             <h2 class="animate-this">
-                                Today is day number #<span id='counter'>X</span> since we first met!<br><em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞
+                                Today is day number #<span id='counter'>X</span> since we first met!<br> <em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞
                                 
                             </h2>
 
@@ -281,9 +281,22 @@
 
         formatPage();
 
-        function copyRawContent() {
-            navigator.clipboard.writeText(`https://iaco.io/ami/\n\nimage: "assets/media/bg/i-love-a.jpg"\nyoutube: ""\n\npre-title: ""\ntitle: "A ❤️ I"\n\ndescription: "Today is day number #<span id='counter'>X</span> since we first met!<br><em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞"\npost-description: ""\n\n---\n\n`);
-            window.location.reload();
+        function copyRawContent(element) {
+            
+            navigator.clipboard.writeText(`https://iaco.io/ami/\n\nimage: "assets/media/bg/i-love-a.jpg"\nyoutube: ""\n\npre-title: ""\ntitle: "A ❤️ I"\n\ndescription: "Today is day number #<span id='counter'>X</span> since we first met!<br> <em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞"\npost-description: ""\n\n---\n\n<script>
+  const ONE_DAY = 1000 * 60 * 60 * 24;
+  const DAY_1 = new Date('2023-05-05T00:00:00+01:00');
+  const TODAY = new Date();
+
+  const differenceMs = Math.abs(TODAY - DAY_1);
+
+  const DAYS = Math.round(differenceMs / ONE_DAY);
+
+  $('#counter').text(DAYS);
+</script>
+`);
+            element.prepend('\u00a0');
+            element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

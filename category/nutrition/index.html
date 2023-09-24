@@ -13,7 +13,7 @@
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
         @font-face { font-family: nasin-nanpa; src: url('https://iaco.io/assets/fonts/nasin-nanpa-2.5.1-lasina-kin.otf'); }
-        newsletter-readers:before { content: "400+"; }
+        .newsletter-readers:before { content: "400+"; }
     </style>
 
     <!-- JS -->
@@ -65,6 +65,8 @@
                 </img>
             </a>
         
+
+        
         </div>
 
         
@@ -107,9 +109,9 @@
                 </li>
                 
                 <li>
-                    <a href="/instagram" title="Instagram Insights" target="_blank">
+                    <a href="/instagram" title="Instagram Posts" target="_blank">
                         <i class="fab fa-instagram"></i>
-                        Instagram Insights
+                        Instagram Posts
                     </a>
                 </li>
                 
@@ -221,7 +223,7 @@
 
 
 
-<a href="/category/habits" class="button tag">✅ Habits</a>
+<a href="/category/fitness" class="button tag">💪 Fitness</a>
 
 <p></p>
 </center>
@@ -237,56 +239,12 @@
             
             
             
-                style="background-image: url('https://i1.ytimg.com/vi/cronometer/maxresdefault.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');"
             
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-youtube"></i><br>HABITS With this app I was finally able to eat healthier - and it is 100% free!</h4>
-            </span>
-        </span>
-    </a>
-</div>
-
-
-<div class="showroom col-six">
-    <a href="/article/eat-healthy/" >
-        <span class="showroom-bg"
-            
-
-            
-            
-            
-            
-            
-                style="background-image: url('https://i1.ytimg.com/vi/eat-healthy/maxresdefault.jpg');"
-            
-        ></span>
-        <span class="showroom-title">
-            <span class="intro">
-                <h4><i class="fab fa-youtube"></i><br>My Evidence-Based Diet – How to Eat Healthy? (and Enjoy it!)</h4>
-            </span>
-        </span>
-    </a>
-</div>
-
-
-<div class="showroom col-six">
-    <a href="/article/cronometer/" >
-        <span class="showroom-bg"
-            
-
-            
-            
-            
-            
-            
-                style="background-image: url('https://i1.ytimg.com/vi/cronometer/maxresdefault.jpg');"
-            
-        ></span>
-        <span class="showroom-title">
-            <span class="intro">
-                <h4><i class="fab fa-youtube"></i><br>With this app I was finally able to eat healthier - and it is 100% free!</h4>
+                <h4>#30medium &mdash; not #75hard ;)</h4>
             </span>
         </span>
     </a>
@@ -484,15 +442,6 @@
                     
                     
                     
-                    <li>
-                        <a href="/policies" target="_blank" class="gray">
-                            
-                            Privacy Policy | Terms and Conditions
-                        </a>
-                    </li>
-                    
-                    
-                    
                 </ul>
             </div>
             <div class="col-twelve tab-full">
@@ -501,7 +450,7 @@
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        <span onclick="copyRawContent();">&copy;</span>
+                        <span onclick="copyRawContent(this);">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -569,9 +518,11 @@
 
         formatPage();
 
-        function copyRawContent() {
+        function copyRawContent(element) {
+            
             navigator.clipboard.writeText(`https://iaco.io/category/nutrition/index.html\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: "ARTICLES"\ntitle: "Articles in nutrition"\n\ndescription: "My collection of evidence-based and practical solutions to help us build a fulfilling life, enjoy!"\npost-description: ""\n\n---\n\n`);
-            window.location.reload();
+            element.prepend('\u00a0');
+            element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

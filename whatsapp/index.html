@@ -13,7 +13,7 @@
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
         @font-face { font-family: nasin-nanpa; src: url('https://iaco.io/assets/fonts/nasin-nanpa-2.5.1-lasina-kin.otf'); }
-        newsletter-readers:before { content: "400+"; }
+        .newsletter-readers:before { content: "400+"; }
     </style>
 
     <!-- JS -->
@@ -65,6 +65,8 @@
                 </img>
             </a>
         
+
+        
         </div>
 
         
@@ -107,9 +109,9 @@
                 </li>
                 
                 <li>
-                    <a href="/instagram" title="Instagram Insights" target="_blank">
+                    <a href="/instagram" title="Instagram Posts" target="_blank">
                         <i class="fab fa-instagram"></i>
-                        Instagram Insights
+                        Instagram Posts
                     </a>
                 </li>
                 
@@ -214,7 +216,7 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/gym.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/fitness.jpg');"></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)</h4>
@@ -234,9 +236,9 @@
     </a>
 </div>
 
-<p>All these contents are 100% free, but only for those joining the group</p>
+<p>All these contents are <strong>100% free</strong>, but only for those joining the group</p>
 
-<p>And by joining Insight of the Week you get concise articles with the most important tool or strategy I studied in the week</p>
+<p>And by joining <em>Insight of the Week</em> you get concise articles with the most important tool or strategy I studied in the week</p>
 
 <p><a class="button large" href="/whatsapp/join" target="_blank"><i class="fab fa-whatsapp fa-2x middle"></i> Join Insight of the Week</a></p>
 
@@ -424,15 +426,6 @@
                     
                     
                     
-                    <li>
-                        <a href="/policies" target="_blank" class="gray">
-                            
-                            Privacy Policy | Terms and Conditions
-                        </a>
-                    </li>
-                    
-                    
-                    
                 </ul>
             </div>
             <div class="col-twelve tab-full">
@@ -441,7 +434,7 @@
                         <script>
                             document.write(new Date().getFullYear())
                         </script>
-                        <span onclick="copyRawContent();">&copy;</span>
+                        <span onclick="copyRawContent(this);">&copy;</span>
                         <script>
                             document.write(document.location.host)
                         </script>
@@ -509,9 +502,25 @@
 
         formatPage();
 
-        function copyRawContent() {
-            navigator.clipboard.writeText(`https://iaco.io/whatsapp/\n\nimage: "assets/media/bg/whatsapp.jpg"\nyoutube: ""\n\npre-title: "JOIN MY WHATSAPP GROUP"\ntitle: "Insight of the Week"\n\ndescription: "In this group I share my Insight of the Week – the most important tool or strategy I studied this week, that you can use in your life right away"\npost-description: ""\n\n---\n\n`);
-            window.location.reload();
+        function copyRawContent(element) {
+            
+            navigator.clipboard.writeText(`https://iaco.io/whatsapp/\n\nimage: "assets/media/bg/whatsapp.jpg"\nyoutube: ""\n\npre-title: "JOIN MY WHATSAPP GROUP"\ntitle: "Insight of the Week"\n\ndescription: "In this group I share my Insight of the Week – the most important tool or strategy I studied this week, that you can use in your life right away"\npost-description: ""\n\n---\n\nJoining the group will also give you access to exclusive content:
+
+{% include showroom url="/whatsapp/join" newtab=true image="assets/media/categories/productivity.jpg" title="The 5 apps for REAL productivity I use! (fast and easy to use)" %}
+{% include showroom url="/whatsapp/join" newtab=true image="assets/media/categories/nutrition.jpg" title="1-2-3 of how to create the MOST NUTRITIOUS diet" %}
+{% include showroom url="/whatsapp/join" newtab=true image="assets/media/categories/fitness.jpg" title="My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)" %}
+{% include showroom url="/whatsapp/join" newtab=true image="assets/media/logos/whatsapp.jpg" title="Join Insight of the Week for free!" %}
+
+All these contents are **100% free**, but only for those joining the group
+
+And by joining *Insight of the Week* you get concise articles with the most important tool or strategy I studied in the week
+
+<a class="button large" href="/whatsapp/join" target="_blank"><i class="fab fa-whatsapp fa-2x middle"></i> Join Insight of the Week</a>
+
+{% include newsletter %}
+`);
+            element.prepend('\u00a0');
+            element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>
