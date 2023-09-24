@@ -358,7 +358,7 @@ var documents = [{
     "id": 71,
     "url": "https://iaco.io/article/30medium/",
     "title": "#30medium &mdash; not #75hard ;)",
-    "body": "2023/09/11 - You can see my full #30medium journey on insta 😉: iaco. ioHere are a few #30medium reels 🤳:                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
+    "body": "2023/09/11 - You can see my full #30medium journey on insta 😉: iaco. ioHere are a few #30medium reels 🤳:     View this post on Instagram      A post shared by IΛCO (@iaco. me)     View this post on Instagram      A post shared by IΛCO (@iaco. me)     View this post on Instagram      A post shared by IΛCO (@iaco. me)                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
     }];
 
 var idx = lunr(function () {
