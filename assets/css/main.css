@@ -1456,6 +1456,12 @@ header .header-logo .icon {
         float: none;
         border-right: none;
         padding: 0;
+        border-image: linear-gradient(to left, rgba(0,0,0,0) 20%, rgba(0,0,0,.5), rgba(0,0,0,.5), rgba(0,0,0,0) 80%) 30;
+        border-bottom: .5px dashed;
+    }
+
+    .text-col:last-child {
+        border-bottom: none;
     }
 }
 
@@ -1483,6 +1489,11 @@ header .header-logo .icon {
     padding: 0;
     height: 35rem;
     background-color: var(--bg);
+    z-index: 10;
+}
+
+.showroom-center {
+    margin: 0 25%;
 }
 
 .showroom a {
@@ -1548,11 +1559,19 @@ header .header-logo .icon {
     .showroom-title .intro {
         text-align: center;
     }
+
+    .showroom-center {
+        margin: 0;
+    }
 }
 
 @media only screen and (max-width:600px) {
     .showroom {
         height: 25rem;
+    }
+
+    .showroom-center {
+        margin: 0;
     }
 }
 

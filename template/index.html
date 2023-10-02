@@ -351,11 +351,11 @@ third text
 
 <p>Image:</p>
 
-<p><code class="language-plaintext highlighter-rouge">{% include img src="assets/media/bg/default.jpg" alt="Alt text" %}</code></p>
+<p><code class="language-plaintext highlighter-rouge">{% include img src="assets/media/bg/default.jpg" title="Title text" %}</code></p>
 
 <p style="text-align: center;">
-    <img src="https://iaco.io/assets/media/bg/default.jpg" alt="Alt text" />
-    
+    <img src="https://iaco.io/assets/media/bg/default.jpg" title="Title text" />
+    <em><small>Title text</small></em>
 </p>
 
 <p>YouTube Video:</p>
@@ -364,6 +364,45 @@ third text
 
 <div class="video-wrapper">
     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/JLTk1jksamk?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</div>
+
+<hr />
+
+<p><code class="language-plaintext highlighter-rouge">{% include showroom url="/yt" newtab=true center=true image="assets/media/logos/youtube.jpg" title="YouTube" %}</code></p>
+
+<div class="showroom col-six showroom-center">
+    <a href="/yt" target="_blank">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4>YouTube</h4>
+            </span>
+        </span>
+    </a>
+</div>
+
+<p><code class="language-plaintext highlighter-rouge">{% include showroom url="/yt" newtab=true image="assets/media/logos/youtube.jpg" title="YouTube" %}</code></p>
+
+<div class="showroom col-six">
+    <a href="/ig" target="_blank">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4>Instagram</h4>
+            </span>
+        </span>
+    </a>
+</div>
+
+<div class="showroom col-six">
+    <a href="/yt" target="_blank">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4>YouTube</h4>
+            </span>
+        </span>
+    </a>
 </div>
 
 <!--
@@ -632,7 +671,6 @@ tiktok: 6801989263727578373
         formatPage();
 
         function copyRawContent(element) {
-            
             navigator.clipboard.writeText(`https://iaco.io/template/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "JLTk1jksamk"\n\npre-title: "pre-title<br>With line-break"\ntitle: "Template Title"\n\ndescription: "Description text"\npost-description: "Additional description"\n\n---\n\n{% include yt id=page.youtube %}
 
 <a class="buttonmodal">link is here hahaha</a>
@@ -756,15 +794,26 @@ Button with big icon:
 
 Image:
 
-\`{% raw %}{% include img src="assets/media/bg/default.jpg" alt="Alt text" %}{% endraw %}\`
+\`{% raw %}{% include img src="assets/media/bg/default.jpg" title="Title text" %}{% endraw %}\`
 
-{% include img src="assets/media/bg/default.jpg" alt="Alt text" %}
+{% include img src="assets/media/bg/default.jpg" title="Title text" %}
 
 YouTube Video:
 
 \`{% raw %}{% include yt id="" %}{% endraw %}\`
 
 {% include yt id="JLTk1jksamk" %}
+
+---
+
+\`{% raw %}{% include showroom url="/yt" newtab=true center=true image="assets/media/logos/youtube.jpg" title="YouTube" %}{% endraw %}\`
+
+{% include showroom url="/yt" newtab=true center=true image="assets/media/logos/youtube.jpg" title="YouTube" %}
+
+\`{% raw %}{% include showroom url="/yt" newtab=true image="assets/media/logos/youtube.jpg" title="YouTube" %}{% endraw %}\`
+
+{% include showroom url="/ig" newtab=true image="assets/media/logos/instagram.jpg" title="Instagram" %}
+{% include showroom url="/yt" newtab=true image="assets/media/logos/youtube.jpg" title="YouTube" %}
 
 <!--
 ig: B1OwTHPiG5M

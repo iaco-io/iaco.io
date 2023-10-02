@@ -489,11 +489,11 @@
 
 <p>Image:</p>
 
-<p><code class="language-plaintext highlighter-rouge">{ % include img src="assets/media/bg/default.jpg" alt="Alt text" %}</code></p>
+<p><code class="language-plaintext highlighter-rouge">{ % include img src="assets/media/bg/default.jpg" title="Alt text" %}</code></p>
 
 <p style="text-align: center;">
-    <img src="https://iaco.io/assets/media/bg/default.jpg" alt="Alt text" />
-    
+    <img src="https://iaco.io/assets/media/bg/default.jpg" title="Alt text" />
+    <em><small>Alt text</small></em>
 </p>
 
 <p>YouTube Video:</p>
@@ -770,7 +770,6 @@ tiktok: 6801989263727578373
         formatPage();
 
         function copyRawContent(element) {
-            
             navigator.clipboard.writeText(`https://iaco.io/subscribe/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "JLTk1jksamk"\n\npre-title: "You can help me by supporting my work"\ntitle: "Hey, thanks in advance ;)"\n\ndescription: "Consider subscribing to one of the options below"\npost-description: ""\n\n---\n\n{% include yt id=page.youtube %}
 
 <!-- Start Chat:
@@ -1035,9 +1034,9 @@ Button with big icon:
 
 Image:
 
-\`{ % include img src="assets/media/bg/default.jpg" alt="Alt text" %}\`
+\`{ % include img src="assets/media/bg/default.jpg" title="Alt text" %}\`
 
-{% include img src="assets/media/bg/default.jpg" alt="Alt text" %}
+{% include img src="assets/media/bg/default.jpg" title="Alt text" %}
 
 YouTube Video:
 
