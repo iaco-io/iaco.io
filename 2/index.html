@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://iaco.io/assets/css/base.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/vendor.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/main.css">
+    <link rel="stylesheet" href="https://iaco.io/assets//css/lightbox.css">
     <style>
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
@@ -19,6 +20,7 @@
     <!-- JS -->
     <script src="https://iaco.io/assets/js/modernizr.js"></script>
     <script src="https://iaco.io/assets/js/jquery.min.js"></script>
+    <script src="https://iaco.io/assets/js/lightbox.js"></script>
 
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/png"    href="https://iaco.io/assets/media/logo/power.png">
@@ -217,10 +219,13 @@
 
 <div class="showroom col-six">
     <a href="/article/my-habits/">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/my-healthy-habits.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/my-healthy-habits.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>The Healthier Habits I'm Building</h4>
+                <h4>Healthier Habits I'm Building Right Now</h4>
             </span>
         </span>
     </a>
@@ -228,10 +233,13 @@
 
 <div class="showroom col-six">
     <a href="/article/who-is-iaco/">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/about-me.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://i1.ytimg.com/vi/JLTk1jksamk/maxresdefault.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>Welcome! Who is IACO?!</h4>
+                <h4><i class="fab fa-youtube"></i><br />Welcome! Who is IACO?!</h4>
             </span>
         </span>
     </a>
@@ -239,7 +247,10 @@
 
 <div class="showroom col-six">
     <a href="/article/30medium/">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>#30medium &mdash; not #75hard ;)</h4>
@@ -342,7 +353,7 @@
 
     
     <div class="showroom col-six">
-    <a href="/youtube" target="_blank">
+    <a  href="/youtube" target="_blank">
         <span class="showroom-bg"
             
 
@@ -351,8 +362,10 @@
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -362,8 +375,9 @@
     </a>
 </div>
 
+    
     <div class="showroom col-six">
-    <a href="/articles" >
+    <a  href="/articles" >
         <span class="showroom-bg"
             
 
@@ -372,8 +386,10 @@
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -384,6 +400,8 @@
 </div>
 
     
+
+    <section></section>
 
     
 
@@ -485,8 +503,8 @@
     <!-- JS -->
     <script>
         $('#main')
-                .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
-                .addClass('animate-this');
+            .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
+            .addClass('animate-this');
 
         function formatPage() {
             $.expr[':'].linkexternal = function(obj){ return (obj.hostname != location.hostname) && obj.href.startsWith("http"); };
@@ -495,8 +513,20 @@
             $('#main p,#main form').has('input').css('text-align', 'center');
             $('#main p,#main form').has('a.button').css('text-align', 'center');
 
+            $.expr[':'].firstshowroom = function(obj){ return !$(obj).prev().hasClass('showroom'); };
+            $('.showroom:firstshowroom').each(function(i, e) {
+                $(this).before('<section></section>');
+                var parent = $(this).prev();
+
+                $(this).detach().appendTo(parent);
+                while(parent.next().hasClass('showroom')) {
+                    parent.next('.showroom').detach().appendTo(parent);
+                }
+            });
+
             $.expr[':'].lastshowroom = function(obj){ return !$(obj).next().hasClass('showroom'); };
-            $('.showroom:lastshowroom').after('<div style="clear: both;"></div>');
+            $('.showroom:lastshowroom').after('<div style="clear: both;">');
+            $('.showroom:lastshowroom:nth-child(odd)').toggleClass('showroom-center');
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());

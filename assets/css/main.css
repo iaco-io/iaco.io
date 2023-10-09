@@ -392,7 +392,7 @@ hr {
     border-width: 1px 0 0 0;
     width: 50%;
     clear: both;
-    margin: auto;
+    margin: 10px auto;
     height: 0;
 }
 
@@ -1456,8 +1456,6 @@ header .header-logo .icon {
         float: none;
         border-right: none;
         padding: 0;
-        border-image: linear-gradient(to left, rgba(0,0,0,0) 20%, rgba(0,0,0,.5), rgba(0,0,0,.5), rgba(0,0,0,0) 80%) 30;
-        border-bottom: .5px dashed;
     }
 
     .text-col:last-child {

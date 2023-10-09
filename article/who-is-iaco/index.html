@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://iaco.io/assets/css/base.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/vendor.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/main.css">
+    <link rel="stylesheet" href="https://iaco.io/assets//css/lightbox.css">
     <style>
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
@@ -19,6 +20,7 @@
     <!-- JS -->
     <script src="https://iaco.io/assets/js/modernizr.js"></script>
     <script src="https://iaco.io/assets/js/jquery.min.js"></script>
+    <script src="https://iaco.io/assets/js/lightbox.js"></script>
 
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/png"    href="https://iaco.io/assets/media/logo/power.png">
@@ -247,7 +249,10 @@
 
 <div class="showroom col-six">
     <a href="/yt" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4><i class="fab fa-youtube"></i> YouTube</h4>
@@ -258,7 +263,10 @@
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4><i class="fab fa-instagram"></i> Instagram</h4>
@@ -360,6 +368,8 @@
     
 
     
+
+    
         
         
             
@@ -367,7 +377,7 @@
                 
 
         <div class="showroom col-six">
-    <a href="/article/30medium/" >
+    <a  href="/article/30medium/" >
         <span class="showroom-bg"
             
 
@@ -376,8 +386,10 @@
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -398,7 +410,7 @@
                 
 
         <div class="showroom col-six">
-    <a href="/article/30medium/" >
+    <a  href="/article/30medium/" >
         <span class="showroom-bg"
             
 
@@ -407,8 +419,10 @@
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -518,8 +532,8 @@
     <!-- JS -->
     <script>
         $('#main')
-                .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
-                .addClass('animate-this');
+            .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
+            .addClass('animate-this');
 
         function formatPage() {
             $.expr[':'].linkexternal = function(obj){ return (obj.hostname != location.hostname) && obj.href.startsWith("http"); };
@@ -528,8 +542,20 @@
             $('#main p,#main form').has('input').css('text-align', 'center');
             $('#main p,#main form').has('a.button').css('text-align', 'center');
 
+            $.expr[':'].firstshowroom = function(obj){ return !$(obj).prev().hasClass('showroom'); };
+            $('.showroom:firstshowroom').each(function(i, e) {
+                $(this).before('<section></section>');
+                var parent = $(this).prev();
+
+                $(this).detach().appendTo(parent);
+                while(parent.next().hasClass('showroom')) {
+                    parent.next('.showroom').detach().appendTo(parent);
+                }
+            });
+
             $.expr[':'].lastshowroom = function(obj){ return !$(obj).next().hasClass('showroom'); };
-            $('.showroom:lastshowroom').after('<div style="clear: both;"></div>');
+            $('.showroom:lastshowroom').after('<div style="clear: both;">');
+            $('.showroom:lastshowroom:nth-child(odd)').toggleClass('showroom-center');
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
@@ -544,7 +570,7 @@
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/article/who-is-iaco/\n\nimage: "assets/media/articles/about-me.jpg"\nyoutube: ""\n\npre-title: "<i>this is iaco</i>"\ntitle: "Welcome! Who is IACO?!"\n\ndescription: "My Mom used to describe my <i>flow state</i> as <em>"going inside the computer"</em> 🤭"\npost-description: ""\n\n---\n\nHello, I'm IACO! A <i>curious</i> fact about me: I often write my name as "IACO" or "iaco" because – more times than I can count – people mix my "i" for an "L"... 😂
+            navigator.clipboard.writeText(`https://iaco.io/article/who-is-iaco/\n\nimage: "assets/media/articles/about-me.jpg"\nyoutube: "JLTk1jksamk"\n\npre-title: "<i>this is iaco</i>"\ntitle: "Welcome! Who is IACO?!"\n\ndescription: "My Mom used to describe my <i>flow state</i> as <em>"going inside the computer"</em> 🤭"\npost-description: ""\n\n---\n\nHello, I'm IACO! A <i>curious</i> fact about me: I often write my name as "IACO" or "iaco" because – more times than I can count – people mix my "i" for an "L"... 😂
 
 I am a PhD engineer, and I can remember my younger self spending hours and hours navigating through the internet: reading articles, watching videos, trying tools... going into [*flow state*](https://en.wikipedia.org/wiki/Flow_%28psychology%29) researching about ***ways to improve the quality-of-life*** <small>(not only the quality of my life, but of the world too – it is fascinating to learn what we can do with the knowledge and tools we have today)</small>.
 

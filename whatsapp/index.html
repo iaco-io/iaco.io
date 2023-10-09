@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://iaco.io/assets/css/base.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/vendor.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/main.css">
+    <link rel="stylesheet" href="https://iaco.io/assets//css/lightbox.css">
     <style>
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
@@ -19,6 +20,7 @@
     <!-- JS -->
     <script src="https://iaco.io/assets/js/modernizr.js"></script>
     <script src="https://iaco.io/assets/js/jquery.min.js"></script>
+    <script src="https://iaco.io/assets/js/lightbox.js"></script>
 
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/png"    href="https://iaco.io/assets/media/logo/power.png">
@@ -194,7 +196,10 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/productivity.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/productivity.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>The 5 apps for REAL productivity I use! (fast and easy to use)</h4>
@@ -205,7 +210,10 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/nutrition.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/nutrition.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>1-2-3 of how to create the MOST NUTRITIOUS diet</h4>
@@ -216,7 +224,10 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/fitness.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/fitness.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)</h4>
@@ -227,7 +238,10 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/whatsapp.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/whatsapp.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>Join Insight of the Week for free!</h4>
@@ -334,7 +348,7 @@
 
     
     <div class="showroom col-six">
-    <a href="/youtube" target="_blank">
+    <a  href="/youtube" target="_blank">
         <span class="showroom-bg"
             
 
@@ -343,8 +357,10 @@
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -354,8 +370,9 @@
     </a>
 </div>
 
+    
     <div class="showroom col-six">
-    <a href="/instagram" target="_blank">
+    <a  href="/instagram" target="_blank">
         <span class="showroom-bg"
             
 
@@ -364,8 +381,10 @@
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -376,6 +395,8 @@
 </div>
 
     
+
+    <section></section>
 
     
 
@@ -477,8 +498,8 @@
     <!-- JS -->
     <script>
         $('#main')
-                .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
-                .addClass('animate-this');
+            .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
+            .addClass('animate-this');
 
         function formatPage() {
             $.expr[':'].linkexternal = function(obj){ return (obj.hostname != location.hostname) && obj.href.startsWith("http"); };
@@ -487,8 +508,20 @@
             $('#main p,#main form').has('input').css('text-align', 'center');
             $('#main p,#main form').has('a.button').css('text-align', 'center');
 
+            $.expr[':'].firstshowroom = function(obj){ return !$(obj).prev().hasClass('showroom'); };
+            $('.showroom:firstshowroom').each(function(i, e) {
+                $(this).before('<section></section>');
+                var parent = $(this).prev();
+
+                $(this).detach().appendTo(parent);
+                while(parent.next().hasClass('showroom')) {
+                    parent.next('.showroom').detach().appendTo(parent);
+                }
+            });
+
             $.expr[':'].lastshowroom = function(obj){ return !$(obj).next().hasClass('showroom'); };
-            $('.showroom:lastshowroom').after('<div style="clear: both;"></div>');
+            $('.showroom:lastshowroom').after('<div style="clear: both;">');
+            $('.showroom:lastshowroom:nth-child(odd)').toggleClass('showroom-center');
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());

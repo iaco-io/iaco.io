@@ -168,7 +168,7 @@
 								setTimeout(function () {
 									el.addClass(animationEfx + ' animated');
 									el.removeClass('item-animate');
-								}, ctr * 50);
+								}, ctr * 10);
 
 							});
 						}, 100);

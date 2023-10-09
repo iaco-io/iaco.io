@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://iaco.io/assets/css/base.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/vendor.css">
     <link rel="stylesheet" href="https://iaco.io/assets/css/main.css">
+    <link rel="stylesheet" href="https://iaco.io/assets//css/lightbox.css">
     <style>
         @font-face { font-family: linja-sike;  src: url('https://iaco.io/assets/fonts/linja-sike-5.otf'); }
         @font-face { font-family: linja-pona;  src: url('https://iaco.io/assets/fonts/linja-pona-4.9.otf'); }
@@ -19,6 +20,7 @@
     <!-- JS -->
     <script src="https://iaco.io/assets/js/modernizr.js"></script>
     <script src="https://iaco.io/assets/js/jquery.min.js"></script>
+    <script src="https://iaco.io/assets/js/lightbox.js"></script>
 
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/png"    href="https://iaco.io/assets/media/logo/power.png">
@@ -195,12 +197,88 @@
                 <div class="section-intro">
                     
 <div class="video-wrapper">
-    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/JLTk1jksamk?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/b-ck-9d9haI?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </div>
 
-<p><a class="buttonmodal">link is here hahaha</a></p>
+<h1 id="links">Links</h1>
 
-<p>{ % include modal permalink=”/template/” %}</p>
+<div style="display: table; width: 100%; height: 100%;">
+    <div class="col-four text-col">
+
+    <p><a href="https://iaco.io" class="modal">modal</a></p>
+
+  </div>
+<div class="col-four text-col">
+
+    <p><a href="https://youtu.be/b-ck-9d9haI">youtube</a></p>
+
+  </div>
+<div class="col-four text-col">
+
+    <p><a href="https://vimeo.com/524933864">vimeo</a></p>
+
+  </div>
+</div>
+
+<h1 id="gallery">Gallery</h1>
+
+<p>{% include gallery folder=”/assets/media/articles/30medium-“ opacity=”1” %}</p>
+
+<div class="showroom col-six">
+    <a href="/assets/media/articles/30medium-16.jpg">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-16.jpg');
+            
+            background-position: 50% 50%;
+            opacity: 1;"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4><i class="fa fa-expand fa-xs"></i></h4>
+            </span>
+        </span>
+    </a>
+</div>
+
+<div class="showroom col-six">
+    <a href="/assets/media/articles/30medium-21.jpg">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-21.jpg');
+            
+            background-position: 50% 50%;
+            opacity: 1;"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4><i class="fa fa-expand fa-xs"></i></h4>
+            </span>
+        </span>
+    </a>
+</div>
+
+<div class="showroom col-six">
+    <a href="/assets/media/articles/30medium-25.jpg">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-25.jpg');
+            
+            background-position: 50% 50%;
+            opacity: 1;"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4><i class="fa fa-expand fa-xs"></i></h4>
+            </span>
+        </span>
+    </a>
+</div>
+
+<div class="showroom col-six">
+    <a href="/assets/media/articles/30medium-29.jpg">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-29.jpg');
+            
+            background-position: 50% 50%;
+            opacity: 1;"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4><i class="fa fa-expand fa-xs"></i></h4>
+            </span>
+        </span>
+    </a>
+</div>
 
 <!-- Start Chat:
 <form action="https://duck.us12.list-manage.com/subscribe/post" method="POST" target="_blank">
@@ -363,29 +441,19 @@ third text
 <p><code class="language-plaintext highlighter-rouge">{% include yt id="" %}</code></p>
 
 <div class="video-wrapper">
-    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/JLTk1jksamk?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/b-ck-9d9haI?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </div>
 
 <hr />
-
-<p><code class="language-plaintext highlighter-rouge">{% include showroom url="/yt" newtab=true center=true image="assets/media/logos/youtube.jpg" title="YouTube" %}</code></p>
-
-<div class="showroom col-six showroom-center">
-    <a href="/yt" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"></span>
-        <span class="showroom-title">
-            <span class="intro">
-                <h4>YouTube</h4>
-            </span>
-        </span>
-    </a>
-</div>
 
 <p><code class="language-plaintext highlighter-rouge">{% include showroom url="/yt" newtab=true image="assets/media/logos/youtube.jpg" title="YouTube" %}</code></p>
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>Instagram</h4>
@@ -396,10 +464,27 @@ third text
 
 <div class="showroom col-six">
     <a href="/yt" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"></span>
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
+            
+            background-position: 50% 50%;
+            "></span>
         <span class="showroom-title">
             <span class="intro">
                 <h4>YouTube</h4>
+            </span>
+        </span>
+    </a>
+</div>
+
+<div class="showroom col-six">
+    <a href="/yt" target="_blank">
+        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logo/power.png');
+            
+            background-position: 50% 50%;
+            "></span>
+        <span class="showroom-title">
+            <span class="intro">
+                <h4>YouTube2</h4>
             </span>
         </span>
     </a>
@@ -502,7 +587,7 @@ tiktok: 6801989263727578373
 
     
     <div class="showroom col-six">
-    <a href="/youtube" target="_blank">
+    <a  href="/youtube" target="_blank">
         <span class="showroom-bg"
             
 
@@ -511,8 +596,10 @@ tiktok: 6801989263727578373
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -522,8 +609,9 @@ tiktok: 6801989263727578373
     </a>
 </div>
 
+    
     <div class="showroom col-six">
-    <a href="/articles" >
+    <a  href="/articles" >
         <span class="showroom-bg"
             
 
@@ -532,8 +620,10 @@ tiktok: 6801989263727578373
             
             
             
-                style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');"
+                style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');
             
+            background-position: 50% 50%;
+            "
         ></span>
         <span class="showroom-title">
             <span class="intro">
@@ -544,6 +634,8 @@ tiktok: 6801989263727578373
 </div>
 
     
+
+    <section></section>
 
     
 
@@ -645,8 +737,8 @@ tiktok: 6801989263727578373
     <!-- JS -->
     <script>
         $('#main')
-                .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
-                .addClass('animate-this');
+            .find('blockquote, h1, h2, h3, center, p, a, li, td, img, hr, pre, code, .video-wrapper, input, textarea, #newsletter')
+            .addClass('animate-this');
 
         function formatPage() {
             $.expr[':'].linkexternal = function(obj){ return (obj.hostname != location.hostname) && obj.href.startsWith("http"); };
@@ -655,8 +747,20 @@ tiktok: 6801989263727578373
             $('#main p,#main form').has('input').css('text-align', 'center');
             $('#main p,#main form').has('a.button').css('text-align', 'center');
 
+            $.expr[':'].firstshowroom = function(obj){ return !$(obj).prev().hasClass('showroom'); };
+            $('.showroom:firstshowroom').each(function(i, e) {
+                $(this).before('<section></section>');
+                var parent = $(this).prev();
+
+                $(this).detach().appendTo(parent);
+                while(parent.next().hasClass('showroom')) {
+                    parent.next('.showroom').detach().appendTo(parent);
+                }
+            });
+
             $.expr[':'].lastshowroom = function(obj){ return !$(obj).next().hasClass('showroom'); };
-            $('.showroom:lastshowroom').after('<div style="clear: both;"></div>');
+            $('.showroom:lastshowroom').after('<div style="clear: both;">');
+            $('.showroom:lastshowroom:nth-child(odd)').toggleClass('showroom-center');
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
@@ -671,11 +775,29 @@ tiktok: 6801989263727578373
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/template/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "JLTk1jksamk"\n\npre-title: "pre-title<br>With line-break"\ntitle: "Template Title"\n\ndescription: "Description text"\npost-description: "Additional description"\n\n---\n\n{% include yt id=page.youtube %}
+            navigator.clipboard.writeText(`https://iaco.io/template/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "b-ck-9d9haI"\n\npre-title: "pre-title<br>With line-break"\ntitle: "Template Title"\n\ndescription: "Description text"\npost-description: "Additional description"\n\n---\n\n{% include yt id=page.youtube %}
 
-<a class="buttonmodal">link is here hahaha</a>
+# Links
 
-{ % include modal permalink="/template/" %}
+{% include col1 %}
+
+<a href="https://iaco.io" class="modal">modal</a>
+
+{% include col2 %}
+
+[youtube](https://youtu.be/b-ck-9d9haI)
+
+{% include col3 %}
+
+[vimeo](https://vimeo.com/524933864)
+
+{% include colend %}
+
+# Gallery
+
+{% raw %}{% include gallery folder="/assets/media/articles/30medium-" opacity="1" %}{% endraw %}
+
+{% include gallery folder="/assets/media/articles/30medium-" opacity="1" %}
 
 <!-- Start Chat:
 <form action="https://duck.us12.list-manage.com/subscribe/post" method="POST" target="_blank">
@@ -802,18 +924,15 @@ YouTube Video:
 
 \`{% raw %}{% include yt id="" %}{% endraw %}\`
 
-{% include yt id="JLTk1jksamk" %}
+{% include yt id="b-ck-9d9haI" %}
 
 ---
-
-\`{% raw %}{% include showroom url="/yt" newtab=true center=true image="assets/media/logos/youtube.jpg" title="YouTube" %}{% endraw %}\`
-
-{% include showroom url="/yt" newtab=true center=true image="assets/media/logos/youtube.jpg" title="YouTube" %}
 
 \`{% raw %}{% include showroom url="/yt" newtab=true image="assets/media/logos/youtube.jpg" title="YouTube" %}{% endraw %}\`
 
 {% include showroom url="/ig" newtab=true image="assets/media/logos/instagram.jpg" title="Instagram" %}
 {% include showroom url="/yt" newtab=true image="assets/media/logos/youtube.jpg" title="YouTube" %}
+{% include showroom url="/yt" newtab=true image="assets/media/logo/power.png" title="YouTube2" %}
 
 <!--
 ig: B1OwTHPiG5M
