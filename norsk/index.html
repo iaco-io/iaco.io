@@ -291,7 +291,7 @@
     
     <div class="showroom col-six">
     <a  href="/youtube" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -301,12 +301,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>YOUTUBE<br>Check out my latest video!</h4>
+                
+                
+                <h4>
+                    YOUTUBE<br>Check out my latest video!
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -315,7 +319,7 @@
     
     <div class="showroom col-six">
     <a  href="/articles" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -325,12 +329,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>ARTICLES<br>Productivity, health, sleep &amp; more...</h4>
+                
+                
+                <h4>
+                    ARTICLES<br>Productivity, health, sleep &amp; more...
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -472,6 +480,25 @@
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

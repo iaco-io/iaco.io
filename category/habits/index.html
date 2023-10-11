@@ -201,8 +201,10 @@
                 <div class="section-intro">
                     
 <p style="text-align: center;">
+    <a href="https://iaco.io/assets/media/gifs/write.gif" target="_blank" style="text-decoration: none !important;">
     <img src="https://iaco.io/assets/media/gifs/write.gif" title="" />
     
+    </a>
 </p>
 
 <h3 id="soon-will-be-more-things-here-meanwhile-you-can-follow-me-on-insta-">Soon will be more things here, meanwhile you can follow me on insta 🙂</h3>
@@ -302,7 +304,7 @@
     
     <div class="showroom col-six">
     <a  href="/youtube" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -312,12 +314,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>INSTAGRAM<br>Check out my latest content!</h4>
+                
+                
+                <h4>
+                    INSTAGRAM<br>Check out my latest content!
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -326,7 +332,7 @@
     
     <div class="showroom col-six">
     <a  href="/articles" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -336,12 +342,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>ALL ARTICLES<br>Productivity, health, habits &amp; more...</h4>
+                
+                
+                <h4>
+                    ALL ARTICLES<br>Productivity, health, habits &amp; more...
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -420,6 +430,25 @@
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

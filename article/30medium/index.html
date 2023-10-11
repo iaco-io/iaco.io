@@ -182,21 +182,27 @@
 </center>
 
 <p style="text-align: center;">
+    <a href="https://iaco.io/assets/media/articles/30medium.jpg" target="_blank" style="text-decoration: none !important;">
     <img src="https://iaco.io/assets/media/articles/30medium.jpg" title="30 days, 30 workouts, 30 reels" />
     <em><small>30 days, 30 workouts, 30 reels</small></em>
+    </a>
 </p>
 
 <h3 id="check-the-30medium-reels-on-insta-">Check the #30medium reels on insta 🤳</h3>
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-29.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io//assets/media/articles/30medium-29.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-instagram"></i> Day 29</h4>
+                
+                
+                <h4>
+                    <i class="fab fa-instagram"></i> Day 29
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -204,13 +210,17 @@
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-25.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io//assets/media/articles/30medium-25.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-instagram"></i> Day 25</h4>
+                
+                
+                <h4>
+                    <i class="fab fa-instagram"></i> Day 25
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -218,13 +228,17 @@
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-21.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io//assets/media/articles/30medium-21.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-instagram"></i> Day 21</h4>
+                
+                
+                <h4>
+                    <i class="fab fa-instagram"></i> Day 21
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -232,13 +246,17 @@
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io//assets/media/articles/30medium-16.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io//assets/media/articles/30medium-16.jpg');
             
-            background-position: top;
-            "></span>
+            background-position: top;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-instagram"></i> Day 16</h4>
+                
+                
+                <h4>
+                    <i class="fab fa-instagram"></i> Day 16
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -349,11 +367,14 @@
         
             
             
+        
+            
+            
                 
 
         <div class="showroom col-six">
     <a  href="/article/30medium/" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -363,12 +384,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>#30medium &mdash; not #75hard ;)</h4>
+                
+                
+                <h4>
+                    #30medium &mdash; not #75hard ;)
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -389,7 +414,7 @@
 
         <div class="showroom col-six">
     <a  href="/article/30medium/" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -399,12 +424,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>#30medium &mdash; not #75hard ;)</h4>
+                
+                
+                <h4>
+                    #30medium &mdash; not #75hard ;)
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -542,6 +571,25 @@
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

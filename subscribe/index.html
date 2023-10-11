@@ -494,8 +494,10 @@
 <p><code class="language-plaintext highlighter-rouge">{ % include img src="assets/media/bg/default.jpg" title="Alt text" %}</code></p>
 
 <p style="text-align: center;">
+    <a href="https://iaco.io/assets/media/bg/default.jpg" target="_blank" style="text-decoration: none !important;">
     <img src="https://iaco.io/assets/media/bg/default.jpg" title="Alt text" />
     <em><small>Alt text</small></em>
+    </a>
 </p>
 
 <p>YouTube Video:</p>
@@ -604,7 +606,7 @@ tiktok: 6801989263727578373
     
     <div class="showroom col-six">
     <a  href="/youtube" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -614,12 +616,16 @@ tiktok: 6801989263727578373
             
                 style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>YOUTUBE<br>Check out my latest video!</h4>
+                
+                
+                <h4>
+                    YOUTUBE<br>Check out my latest video!
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -628,7 +634,7 @@ tiktok: 6801989263727578373
     
     <div class="showroom col-six">
     <a  href="/articles" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -638,12 +644,16 @@ tiktok: 6801989263727578373
             
                 style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>ARTICLES<br>Productivity, health, sleep &amp; more...</h4>
+                
+                
+                <h4>
+                    ARTICLES<br>Productivity, health, sleep &amp; more...
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -785,6 +795,25 @@ tiktok: 6801989263727578373
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

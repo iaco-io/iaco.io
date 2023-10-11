@@ -196,13 +196,17 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/productivity.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/categories/productivity.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>The 5 apps for REAL productivity I use! (fast and easy to use)</h4>
+                
+                
+                <h4>
+                    The 5 apps for REAL productivity I use! (fast and easy to use)
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -210,13 +214,17 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/nutrition.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/categories/nutrition.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>1-2-3 of how to create the MOST NUTRITIOUS diet</h4>
+                
+                
+                <h4>
+                    1-2-3 of how to create the MOST NUTRITIOUS diet
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -224,13 +232,17 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/categories/fitness.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/categories/fitness.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)</h4>
+                
+                
+                <h4>
+                    My personal top 5 of 50-minutes workouts for the gym (plans you can follow today, or adapt to your needs)
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -238,13 +250,17 @@
 
 <div class="showroom col-six">
     <a href="/whatsapp/join" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/whatsapp.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/logos/whatsapp.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>Join Insight of the Week for free!</h4>
+                
+                
+                <h4>
+                    Join Insight of the Week for free!
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -349,7 +365,7 @@
     
     <div class="showroom col-six">
     <a  href="/youtube" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -359,12 +375,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>SUBSCRIBE<br>Check my YouTube channel</h4>
+                
+                
+                <h4>
+                    SUBSCRIBE<br>Check my YouTube channel
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -373,7 +393,7 @@
     
     <div class="showroom col-six">
     <a  href="/instagram" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -383,12 +403,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>FOLLOW<br>Find me on Instagram</h4>
+                
+                
+                <h4>
+                    FOLLOW<br>Find me on Instagram
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -530,6 +554,25 @@
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

@@ -219,13 +219,23 @@
 
 <div class="showroom col-six">
     <a href="/article/my-habits/">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/my-healthy-habits.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://i1.ytimg.com/vi/b-ck-9d9haI/maxresdefault.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>Healthier Habits I'm Building Right Now</h4>
+                
+                <div>
+                    <h5>
+                        <i class="fab fa-youtube"></i><small> YouTube</small>
+                    </h5>
+                </div>
+                
+                
+                <h4>
+                    Healthier Habits I'm Building Right Now
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -233,13 +243,23 @@
 
 <div class="showroom col-six">
     <a href="/article/who-is-iaco/">
-        <span class="showroom-bg" style="background-image: url('https://i1.ytimg.com/vi/JLTk1jksamk/maxresdefault.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://i1.ytimg.com/vi/upDN7oPR-l0/maxresdefault.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-youtube"></i><br />Welcome! Who is IACO?!</h4>
+                
+                <div>
+                    <h5>
+                        <i class="fab fa-youtube"></i><small> YouTube</small>
+                    </h5>
+                </div>
+                
+                
+                <h4>
+                    Welcome! Who is IACO?!
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -247,13 +267,41 @@
 
 <div class="showroom col-six">
     <a href="/article/30medium/">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>#30medium &mdash; not #75hard ;)</h4>
+                
+                
+                <h4>
+                    #30medium &mdash; not #75hard ;)
+                </h4>
+                
+            </span>
+        </span>
+    </a>
+</div>
+
+<div class="showroom col-six">
+    <a href="/article/youtube-only-example/">
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://i1.ytimg.com/vi/kTyhHFsI0-g/maxresdefault.jpg');
+            
+            background-position: 50% 50%;"></span>
+        <span class="showroom-title">
+            <span class="intro">
+                
+                <div>
+                    <h5>
+                        <i class="fab fa-youtube"></i><small> YouTube</small>
+                    </h5>
+                </div>
+                
+                
+                <h4>
+                    Example of youtube-only post
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -354,7 +402,7 @@
     
     <div class="showroom col-six">
     <a  href="/youtube" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -364,12 +412,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>YOUTUBE CHANNEL<br>Check out my latest video!</h4>
+                
+                
+                <h4>
+                    YOUTUBE CHANNEL<br>Check out my latest video!
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -378,7 +430,7 @@
     
     <div class="showroom col-six">
     <a  href="/articles" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -388,12 +440,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/bg/articles.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>ALL ARTICLES<br>Productivity, health, habits &amp; more...</h4>
+                
+                
+                <h4>
+                    ALL ARTICLES<br>Productivity, health, habits &amp; more...
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -535,6 +591,25 @@
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

@@ -302,13 +302,17 @@ In practice, it means some days may be slightly lower in some nutrients, but the
 
 <div class="showroom col-six">
     <a href="/yt" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-youtube"></i> YouTube</h4>
+                
+                
+                <h4>
+                    <i class="fab fa-youtube"></i> YouTube
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -316,13 +320,17 @@ In practice, it means some days may be slightly lower in some nutrients, but the
 
 <div class="showroom col-six">
     <a href="/ig" target="_blank">
-        <span class="showroom-bg" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
+        <span class="showroom-bg scroll_showroom" style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
             
-            background-position: 50% 50%;
-            "></span>
+            background-position: 50% 50%;"></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4><i class="fab fa-instagram"></i> Instagram</h4>
+                
+                
+                <h4>
+                    <i class="fab fa-instagram"></i> Instagram
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -434,7 +442,7 @@ In practice, it means some days may be slightly lower in some nutrients, but the
 
         <div class="showroom col-six">
     <a  href="/article/30medium/" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -444,12 +452,16 @@ In practice, it means some days may be slightly lower in some nutrients, but the
             
                 style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>#30medium &mdash; not #75hard ;)</h4>
+                
+                
+                <h4>
+                    #30medium &mdash; not #75hard ;)
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -464,7 +476,7 @@ In practice, it means some days may be slightly lower in some nutrients, but the
 
         <div class="showroom col-six">
     <a  href="/article/30medium/" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -474,12 +486,16 @@ In practice, it means some days may be slightly lower in some nutrients, but the
             
                 style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>#30medium &mdash; not #75hard ;)</h4>
+                
+                
+                <h4>
+                    #30medium &mdash; not #75hard ;)
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -618,12 +634,31 @@ In practice, it means some days may be slightly lower in some nutrients, but the
                     "</span>"
                 );
             });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
+            });
         }
 
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/article/my-habits/\n\nimage: "assets/media/articles/my-healthy-habits.jpg"\nyoutube: ""\n\npre-title: "One step at a time"\ntitle: "Healthier Habits I'm Building Right Now"\n\ndescription: "I used to think habits were about <em>repetition</em>... Little did I know they are about <strong>enjoyment</strong>!"\npost-description: ""\n\n---\n\nIn order to enjoy life, I think it is important to first take care of our body, after all it will support us on every activity we do, physical or mental... so let's treat it with some love ;)
+            navigator.clipboard.writeText(`https://iaco.io/article/my-habits/\n\nimage: "assets/media/articles/my-healthy-habits.jpg"\nyoutube: "b-ck-9d9haI"\n\npre-title: "One step at a time"\ntitle: "Healthier Habits I'm Building Right Now"\n\ndescription: "I used to think habits were about <em>repetition</em>... Little did I know they are about <strong>enjoyment</strong>!"\npost-description: ""\n\n---\n\nIn order to enjoy life, I think it is important to first take care of our body, after all it will support us on every activity we do, physical or mental... so let's treat it with some love ;)
 
 I like to organise our physical health in 3 dimensions:
 

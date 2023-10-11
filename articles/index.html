@@ -210,7 +210,7 @@
                     
 
 <center>
-<a href="/articles" class="button tag">🗂️ All Articles</a>
+<a href="/articles" class="button tag tag-hover">🗂️ All Articles</a>
 
 
 
@@ -220,9 +220,10 @@
 </center>
 
 
-<div class="showroom col-six">
+
+    <div class="showroom col-six">
     <a  href="/article/30medium/" >
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -232,16 +233,22 @@
             
                 style="background-image: url('https://iaco.io/assets/media/articles/30medium.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>#30medium &mdash; not #75hard ;)</h4>
+                
+                
+                <h4>
+                    #30medium &mdash; not #75hard ;)
+                </h4>
+                
             </span>
         </span>
     </a>
 </div>
+
+
 
 
 
@@ -344,7 +351,7 @@
     
     <div class="showroom col-six">
     <a  href="/youtube" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -354,12 +361,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/youtube.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>SUBSCRIBE<br>Check my YouTube channel</h4>
+                
+                
+                <h4>
+                    SUBSCRIBE<br>Check my YouTube channel
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -368,7 +379,7 @@
     
     <div class="showroom col-six">
     <a  href="/instagram" target="_blank">
-        <span class="showroom-bg"
+        <span class="showroom-bg scroll_showroom"
             
 
             
@@ -378,12 +389,16 @@
             
                 style="background-image: url('https://iaco.io/assets/media/logos/instagram.jpg');
             
-            background-position: 50% 50%;
-            "
+            background-position: 50% 50%;"
         ></span>
         <span class="showroom-title">
             <span class="intro">
-                <h4>FOLLOW<br>Find me on Instagram</h4>
+                
+                
+                <h4>
+                    FOLLOW<br>Find me on Instagram
+                </h4>
+                
             </span>
         </span>
     </a>
@@ -525,6 +540,25 @@
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 

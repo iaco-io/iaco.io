@@ -285,8 +285,10 @@ tiktok: 6801989263727578373
 <h2 id="5-tips">5 tips</h2>
 
 <p style="text-align: center;">
+    <a href="https://iaco.io/default-bg.jpg" target="_blank" style="text-decoration: none !important;">
     <img src="https://iaco.io/default-bg.jpg" title="" />
     
+    </a>
 </p>
 
 <p>The <em>5 tips</em> to <strong>help you</strong> avoiding <strong><em>procrastination</em></strong>, <del>managing</del> your <abbr>time and getting</abbr> things done:</p>
@@ -484,6 +486,25 @@ hi
                     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
                     "</span>"
                 );
+            });
+
+            $(document).ready(function() {
+                var window_height = $(window).height();
+
+                $(window).scroll(function() {
+                    var scrollMiddle = $(window).scrollTop() + (window_height/2);
+
+                    $('.showroom-bg').each(function() {
+                        elTop = $(this).offset().top;
+                        elBtm = elTop + $(this).height();
+
+                        if (elTop < scrollMiddle && elBtm > scrollMiddle) {
+                            $(this).addClass("showroom-bg-hover");
+                        } else {
+                            $(this).removeClass("showroom-bg-hover");
+                        }
+                    });
+                });
             });
         }
 
