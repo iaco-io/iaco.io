@@ -197,7 +197,7 @@
                 <div class="section-intro">
                     
 <div class="video-wrapper">
-    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/b-ck-9d9haI?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe width="100%" height="100%" src="https://www.youtube.com/embed/b-ck-9d9haI?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </div>
 
 <hr />
@@ -205,7 +205,7 @@
 <h1 id="links">Links</h1>
 
 <div style="display: table; width: 100%; height: 100%;">
-    <div class="col-four text-col">
+<div class="col-four text-col">
 
     <p><a href="https://iaco.io" class="modal">modal</a></p>
 
@@ -305,8 +305,25 @@
 
 <h3 id="-title-3-anchor"><code class="language-plaintext highlighter-rouge">###</code> Title 3 <code class="language-plaintext highlighter-rouge">{#anchor}</code></h3>
 
+<details>
+  <summary>Template of a large text on a details-summary HTML tag that opens and closes with mouse click, and can be used for FAQs, better organising content, etc.</summary>
+  <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+
+  <p>Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+</details>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>&lt;details markdown="1"&gt;
+&lt;summary&gt;Title&lt;/summary&gt;
+Text
+&lt;/details&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
 <div style="display: table; width: 100%; height: 100%;">
-    <div class="col-six text-col">
+<div class="col-six text-col">
     <p>Column left</p>
     <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -326,7 +343,7 @@ right text
 </div>
 
 <div style="display: table; width: 100%; height: 100%;">
-    <div class="col-four text-col">
+<div class="col-four text-col">
     <p>Column One</p>
     <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -445,7 +462,7 @@ third text
 <p><code class="language-plaintext highlighter-rouge">{% include yt id="" %}</code></p>
 
 <div class="video-wrapper">
-    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/b-ck-9d9haI?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<iframe width="100%" height="100%" src="https://www.youtube.com/embed/b-ck-9d9haI?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </div>
 
 <hr />
@@ -873,6 +890,21 @@ tiktok: 6801989263727578373
 ## \`##\` Title 2 \`{#anchor}\`
 
 ### \`###\` Title 3 \`{#anchor}\`
+
+<details markdown="1">
+<summary>Template of a large text on a details-summary HTML tag that opens and closes with mouse click, and can be used for FAQs, better organising content, etc.</summary>
+Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
+
+Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
+</details>
+
+
+\`\`\`
+{% raw %}<details markdown="1">
+<summary>Title</summary>
+Text
+</details>{% endraw %}
+\`\`\`
 
 {% include coll %}
 Column left
