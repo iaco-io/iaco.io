@@ -4,46 +4,44 @@
 
 @import url("../fonts/fontawesome-free-5.15.4-web/css/all.css");
 
+/* libre baskerville */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&display=swap');
+
 /* cardo */
-@font-face {
+/* @font-face {
     font-family: "cardo";
     src: url("../fonts/cardo/Cardo-Regular.ttf") format("truetype");
     font-style: normal;
     font-weight: normal;
 }
-
 @font-face {
     font-family: "cardo-bold";
     src: url("../fonts/cardo/Cardo-Bold.ttf") format("truetype");
     font-style: normal;
     font-weight: normal;
 }
-
 @font-face {
     font-family: "cardo-italic";
     src: url("../fonts/cardo/Cardo-Italic.ttf") format("truetype");
     font-style: normal;
     font-weight: normal;
-}
+} */
 
 /* noto sans */
 @font-face {
     font-family: "noto";
     src: url("../fonts/notosans/NotoSans-Medium.ttf") format("truetype");
 }
-
 @font-face {
     font-family: "noto";
     src: url("../fonts/notosans/NotoSans-Bold.ttf") format("truetype");
     font-weight: bold;
 }
-
 @font-face {
     font-family: "noto";
     src: url("../fonts/notosans/NotoSans-Italic.ttf") format("truetype");
     font-style: italic;
 }
-
 @font-face {
     font-family: "noto";
     src: url("../fonts/notosans/NotoSans-BoldItalic.ttf") format("truetype");
@@ -52,29 +50,26 @@
 }
 
 /* noto serif */
-@font-face {
+/* @font-face {
     font-family: "notos";
     src: url("../fonts/notoserif/NotoSerif-Regular.ttf") format("truetype") ;
 }
-
 @font-face {
     font-family: "notos";
     src: url("../fonts/notoserif/NotoSerif-Bold.ttf") format("truetype");
     font-weight: bold;
 }
-
 @font-face {
     font-family: "notos";
     src: url("../fonts/notoserif/NotoSerif-Italic.ttf") format("truetype");
     font-style: italic;
 }
-
 @font-face {
     font-family: "notos";
     src: url("../fonts/notoserif/NotoSerif-BoldItalic.ttf") format("truetype");
     font-weight: bold;
     font-style: italic;
-}
+} */
 
 /******************************/
 /* HTML BODY */
@@ -212,7 +207,7 @@ a-out:before {
 /******************************/
 
 h1, h2, h3 {
-    font-family: "noto", sans-serif;
+    font-family: "Libre Baskerville", georgia, serif;
     font-weight: bold !important;
     color: var(--fg);
     font-style: normal;
@@ -233,6 +228,9 @@ section#home h1 {
     font-weight: bold !important;
 }
 
+section#home h3 {
+    font-style: italic !important;
+}
 section#main h1,
 section#main h2,
 section#main h3 {
@@ -289,7 +287,7 @@ img.gallery4 {
 }
 
 em {
-    font-family: "notos", serif;
+    font-family: "Libre Baskerville", georgia, serif;
     font-weight: normal;
     font-style: italic;
     color: var(--em-violet);
@@ -304,10 +302,11 @@ strong {
 
 strong>em,
 em>strong {
-    font-family: "notos", serif;
+    font-family: "Libre Baskerville", georgia, serif;
     background: var(--em-red);
     color: var(--bg);
     padding: 0 3px;
+    font-weight: normal !important;
 }
 
 small {
@@ -321,7 +320,7 @@ blockquote {
     position: relative;
     font-size: 1.75rem;
     font-style: italic;
-    font-family: "notos", georgia, serif;
+    font-family: "Libre Baskerville", georgia, serif;
 }
 
 blockquote:before {
@@ -921,7 +920,7 @@ header .header-logo a {
 header .header-logo .icon {
     font: unset;
     font-size: 2.5rem;
-    font-family: 'Font Awesome 5 Free';
+    font-family: "Font Awesome 5 Free";
     color: var(--bg) !important;
 	text-shadow: 0 0 4px var(--fg) !important;
 }
@@ -1225,7 +1224,7 @@ header .header-logo .icon {
 }
 
 .home-content-tablecell h1 {
-    font-family: "noto", sans-serif;
+    font-family: "Libre Baskerville", georgia, serif;
     font-size: 5.5rem;
     line-height: normal; /* 1.2 */
 }
@@ -1247,8 +1246,7 @@ header .header-logo .icon {
 .home-content-tablecell h3 {
     font-family: "noto", sans-serif;
     font-weight: bold;
-    font-size: 2rem;
-    letter-spacing: .01rem;
+    font-size: 1.8rem;
     margin: 0;
     color: var(--fg-blue-a);
 }
@@ -1276,7 +1274,6 @@ header .header-logo .icon {
 }
 
 .home-content-tablecell .links-home span {
-    font-family: "notos", serif;
     font-size: 2rem;
     text-transform: none;
     letter-spacing: 0;
@@ -1311,7 +1308,7 @@ header .header-logo .icon {
 
 @media only screen and (max-width:1024px) {
     .home-content-tablecell h3 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
     .home-content-tablecell h1 {
