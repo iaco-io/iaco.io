@@ -1264,7 +1264,6 @@ header .header-logo .icon {
     font-size: 1.4rem;
     text-transform: uppercase;
     letter-spacing: .1rem;
-    text-shadow: 0 0 6px var(--bg);
     margin-right: 2rem;
     margin-bottom: .5rem;
 }
@@ -1556,7 +1555,6 @@ header .header-logo .icon {
 .showroom h5 {
     font-family: "noto", sans-serif;
     color: var(--fg-blue);
-    text-shadow: 0 0 3px var(--bg);
     padding: 7px;
     font-size: 1.6rem;
     margin: 0;
