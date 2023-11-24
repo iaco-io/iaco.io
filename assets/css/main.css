@@ -1232,7 +1232,8 @@ header .header-logo .icon {
 .home-content-tablecell h1 {
     font-family: "Libre Baskerville", georgia, serif;
     font-size: 5.5rem;
-    line-height: normal; /* 1.2 */
+    line-height: normal;
+    letter-spacing: -1.5px;
 }
 
 .home-title-bg {
