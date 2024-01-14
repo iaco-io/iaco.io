@@ -540,20 +540,9 @@
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "intro"\n\npre-title: "Welcome to the life adventure of &mdash;"\ntitle: "Building healthier habits!"\n\ndescription: "I'm Iaco, a PhD engineer, and I'm here to share my journey researching <i>evidence-based &amp; practical solutions</i> for <a href='/articles'>healthier habits</a>, to build a life <i>healthier, happier, wealthier</i> and <i title='a.k.a. "more productive", for the grammar-savvies ;)'>productivier*</i>!"\npost-description: "Right now I'm developing some new habits, and I'm sharing this adventure with you on <a href='/ig' target='_blank'>Instagram</a> (and soon <a href='/yt' target='_blank'>YouTube</a>)."\n\n---\n\n{% for post in site.posts %}
-{% unless post.hidden %}
-{% include showroom url=post.url newtab=post.newtab image=post.image title=post.title youtube=post.youtube %}
-{% endunless %}
-{% endfor %}
-
-### Remember to follow and enjoy the journey with me 🙂
-
-<a href="/ig" target="_blank" class="button secondary"><i class="fab fa-instagram"></i> iaco.io</a>
-
-{% include newsletter %}
-`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: "intro"\n\npre-title: "Welcome to the life adventure of &mdash;"\ntitle: "Building healthier habits!"\n\ndescription: "I'm Iaco, a PhD engineer, and I'm here to share my journey researching <i>evidence-based &amp; practical solutions</i> for <a href='/articles'>healthier habits</a>, to build a life <i>healthier, happier, wealthier</i> and <i title='a.k.a. "more productive", for the grammar-savvies ;)'>productivier*</i>!"\npost-description: "Right now I'm developing some new habits, and I'm sharing this adventure with you on <a href='/ig' target='_blank'>Instagram</a> (and soon <a href='/yt' target='_blank'>YouTube</a>)."\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

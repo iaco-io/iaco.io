@@ -339,61 +339,9 @@
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<span id='time' style='font-size: 40px;'></span><br><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n<style>
-.overlay { background-color: var(--fg) !important; }
-.gradient-overlay { display: none; }
-.home-content-table { background: none; }
-.home-bottom-text li > *,
-.home-bottom-text > * {
-  color: var(--bg) !important;
-  text-shadow: none !important;
-}
-</style>
-
-<script>
-  //window.onclick = () => { $('#bg-audio')[0].play(); window.onclick = null; }
-
-  function getWeekNumber() {
-    var today = new Date();
-    var year = today.getFullYear();
-    var jan4th = new Date(year, 0, 4);
-    var daysSinceJan4th = Math.floor((today - jan4th) / (24 * 60 * 60 * 1000));
-    var isoWeekNumber = Math.ceil((daysSinceJan4th + jan4th.getDay() + 1) / 7);
-    return isoWeekNumber;
-  }
-
-  function getDayOfYear() {
-    var now = new Date();
-    var start = new Date(now.getFullYear(), 0, 0);
-    var diff = now - start;
-    var oneDay = 1000 * 60 * 60 * 24;
-    var dayOfYear = Math.floor(diff / oneDay);
-    return dayOfYear;
-  }
-
-  function getTotalDaysInYear() {
-    var now = new Date();
-    var start = new Date(now.getFullYear(), 0, 0);
-    var end = new Date(now.getFullYear() + 1, 0, 0);
-    var totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
-    return totalDays;
-  }
-
-  const WEEK_DAYS = ["2", "3", "4", "5", "6", "7", "1"];
-
-  $("#year").append("<tok title='ma'>ma</tok> <b style='font-size: 25px;'>" + getDayOfYear().toString().padStart(2, '0') + "</b>");
-  $("#year").append(" / " + getTotalDaysInYear());
-
-  $("#time").append(" <tok title='sike'>sike</tok>" + getWeekNumber().toString().padStart(2, '0'));
-  $("#time").append(" <tok title='suno'>suno</tok>" + WEEK_DAYS[new Date().getDay()]);
-  $("#time").append("<span style='font-size: 22px;'>/<span style='font-size: 20px;'>7</span></span>");
-</script>
-
-<audio src="{{ site.baseurl }}/assets/media/rain.mp3" id="bg-audio" loop />
-<!-- <audio src="{{ site.baseurl }}/assets/media/rain.mp3" id="bg-audio" autoplay loop /> -->
-`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<span id='time' style='font-size: 40px;'></span><br><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

@@ -542,61 +542,9 @@ Example of youtube-only post
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/hidden/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: "Work in Progress"\ntitle: "Hidden Posts"\n\ndescription: "To Be Finished..."\npost-description: ""\n\n---\n\n{% for post in site.posts %}
-{% if post.hidden %}
-
-<!-- all hidden posts, shown with normal cover, that are not "youtube-only" -->
-
-{% unless post.youtube-only %}
-
-{% capture titlepost %}
-{{ post.title }}
-<br>
-<small style="font-weight: normal;">
-<i class="far fa-calendar-alt"></i> {{ post.path | replace: '.md', '' | replace: '_posts/', '' | slice: 0, 10 }}
-&nbsp;
-<i class="fa fa-link"></i> /article/{{ post.path | replace: '.md', '' | replace: '_posts/', '' | slice: 11, 111  }}
-</small>
-{% endcapture %}
-
-{% include showroom url=post.url newtab=post.newtab image=post.image title=titlepost youtube=false %}
-
-{% endunless %}
-
-<!-- all hidden posts, with video, shown with youtube video cover -->
-
-{% if post.youtube %}
-
-{% capture youtubeurl %}https://www.youtube.com/watch?v={{ post.youtube }}{% endcapture %}
-
-{% capture titlepost %}
-{{ post.title }}
-<br>
-<small style="font-weight: normal;">
-<i class="far fa-calendar-alt"></i> {{ post.path | replace: '.md', '' | replace: '_posts/', '' | slice: 0, 10 }}
-&nbsp;
-{% if post.youtube-only %}
-<i class="fab fa-youtube"></i> only
-&nbsp;
-<i class="fa fa-link"></i> /article/{{ post.path | replace: '.md', '' | replace: '_posts/', '' | slice: 11, 111  }}
-&nbsp;
-{% else %}
-<i class="fab fa-youtube"></i> /@iaco
-{% endif %}
-</small>
-{% endcapture %}
-
-{% include showroom url=youtubeurl newtab=post.newtab image=post.image title=titlepost youtube=post.youtube %}
-
-{% endif %}
-
-<!-- end of hidden posts -->
-
-{% endif %}
-{% endfor %}
-`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/hidden/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: "Work in Progress"\ntitle: "Hidden Posts"\n\ndescription: "To Be Finished..."\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

@@ -231,31 +231,6 @@
 
     <!-- CORNER -->
     
-    <div id="corner">
-  
-  <a id="go-top" title="Back to Top" href="#top"><i class="fa fa-arrow-up fa-sm"></i></a>
-  <!-- <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          if (document.cookie.split('; ').find(row => row.startsWith('inotif=')).split('=')[1] > 0) {
-              $('.pulsating-circle').hide();
-          }
-      }, false);
-  </script> -->
-  <div id="notif">
-      This is just a message to test how it will display in the corner of the screen of my website and let's see!
-      <br>
-      I like to see how it will display if the text is really really big enourmously big hahahah
-      <br>
-      I like to see how it will display if the text is really really big enourmously big hahahahI like to see how it will display if the text is really really big enourmously big hahahahI like to see how it will display if the text is
-      really really big enourmously big hahahahI like to see how it will display if the text is really really big enourmously big hahahah
-      <br>
-      I like to see how it will display if the text is really really big enourmously big hahahahI like to see how it will display if the text is really really big enourmously big hahahahI like to see how it will display if the text is
-      really really big enourmously big hahahahI like to see how it will display if the text is really really big enourmously big hahahahI like to see how it will display if the text is really really big enourmously big hahahahI like to see
-      how it will display if the text is really really big enourmously big hahahah
-  </div>
-</div>
-
-    
 
     <!-- JS -->
     <script>
@@ -317,20 +292,9 @@
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/ami/\n\nimage: "assets/media/bg/i-love-a.jpg"\nyoutube: ""\n\npre-title: ""\ntitle: "A ❤️ I"\n\ndescription: "Today is day number #<span id='counter'>X</span> since we first met!<br> <em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞"\npost-description: ""\n\n---\n\n<script>
-  const ONE_DAY = 1000 * 60 * 60 * 24;
-  const DAY_1 = new Date('2023-05-05T00:00:00+01:00');
-  const TODAY = new Date();
-
-  const differenceMs = Math.abs(TODAY - DAY_1);
-
-  const DAYS = Math.round(differenceMs / ONE_DAY);
-
-  $('#counter').text(DAYS);
-</script>
-`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/ami/\n\nimage: "assets/media/bg/i-love-a.jpg"\nyoutube: ""\n\npre-title: ""\ntitle: "A ❤️ I"\n\ndescription: "Today is day number #<span id='counter'>X</span> since we first met!<br> <em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

@@ -576,9 +576,9 @@
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/category/nutrition/index.html\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: "ARTICLES"\ntitle: "Articles in nutrition"\n\ndescription: "My collection of evidence-based and practical solutions to help us build a fulfilling life, enjoy!"\npost-description: ""\n\n---\n\n`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/category/nutrition/index.html\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: "ARTICLES"\ntitle: "Articles in nutrition"\n\ndescription: "My collection of evidence-based and practical solutions to help us build a fulfilling life, enjoy!"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

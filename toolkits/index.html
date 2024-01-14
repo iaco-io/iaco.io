@@ -511,87 +511,9 @@ hi
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/toolkits/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: ""\ntitle: "My Personal Recommendations"\n\ndescription: "A collection of apps and tools to help you build YOU."\npost-description: ""\n\n---\n\n{% comment %}
-
-- TOC
-{:toc}
-
-{% endcomment %}
-
-<!--
-igtv: B1OwTHPiG5M
-tweet: 1236801534240882689
-tiktok: 6801989263727578373
--->
-
-{% include yt id="nXhxMjtquus" %}
-
-# Apps {#apps}
-
-- TickTick
-- Bitwarden
-- DuckDuckGo
-
-{ % include img src="default-bg.jpg" %}
-
-## Title 2 \#
-
-Bold 2 * : **bold**
-
-Italic 1 * : *italic*
-
-Highlight 3 * : ***highlight***
-
-# Title 3 \#
-
-> Quote 1 >
-
-Code 1 \\` : \`code\`
-
-Block 3 \\`
-\`\`\`
-block
-\`\`\`
-
-We all **procrastinate**...
-
-But how can we *avoid* that? One answer: your own *system*! 😱💤
-
-# My current level of familiarity with some technologies {#p1}
-
-In our lives there are things we want to do (because we like, or even love them ❤️), and things we have to do (because they are important, or mandatory ⚠️).
-
-> ***The idea is simple***: to have more ==time== and <mark>energy</mark> for the things that matter the most, it is important to have a system in place, a system that supports you!
-
-## 5 tips
-
-{% include img src="default-bg.jpg" %}
-
-The *5 tips* to **help you** avoiding ***procrastination***, ~~managing~~ your <abbr>time and getting</abbr> things done:
-
-## Les Tips
-
-- Your calendar reminds you about what you need to do;
-- Your timers allow you to have control of your time and progress;
-
-### Les Tips Two
-
-- By delegating you give tasks to those best suited for the job;
-- Entering a Flow State allows you to be more focused and make better use of your time;
-- And by paying attention to your health triangle you will have more energy and focus because your body and mind are working at their best capacity.
-
-# This is the title post
-
-And you, tell me, \`\`\`how do you\`\`\` avoid \`\`\`Cmd\`\`\`+\`\`\`C\`\`\` procrastination?
-
-\`\`\`
-And you, tell me, how do you avoid procrastination? And you, tell me, how do you avoid procrastination? And you, tell me, how do you avoid procrastination?
-
-hi
-\`\`\`
-`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/toolkits/\n\nimage: "assets/media/bg/default.jpg"\nyoutube: ""\n\npre-title: ""\ntitle: "My Personal Recommendations"\n\ndescription: "A collection of apps and tools to help you build YOU."\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>

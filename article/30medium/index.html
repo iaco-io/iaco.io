@@ -596,25 +596,9 @@
         formatPage();
 
         function copyRawContent(element) {
-            navigator.clipboard.writeText(`https://iaco.io/article/30medium/\n\nimage: "assets/media/articles/30medium.jpg"\nyoutube: ""\n\npre-title: "Challenge"\ntitle: "#30medium – not #75hard ;)"\n\ndescription: "Developing a healthier habit: 30 days of fitness!"\npost-description: ""\n\n---\n\n### See my full #30medium journey on insta 😉
-
-<center>
-<a href="/ig" target="_blank" class="button secondary"><i class="fab fa-instagram"></i> iaco.io</a>
-</center>
-
-{% include img src=page.image title="30 days, 30 workouts, 30 reels" %}
-
-### Check the #30medium reels on insta 🤳
-
-{% include showroom url="/ig" newtab=true image="/assets/media/articles/30medium-29.jpg" title="<i class='fab fa-instagram'></i> Day 29" %}
-{% include showroom url="/ig" newtab=true image="/assets/media/articles/30medium-25.jpg" title="<i class='fab fa-instagram'></i> Day 25" %}
-{% include showroom url="/ig" newtab=true image="/assets/media/articles/30medium-21.jpg" title="<i class='fab fa-instagram'></i> Day 21" %}
-{% include showroom url="/ig" newtab=true image="/assets/media/articles/30medium-16.jpg" title="<i class='fab fa-instagram'></i> Day 16" position="top" %}
-
-{% include newsletter %}
-`);
-            element.prepend('\u00a0');
-            element.append('\u00a0');
+            // navigator.clipboard.writeText(`https://iaco.io/article/30medium/\n\nimage: "assets/media/articles/30medium.jpg"\nyoutube: ""\n\npre-title: "Challenge"\ntitle: "#30medium – not #75hard ;)"\n\ndescription: "Developing a healthier habit: 30 days of fitness!"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // element.prepend('\u00a0');
+            // element.append('\u00a0');
         }
     </script>
     <script src="https://iaco.io/assets/js/plugins.js"></script>
