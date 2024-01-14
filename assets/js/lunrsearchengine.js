@@ -27,7 +27,7 @@ var documents = [{
     }, {
     "id": 5,
     "url": "https://iaco.io/cmd/",
-    "title": "<span id='week' style='font-size: 40px;'></span><br><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>",
+    "title": "<span id='time' style='font-size: 40px;'></span><br><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>",
     "body": ""
     }, {
     "id": 6,
