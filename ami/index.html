@@ -134,7 +134,7 @@
                             <div style="height: 20vh; height: 20lvh; display: grid; align-content: center;"></div>
 
                             <h3 class="animate-this"></h3>
-                            <h1 class="animate-this"><span >A ❤️ I</span></h1>
+                            <h1 class="animate-this">A ❤️ I</h1>
                             <h2 class="animate-this">
                                 Today is day number #<span id='counter'>X</span> since we first met!<br> <em><a href='https://www.dictionary.com/browse/ami'>am</a><a href='https://es.wikipedia.org/wiki/Ami_(trilog%C3%ADa)'>i</a></em> means lover :) and comes from ❝&nbsp;<em>a</em>&nbsp;a<em>m</em>or&nbsp;<em>i</em>&nbsp;❞
                                 
@@ -262,11 +262,11 @@
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
-                $(this).html(
-                    "<span style='white-space: nowrap;'>" +
-                    $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
-                    "</span>"
-                );
+                // $(this).html(
+                //     "<span style='white-space: nowrap;'>" +
+                //     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
+                //     "</span>"
+                // );
             });
 
             $(document).ready(function() {

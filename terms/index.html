@@ -451,11 +451,11 @@ The data DOES NOT contain personal information, and its main purpose is to study
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
-                $(this).html(
-                    "<span style='white-space: nowrap;'>" +
-                    $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
-                    "</span>"
-                );
+                // $(this).html(
+                //     "<span style='white-space: nowrap;'>" +
+                //     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
+                //     "</span>"
+                // );
             });
 
             $(document).ready(function() {

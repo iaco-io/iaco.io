@@ -20,8 +20,6 @@
  * ------------------------------------------------------------------- */
  html {
 	font-family: sans-serif;
-	-ms-text-size-adjust: 100%;
-	-webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -149,6 +147,7 @@ tok > span {
 	letter-spacing: normal !important;
 	font-weight: normal !important;
 	font-size: max(1em, 25px);
+  word-break: keep-all;
 }
 
 button,
@@ -266,8 +265,6 @@ body {
 	line-height: 1;
 	text-rendering: optimizeLegibility;
 	word-wrap: break-word;
-	-webkit-overflow-scrolling: touch;
-	-webkit-text-size-adjust: none;
 }
 
 body,

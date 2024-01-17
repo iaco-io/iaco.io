@@ -32,7 +32,7 @@
 
     <!-- Begin Jekyll SEO tag v2.8.0 -->
 <meta name="generator" content="Jekyll v4.3.3" />
-<meta property="og:title" content="[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]" />
+<meta property="og:title" content="&lt;p&gt;[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]&lt;/p&gt;" />
 <meta name="author" content="iaco" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="ali li tawa-telo" />
@@ -44,9 +44,9 @@
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="twitter:image" content="https://iaco.io/assets/media/bg/skyby-regn.gif" />
-<meta property="twitter:title" content="[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]" />
+<meta property="twitter:title" content="&lt;p&gt;[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]&lt;/p&gt;" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"iaco"},"description":"ali li tawa-telo","headline":"[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]","image":"https://iaco.io/assets/media/bg/skyby-regn.gif","url":"https://iaco.io/cmd/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"iaco"},"description":"ali li tawa-telo","headline":"&lt;p&gt;[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]&lt;/p&gt;","image":"https://iaco.io/assets/media/bg/skyby-regn.gif","url":"https://iaco.io/cmd/"}</script>
 <!-- End Jekyll SEO tag -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -140,7 +140,7 @@
                             <div style="height: 20vh; height: 20lvh; display: grid; align-content: center;"></div>
 
                             <h3 class="animate-this"><tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok></h3>
-                            <h1 class="animate-this"><span ><span id='time' style='font-size: 40px;'></span><br><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok></span></h1>
+                            <h1 class="animate-this"><span id='time' style='font-size: 40px;'></span><p><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok></p></h1>
                             <h2 class="animate-this">
                                 <tok>ali li tawa-telo</tok>
                                 
@@ -309,11 +309,11 @@
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
-                $(this).html(
-                    "<span style='white-space: nowrap;'>" +
-                    $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
-                    "</span>"
-                );
+                // $(this).html(
+                //     "<span style='white-space: nowrap;'>" +
+                //     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
+                //     "</span>"
+                // );
             });
 
             $(document).ready(function() {
@@ -339,7 +339,7 @@
         formatPage();
 
         function copyRawContent(element) {
-            // navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<span id='time' style='font-size: 40px;'></span><br><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<span id='time' style='font-size: 40px;'></span><p><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok></p>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
             // element.prepend('\u00a0');
             // element.append('\u00a0');
         }

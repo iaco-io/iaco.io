@@ -134,7 +134,7 @@
                             <div style="height: 20vh; height: 20lvh; display: grid; align-content: center;"></div>
 
                             <h3 class="animate-this"></h3>
-                            <h1 class="animate-this"><span ><tok>insa-lawa</tok></span></h1>
+                            <h1 class="animate-this"><tok>insa-lawa</tok></h1>
                             <h2 class="animate-this">
                                 <tok>oki</tok> do 1 story (<tok>pomotolo</tok>15') <br> <tok>oki</tok> schedule 1 post-reel (<tok>unu</tok>~17:30) <br> <tok>oki</tok> write 2 ❡ of article (<tok>suwi</tok>)
                                 
@@ -277,11 +277,11 @@
 
             $('tok').each(function() {
                 $(this).attr('title', $(this).text());
-                $(this).html(
-                    "<span style='white-space: nowrap;'>" +
-                    $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
-                    "</span>"
-                );
+                // $(this).html(
+                //     "<span style='white-space: nowrap;'>" +
+                //     $(this).text().replace(/ /g, "</span> <span style='white-space: nowrap;'>") +
+                //     "</span>"
+                // );
             });
 
             $(document).ready(function() {
