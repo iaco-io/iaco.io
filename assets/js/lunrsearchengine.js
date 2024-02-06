@@ -51,7 +51,7 @@ var documents = [{
     "body": "                                                  Healthier Habits I'm Building Right Now 2023-09-28&nbsp; /article/my-habits        :                                                                           YouTube                                                    Healthier Habits I'm Building Right Now 2023-09-28&nbsp; /@iaco        :                                                                       Welcome! Who is IACO?! 2023-09-27&nbsp; /article/who-is-iaco        :                                                                           YouTube                                                    Welcome! Who is IACO?! 2023-09-27&nbsp; /@iaco        :                                                                           YouTube                                                    Example of youtube-only post 2023-09-10&nbsp; only&nbsp; /article/youtube-only-example&nbsp;        :                     "
     }, {
     "id": 10,
-    "url": "https://iaco.io/",
+    "url": "https://iaco.io/hidden-new",
     "title": "Building healthier habits!",
     "body": "                                                  #30medium – not #75hard ;)        :                     Remember to follow and enjoy the journey with me 🙂: iaco. io                 I just started this online adventure!            Soon I wish to send my first newsletter, and you can join me by subscribing here ;)                                                        "
     }, {
