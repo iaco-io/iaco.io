@@ -139,7 +139,7 @@
                             
                             <div style="height: 20vh; height: 20lvh; display: grid; align-content: center;"></div>
 
-                            <h3 class="animate-this"><tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok></h3>
+                            <h3 class="animate-this"><tok>tomo-lawa</tok> &nbsp; <tok>ma</tok> <span id='year'></span><br><tok>open sin pona pi+__pali</tok></h3>
                             <h1 class="animate-this"><span id='time' style='font-size: 40px;'></span><p><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok></p></h1>
                             <h2 class="animate-this">
                                 <tok>ali li tawa-telo</tok>
@@ -201,7 +201,7 @@
     var year = today.getFullYear();
     var jan4th = new Date(year, 0, 4);
     var daysSinceJan4th = Math.floor((today - jan4th) / (24 * 60 * 60 * 1000));
-    var isoWeekNumber = Math.ceil((daysSinceJan4th + jan4th.getDay() + 1) / 7);
+    var isoWeekNumber = Math.ceil((daysSinceJan4th + jan4th.getDay() + 2) / 7);
     return isoWeekNumber;
   }
 
@@ -222,10 +222,10 @@
     return totalDays;
   }
 
-  const WEEK_DAYS = ["2", "3", "4", "5", "6", "7", "1"];
-
-  $("#year").append("<tok title='ma'>ma</tok> <b style='font-size: 25px;'>" + getDayOfYear().toString().padStart(2, '0') + "</b>");
+  $("#year").append("<b style='font-size: 25px;'>" + getDayOfYear().toString().padStart(2, '0') + "</b>");
   $("#year").append(" / " + getTotalDaysInYear());
+
+  const WEEK_DAYS = ["2", "3", "4", "5", "6", "7", "1"];
 
   $("#time").append(" <tok title='sike'>sike</tok>" + getWeekNumber().toString().padStart(2, '0'));
   $("#time").append(" <tok title='suno'>suno</tok>" + WEEK_DAYS[new Date().getDay()]);
@@ -339,7 +339,7 @@
         formatPage();
 
         function copyRawContent(element) {
-            // navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok> &nbsp; <span id='year'></span><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<span id='time' style='font-size: 40px;'></span><p><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok></p>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
+            // navigator.clipboard.writeText(`https://iaco.io/cmd/\n\nimage: "assets/media/bg/skyby-regn.gif"\nyoutube: ""\n\npre-title: "<tok>tomo-lawa</tok> &nbsp; <tok>ma</tok> <span id='year'></span><br><tok>open sin pona pi+__pali</tok>"\ntitle: "<span id='time' style='font-size: 40px;'></span><p><tok>[_jan-ali_kama-olin] [_wawa-insa_wile-awen_sona-jo]</tok></p>"\n\ndescription: "<tok>ali li tawa-telo</tok>"\npost-description: ""\n\n---\n\n{ { page.raw_content | default: '' | regex_replace: '\`', '\\`' }}`);
             // element.prepend('\u00a0');
             // element.append('\u00a0');
         }
