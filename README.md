@@ -1,8 +1,2 @@
-# useful commands
-
-```sh
-# Deploy Vite local server ('--host' deploys to local network too)
-npm run dev -- --open --host
-```
-
----
+# iaco.io
+iaco © all rights reserved
