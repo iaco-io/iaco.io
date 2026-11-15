@@ -1,11 +1,23 @@
 <script>
-	import { X } from '@lucide/svelte';
+	import { X, RotateCw } from '@lucide/svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	/** @type {{ open: boolean, links: { href: string, label: string }[] }} */
 	let { open = $bindable(), links } = $props();
 
 	const close = () => (open = false);
+
+	let refreshing = $state(false);
+
+	// drop cached files and fetch the newest version of this page
+	async function refresh() {
+		refreshing = true;
+		try {
+			await Promise.all((await caches.keys()).map((key) => caches.delete(key)));
+			await (await navigator.serviceWorker?.getRegistration())?.update();
+		} catch {}
+		location.reload();
+	}
 </script>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
@@ -21,7 +33,12 @@
 			<li><a href={link.href} onclick={close}>{link.label}</a></li>
 		{/each}
 	</ul>
-	<div class="theme"><ThemeToggle /></div>
+	<div class="bottom">
+		<ThemeToggle />
+		<button class="round glass refresh" class:spin={refreshing} onclick={refresh} aria-label="refresh">
+			<RotateCw size={18} />
+		</button>
+	</div>
 </nav>
 
 <style>
@@ -66,8 +83,26 @@
 		right: var(--gap);
 	}
 
-	.theme {
+	.bottom {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		margin-top: auto;
+	}
+
+	.refresh {
+		width: 3.1rem;
+		height: 3.1rem;
+	}
+
+	.spin :global(svg) {
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	ul {
