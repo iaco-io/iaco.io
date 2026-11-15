@@ -65,7 +65,7 @@
 		font-size: 1.25rem;
 		font-weight: 700;
 		letter-spacing: -0.03em;
-		color: var(--ink);
+		color: var(--fg);
 	}
 
 	/* small screens: both buttons stacked bottom right */

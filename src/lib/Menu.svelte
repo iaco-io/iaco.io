@@ -27,7 +27,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: 20;
-		background: rgb(15 42 71 / 0.15);
+		background: var(--scrim);
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity 0.35s ease;
@@ -46,7 +46,7 @@
 		z-index: 30;
 		width: min(22rem, 85vw);
 		padding: calc(var(--top) + 5.5rem) 2rem 2rem;
-		background: rgb(244 236 220 / 0.55);
+		background: var(--panel);
 		border-width: 0 0 0 1px;
 		transform: translateX(100%);
 		transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
@@ -74,11 +74,11 @@
 		font-size: 1.75rem;
 		font-weight: 600;
 		letter-spacing: -0.02em;
-		color: var(--ink);
+		color: var(--fg);
 		transition: color 0.2s ease;
 	}
 
 	a:hover {
-		color: var(--blue);
+		color: var(--accent);
 	}
 </style>

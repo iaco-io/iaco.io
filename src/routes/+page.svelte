@@ -51,7 +51,7 @@
 		margin: 0 0 1rem;
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--wave);
+		color: var(--soft);
 	}
 
 	h1 {
@@ -60,7 +60,7 @@
 		line-height: 1.04;
 		font-weight: 700;
 		letter-spacing: -0.045em;
-		background: linear-gradient(180deg, var(--ink), var(--blue));
+		background: linear-gradient(180deg, var(--fg), var(--accent));
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
@@ -71,7 +71,7 @@
 		margin: 1.5rem auto 0;
 		font-size: clamp(1.15rem, 2.4vw, 1.4rem);
 		line-height: 1.45;
-		color: rgb(15 42 71 / 0.7);
+		color: var(--muted);
 	}
 
 	.topics {
@@ -84,20 +84,20 @@
 	.card {
 		padding: 1.75rem;
 		border-radius: 1.5rem;
-		color: var(--blue);
+		color: var(--accent);
 	}
 
 	.card h2 {
 		margin: 1rem 0 0.35rem;
 		font-size: 1.25rem;
 		letter-spacing: -0.02em;
-		color: var(--ink);
+		color: var(--fg);
 	}
 
 	.card p {
 		margin: 0;
 		line-height: 1.5;
-		color: rgb(15 42 71 / 0.65);
+		color: var(--muted);
 	}
 
 	.about {
@@ -114,6 +114,6 @@
 
 	.about p {
 		margin: 0.75rem 0 0;
-		color: rgb(15 42 71 / 0.6);
+		color: var(--muted);
 	}
 </style>
