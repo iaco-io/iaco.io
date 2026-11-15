@@ -1,5 +1,6 @@
 <script>
 	import { X } from '@lucide/svelte';
+	import ThemeToggle from './ThemeToggle.svelte';
 
 	/** @type {{ open: boolean, links: { href: string, label: string }[] }} */
 	let { open = $bindable(), links } = $props();
@@ -20,6 +21,7 @@
 			<li><a href={link.href} onclick={close}>{link.label}</a></li>
 		{/each}
 	</ul>
+	<div class="theme"><ThemeToggle /></div>
 </nav>
 
 <style>
@@ -44,8 +46,10 @@
 		right: 0;
 		bottom: 0;
 		z-index: 30;
+		display: flex;
+		flex-direction: column;
 		width: min(22rem, 85vw);
-		padding: calc(var(--top) + 5.5rem) 2rem 2rem;
+		padding: calc(var(--top) + 5.5rem) 2rem calc(env(safe-area-inset-bottom) + 2rem);
 		background: var(--panel);
 		border-width: 0 0 0 1px;
 		transform: translateX(100%);
@@ -60,6 +64,10 @@
 		position: absolute;
 		top: calc(var(--top) + var(--gap));
 		right: var(--gap);
+	}
+
+	.theme {
+		margin-top: auto;
 	}
 
 	ul {

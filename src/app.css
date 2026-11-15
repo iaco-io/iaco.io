@@ -1,17 +1,17 @@
 :root {
-	/* kanagawa: deep prussian blue, wave blue, foam and cream paper */
-	--fg: #0f2a47;
-	--accent: #1d4e89;
-	--soft: #5f8fb8;
-	--muted: rgb(15 42 71 / 0.65);
-	--bg: #faf6ee;
-	--glow-1: var(--glow-1);
-	--glow-2: var(--glow-2);
-	--glass: rgb(250 246 238 / 0.6);
-	--glass-edge: rgb(255 255 255 / 0.5);
-	--panel: rgb(244 236 220 / 0.55);
-	--scrim: rgb(15 42 71 / 0.15);
-	--shadow: var(--shadow);
+	/* kanagawa. light: cream paper, prussian blue ink. dark: night sea, cream foam */
+	--fg: light-dark(#0f2a47, #f4ecdc);
+	--accent: light-dark(#1d4e89, #a9c4dc);
+	--soft: light-dark(#5f8fb8, #7fa6c9);
+	--muted: light-dark(rgb(15 42 71 / 0.65), rgb(244 236 220 / 0.65));
+	--bg: light-dark(#faf6ee, #0b1a2e);
+	--glow-1: light-dark(rgb(95 143 184 / 0.18), rgb(95 143 184 / 0.22));
+	--glow-2: light-dark(rgb(29 78 137 / 0.12), rgb(29 78 137 / 0.3));
+	--glass: light-dark(rgb(250 246 238 / 0.6), rgb(20 44 72 / 0.55));
+	--glass-edge: light-dark(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.08));
+	--panel: light-dark(rgb(244 236 220 / 0.55), rgb(11 26 46 / 0.6));
+	--scrim: light-dark(rgb(15 42 71 / 0.15), rgb(0 0 0 / 0.35));
+	--shadow: light-dark(rgb(15 42 71 / 0.12), rgb(0 0 0 / 0.35));
 	--blur: blur(20px) saturate(180%);
 
 	/* iOS standalone: status bar overlays content; add 16px so it blurs cleanly */
@@ -28,22 +28,13 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		/* night sea: ink background, cream text, foam blue accents */
-		--fg: #f4ecdc;
-		--accent: #a9c4dc;
-		--soft: #7fa6c9;
-		--muted: rgb(244 236 220 / 0.65);
-		--bg: #0b1a2e;
-		--glow-1: rgb(95 143 184 / 0.22);
-		--glow-2: rgb(29 78 137 / 0.3);
-		--glass: rgb(20 44 72 / 0.55);
-		--glass-edge: rgb(255 255 255 / 0.08);
-		--panel: rgb(11 26 46 / 0.6);
-		--scrim: rgb(0 0 0 / 0.35);
-		--shadow: rgb(0 0 0 / 0.35);
-	}
+/* theme toggle overrides the system setting */
+:root[data-theme='light'] {
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
 }
 
 @media (display-mode: standalone) {
