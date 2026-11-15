@@ -1,7 +1,7 @@
 {
 	"name": "iaco",
 	"short_name": "iaco",
-	"description": "A blog on wellness and digital lifestyle.",
+	"description": "a blog on wellness and digital lifestyle.",
 	"start_url": "/",
 	"scope": "/",
 	"display": "standalone",

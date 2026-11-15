@@ -2,9 +2,9 @@
 	import { Waves, Feather, Sprout } from '@lucide/svelte';
 
 	const topics = [
-		{ icon: Sprout, title: 'Wellness', text: 'Small habits that make days lighter.' },
-		{ icon: Waves, title: 'Digital calm', text: 'Using technology without being used by it.' },
-		{ icon: Feather, title: 'Notes', text: 'Short reflections, written slowly.' }
+		{ icon: Sprout, title: 'wellness', text: 'small habits that make days lighter.' },
+		{ icon: Waves, title: 'digital calm', text: 'using technology without being used by it.' },
+		{ icon: Feather, title: 'notes', text: 'short reflections, written slowly.' }
 	];
 </script>
 
@@ -14,9 +14,9 @@
 
 <main>
 	<section class="hero">
-		<p class="eyebrow">The iaco blog</p>
-		<h1>Calm ideas,<br />one wave at a time.</h1>
-		<p class="lead">Writing on wellness, habits and a gentler digital life.</p>
+		<p class="eyebrow">the iaco blog</p>
+		<h1>calm ideas,<br />one wave at a time.</h1>
+		<p class="lead">writing on wellness, habits and a gentler digital life.</p>
 	</section>
 
 	<section id="latest" class="topics">
@@ -30,8 +30,8 @@
 	</section>
 
 	<section id="about" class="about">
-		<h2>First posts are on their way.</h2>
-		<p>Install this site as an app to read offline.</p>
+		<h2>first posts are on their way.</h2>
+		<p>install this site as an app to read offline.</p>
 	</section>
 </main>
 

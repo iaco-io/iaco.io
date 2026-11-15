@@ -7,9 +7,9 @@
 	let { children } = $props();
 
 	const links = [
-		{ href: '/', label: 'Home' },
-		{ href: '/#latest', label: 'Latest' },
-		{ href: '/#about', label: 'About' }
+		{ href: '/', label: 'home' },
+		{ href: '/#latest', label: 'latest' },
+		{ href: '/#about', label: 'about' }
 	];
 
 	let open = $state(false);
