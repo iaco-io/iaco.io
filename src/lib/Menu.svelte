@@ -38,8 +38,8 @@
 		<button class="round glass refresh" class:spin={refreshing} onclick={refresh} aria-label="refresh">
 			<RotateCw size={18} />
 		</button>
+		<span class="version">v {__VERSION__}</span>
 	</div>
-	<p class="version">v {__VERSION__}</p>
 </nav>
 
 <style>
@@ -92,7 +92,7 @@
 	}
 
 	.version {
-		margin: 0.75rem 0 0;
+		margin-left: 0.25rem;
 		font-size: 0.75rem;
 		color: var(--muted);
 	}
