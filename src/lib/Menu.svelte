@@ -1,6 +1,7 @@
 <script>
 	import { X, RotateCw } from '@lucide/svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
+	import Social from './Social.svelte';
 
 	/** @type {{ open: boolean, links: { href: string, label: string }[] }} */
 	let { open = $bindable(), links } = $props();
@@ -33,6 +34,7 @@
 			<li><a href={link.href} onclick={close}>{link.label}</a></li>
 		{/each}
 	</ul>
+	<div class="social"><Social /></div>
 	<div class="bottom">
 		<ThemeToggle />
 		<button class="round glass refresh" class:spin={refreshing} onclick={refresh} aria-label="refresh">
@@ -84,11 +86,15 @@
 		right: var(--gap);
 	}
 
+	.social {
+		margin-top: auto;
+		margin-bottom: 2.5rem;
+	}
+
 	.bottom {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		margin-top: auto;
 	}
 
 	.version {
