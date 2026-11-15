@@ -1,0 +1,119 @@
+<script>
+	import { Waves, Feather, Sprout } from '@lucide/svelte';
+
+	const topics = [
+		{ icon: Sprout, title: 'Wellness', text: 'Small habits that make days lighter.' },
+		{ icon: Waves, title: 'Digital calm', text: 'Using technology without being used by it.' },
+		{ icon: Feather, title: 'Notes', text: 'Short reflections, written slowly.' }
+	];
+</script>
+
+<svelte:head>
+	<title>iaco — blog</title>
+</svelte:head>
+
+<main>
+	<section class="hero">
+		<p class="eyebrow">The iaco blog</p>
+		<h1>Calm ideas,<br />one wave at a time.</h1>
+		<p class="lead">Writing on wellness, habits and a gentler digital life.</p>
+	</section>
+
+	<section id="latest" class="topics">
+		{#each topics as { icon: Icon, title, text }}
+			<article class="card glass">
+				<Icon size={22} strokeWidth={1.75} />
+				<h2>{title}</h2>
+				<p>{text}</p>
+			</article>
+		{/each}
+	</section>
+
+	<section id="about" class="about">
+		<h2>First posts are on their way.</h2>
+		<p>Install this site as an app to read offline.</p>
+	</section>
+</main>
+
+<style>
+	main {
+		max-width: 64rem;
+		margin: 0 auto;
+		padding: calc(var(--top) + 9rem) 1.5rem 8rem;
+	}
+
+	.hero {
+		text-align: center;
+		padding-bottom: 6rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 1rem;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--wave);
+	}
+
+	h1 {
+		margin: 0;
+		font-size: clamp(2.75rem, 8vw, 5.5rem);
+		line-height: 1.04;
+		font-weight: 700;
+		letter-spacing: -0.045em;
+		background: linear-gradient(180deg, var(--ink), var(--blue));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+
+	.lead {
+		max-width: 30rem;
+		margin: 1.5rem auto 0;
+		font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+		line-height: 1.45;
+		color: rgb(15 42 71 / 0.7);
+	}
+
+	.topics {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+		gap: 1rem;
+		scroll-margin-top: calc(var(--top) + 6rem);
+	}
+
+	.card {
+		padding: 1.75rem;
+		border-radius: 1.5rem;
+		color: var(--blue);
+	}
+
+	.card h2 {
+		margin: 1rem 0 0.35rem;
+		font-size: 1.25rem;
+		letter-spacing: -0.02em;
+		color: var(--ink);
+	}
+
+	.card p {
+		margin: 0;
+		line-height: 1.5;
+		color: rgb(15 42 71 / 0.65);
+	}
+
+	.about {
+		margin-top: 6rem;
+		text-align: center;
+		scroll-margin-top: calc(var(--top) + 6rem);
+	}
+
+	.about h2 {
+		margin: 0;
+		font-size: clamp(1.6rem, 4vw, 2.4rem);
+		letter-spacing: -0.03em;
+	}
+
+	.about p {
+		margin: 0.75rem 0 0;
+		color: rgb(15 42 71 / 0.6);
+	}
+</style>
