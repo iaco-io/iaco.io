@@ -32,7 +32,7 @@
 {@render children()}
 
 <button class="round glass menu" onclick={() => (open = true)} aria-label="Open menu">
-	<span>Menu</span>
+	<span>menu</span>
 	<MenuIcon size={20} />
 </button>
 
