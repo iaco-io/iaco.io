@@ -3,6 +3,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+	// deploy number from GitHub Actions, shown at the bottom of the menu
+	define: { __VERSION__: JSON.stringify(process.env.GITHUB_RUN_NUMBER ?? 'dev') },
 	plugins: [
 		sveltekit({
 			compilerOptions: {

@@ -39,6 +39,7 @@
 			<RotateCw size={18} />
 		</button>
 	</div>
+	<p class="version">v {__VERSION__}</p>
 </nav>
 
 <style>
@@ -88,6 +89,12 @@
 		align-items: center;
 		gap: 0.5rem;
 		margin-top: auto;
+	}
+
+	.version {
+		margin: 0.75rem 0 0;
+		font-size: 0.75rem;
+		color: var(--muted);
 	}
 
 	.refresh {
