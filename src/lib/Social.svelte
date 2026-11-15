@@ -20,6 +20,11 @@
 			label: 'twitch',
 			href: 'https://twitch.tv/@iaco_io',
 			d: 'M21 2H3v16h5v4l4-4h5l4-4V2zM11 11V7M16 11V7'
+		},
+		{
+			label: 'mastodon',
+			href: 'https://c.im/@iaco',
+			d: 'M17 17.5c2.5-.3 4-2 4-4.5V9c0-3.3-2.7-6-6-6H9C5.7 3 3 5.7 3 9v3.5C3 18 6 21 11 21c1.5 0 3-.3 4-.8M8 14v-4a2 2 0 0 1 4 0v2M12 10a2 2 0 0 1 4 0v4'
 		}
 	];
 </script>
@@ -27,7 +32,7 @@
 <ul>
 	{#each links as { label, href, d }}
 		<li>
-			<a class="round glass" {href} target="_blank" rel="noopener noreferrer" aria-label={label}>
+			<a class="round glass" {href} target="_blank" rel="noopener noreferrer me" aria-label={label}>
 				<svg
 					width="18"
 					height="18"
