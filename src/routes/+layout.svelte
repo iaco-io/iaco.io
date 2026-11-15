@@ -17,11 +17,27 @@
 
 	const onscroll = () => (atTop = window.scrollY < window.innerHeight / 3);
 
+	// swipe left from the right edge opens the menu, swipe right closes it
+	let start = null;
+	/** @param {TouchEvent} e */
+	const ontouchstart = (e) => {
+		const { clientX: x, clientY: y } = e.touches[0];
+		start = open || x > window.innerWidth - 32 ? { x, y } : null;
+	};
+	/** @param {TouchEvent} e */
+	const ontouchend = (e) => {
+		if (!start) return;
+		const dx = e.changedTouches[0].clientX - start.x;
+		const dy = e.changedTouches[0].clientY - start.y;
+		if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) open = dx < 0;
+		start = null;
+	};
+
 	const jump = () =>
 		window.scrollTo({ top: atTop ? document.documentElement.scrollHeight : 0 });
 </script>
 
-<svelte:window {onscroll} />
+<svelte:window {onscroll} {ontouchstart} {ontouchend} />
 
 <div class="statusbar glass" aria-hidden="true"></div>
 
