@@ -1,6 +1,6 @@
 <script>
 	// "new" icons: a file with + for pages, a feather with + for posts, a link with + for redirects
-	import { FilePlusCorner, Feather, Link2, Plus } from '@lucide/svelte';
+	import { FilePlusCorner, Feather, Link, Plus } from '@lucide/svelte';
 
 	/** @type {{ kind: 'posts' | 'pages' | 'redirects', size?: number }} */
 	let { kind, size = 22 } = $props();
@@ -10,7 +10,7 @@
 	<FilePlusCorner {size} />
 {:else}
 	<span class="combo">
-		{#if kind === 'posts'}<Feather {size} />{:else}<Link2 {size} />{/if}
+		{#if kind === 'posts'}<Feather {size} />{:else}<Link {size} />{/if}
 		<span class="plus"><Plus size={size * 0.55} strokeWidth={3} /></span>
 	</span>
 {/if}
@@ -23,8 +23,8 @@
 
 	.plus {
 		position: absolute;
-		top: -0.35em;
 		right: -0.45em;
+		bottom: -0.35em;
 		display: flex;
 	}
 </style>

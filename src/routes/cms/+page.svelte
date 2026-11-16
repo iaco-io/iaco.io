@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount } from 'svelte';
-	import { Lock, FileText, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
+	import { Lock, Feather, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -44,17 +44,34 @@
 		flash('logged out after an hour without activity');
 	}
 
+	// already logged in: start right away from the saved token and the last list, then check in the background
+	const savedToken = (() => {
+		try {
+			const token = sessionStorage.getItem('cms-token') ?? (standalone() ? localStorage.getItem('cms-token') : null);
+			return token && !expired() ? token : null;
+		} catch {
+			return null;
+		}
+	})();
+	const cached = (() => {
+		try {
+			return savedToken ? JSON.parse(store().getItem('cms-cache') ?? 'null') : null;
+		} catch {
+			return null;
+		}
+	})();
+
 	/** @type {ReturnType<typeof github> | null} */
-	let api = $state(null);
+	let api = $state(savedToken ? github(savedToken) : null);
 	let kind = $state(/** @type {Kind} */ ('posts'));
-	let entries = $state(/** @type {Entry[]} */ ([]));
-	let files = $state(/** @type {string[]} */ ([]));
+	let entries = $state(/** @type {Entry[]} */ (cached?.entries ?? []));
+	let files = $state(/** @type {string[]} */ (cached?.files ?? []));
 	let loading = $state(false);
 	let message = $state('');
 	let menu = $state(false);
 
 	const KINDS = /** @type {const} */ ([
-		{ kind: 'posts', icon: FileText },
+		{ kind: 'posts', icon: Feather },
 		{ kind: 'pages', icon: FileIcon },
 		{ kind: 'redirects', icon: ExternalLink }
 	]);
@@ -130,8 +147,10 @@
 
 	function logout() {
 		try {
-			localStorage.removeItem('cms-token');
-			sessionStorage.removeItem('cms-token');
+			for (const s of [localStorage, sessionStorage]) {
+				s.removeItem('cms-token');
+				s.removeItem('cms-cache');
+			}
 		} catch {}
 		api = null;
 		editing = null;
@@ -144,16 +163,23 @@
 		try {
 			const tree = await api.list();
 			files = tree.map((f) => f.path);
-			const paths = files.filter((p) => /^src\/(posts|pages|redirects)\/[^/]+\.md$/.test(p) && !p.endsWith('/README.md'));
+			const known = new Map(entries.map((e) => [e.sha, e]));
+			const items = tree.filter((f) => /^src\/(posts|pages|redirects)\/[^/]+\.md$/.test(f.path) && !f.path.endsWith('/README.md'));
 			entries = await Promise.all(
-				paths.map(async (path) => {
+				items.map(async ({ path, sha: blob }) => {
 					const [, k, name] = /** @type {RegExpMatchArray} */ (path.match(/^src\/(\w+)\/([^/]+)\.md$/));
+					// unchanged files (same sha) are reused, only changed ones are downloaded
+					const same = known.get(blob);
+					if (same && same.kind === k && same.name === name) return same;
 					const { sha, text } = await /** @type {NonNullable<typeof api>} */ (api).read(path);
 					const { meta, body } = parse(text);
 					return { kind: /** @type {Kind} */ (k), name, sha, meta: toMeta(meta), body };
 				})
 			);
 			entries.sort((a, b) => b.name.localeCompare(a.name, 'en', { numeric: true }));
+			try {
+				store().setItem('cms-cache', JSON.stringify({ files, entries }));
+			} catch {}
 		} catch (err) {
 			flash(/** @type {Error} */ (err).message);
 		}
@@ -277,12 +303,13 @@
 
 	onMount(() => {
 		partials = listPartials();
-		let token = null;
-		try {
-			token = sessionStorage.getItem('cms-token') ?? (standalone() ? localStorage.getItem('cms-token') : null);
-		} catch {}
-		if (token && expired()) logout();
-		else if (token) login(token).catch(logout);
+		if (api) {
+			refresh();
+			api.check().catch((/** @type {Error} */ err) => {
+				logout();
+				flash(err.message);
+			});
+		} else logout();
 
 		const timer = setInterval(checkIdle, 60_000);
 		addEventListener('pointerdown', touch);
@@ -330,7 +357,7 @@
 				{#each list as entry (entry.kind + entry.name)}
 					<li>
 						<button class="row glass" onclick={() => open(entry)}>
-							{#if entry.kind === 'posts'}<FileText size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
+							{#if entry.kind === 'posts'}<Feather size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
 							{#if entry.kind === 'redirects'}
 								<span class="title">
 									/{entry.name}
