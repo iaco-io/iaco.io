@@ -38,29 +38,32 @@
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
 
-<div
-	class="backdrop"
-	class:open
-	style:top="{top}px"
-	style:height="{height}px"
-	onclick={close}
-	aria-hidden="true"
-></div>
+<!-- clips the panel while it slides, so the page never gets wider; takes no space when closed -->
+<div class="layer" style:top="{top}px" style:height="{height}px" style:--bleed="{BLEED}px">
+	<div class="backdrop" class:open onclick={close} aria-hidden="true"></div>
 
-<nav class="panel glass" class:open style:top="{top}px" style:height="{height}px" style:--bleed="{BLEED}px" aria-label={label} inert={!open}>
-	<button class="round glass close" onclick={close} aria-label="Close menu">
-		<X size={20} />
-	</button>
-	<div class="main">{@render children()}</div>
-	{#if bottom}<div class="bottom">{@render bottom()}</div>{/if}
-</nav>
+	<nav class="panel glass" class:open aria-label={label} inert={!open}>
+		<button class="round glass close" onclick={close} aria-label="Close menu">
+			<X size={20} />
+		</button>
+		<div class="main">{@render children()}</div>
+		{#if bottom}<div class="bottom">{@render bottom()}</div>{/if}
+	</nav>
+</div>
 
 <style>
-	.backdrop {
+	.layer {
 		position: absolute;
 		right: 0;
 		left: 0;
 		z-index: 20;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.backdrop {
+		position: absolute;
+		inset: 0;
 		background: var(--scrim);
 		opacity: 0;
 		pointer-events: none;
@@ -79,8 +82,9 @@
 
 	.panel {
 		position: absolute;
+		top: 0;
 		right: 0;
-		z-index: 30;
+		bottom: 0;
 		display: flex;
 		flex-direction: column;
 		width: min(22rem, 85vw);
@@ -99,6 +103,7 @@
 	.panel.open {
 		transform: none;
 		visibility: visible;
+		pointer-events: auto;
 		transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
