@@ -1,6 +1,5 @@
 <script>
 	// gentle rain made in the browser (no audio files): soft noise plus scattered drops
-	import { Waves, Music } from '@lucide/svelte';
 	import { onDestroy } from 'svelte';
 
 	let playing = $state(false);
@@ -91,8 +90,20 @@
 </script>
 
 <button class="rain glass" class:playing onclick={() => (playing ? stop() : start())} aria-pressed={playing}>
-	<span class="wave"><Waves size={16} /></span>
-	<span class="notes"><Music size={13} /></span>
+	<!-- waves that flow while it plays -->
+	<svg class="wave" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+		<defs><clipPath id="rain-clip"><rect x="1" y="0" width="22" height="24" /></clipPath></defs>
+		<g clip-path="url(#rain-clip)">
+			<path class="w1" d="M-24 7 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+			<path class="w2" d="M-24 12 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+			<path class="w3" d="M-24 17 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+		</g>
+	</svg>
+	<!-- two notes that take turns to rise -->
+	<svg class="notes" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+		<g class="n1"><circle cx="6" cy="18" r="2.5" /><path d="M8.5 18V6l5 2" /></g>
+		<g class="n2"><circle cx="16" cy="15" r="2.5" /><path d="M18.5 15V3l4 1.6" /></g>
+	</svg>
 	<em>raiɳ</em>
 </button>
 
@@ -118,40 +129,59 @@
 
 	.wave,
 	.notes {
-		display: flex;
+		flex: none;
 	}
 
 	.notes {
 		color: var(--soft);
 	}
 
-	.playing .wave {
-		animation: drift 2.4s ease-in-out infinite;
+	/* each wave line slides by one wave length, at its own pace, so the water flows */
+	.playing .wave path {
+		animation: flow 2.4s linear infinite;
 	}
 
-	.playing .notes {
-		animation: bob 1.2s ease-in-out infinite;
+	.playing .wave .w2 {
+		animation-duration: 3.2s;
+		animation-direction: reverse;
 	}
 
-	@keyframes drift {
-		50% {
-			transform: translateX(3px);
+	.playing .wave .w3 {
+		animation-duration: 2s;
+	}
+
+	@keyframes flow {
+		to {
+			transform: translateX(12px);
 		}
 	}
 
-	@keyframes bob {
+	/* the notes rise in turn */
+	.notes g {
+		transform-box: fill-box;
+	}
+
+	.playing .notes .n1 {
+		animation: rise 1.4s ease-in-out infinite;
+	}
+
+	.playing .notes .n2 {
+		animation: rise 1.4s ease-in-out -0.7s infinite;
+	}
+
+	@keyframes rise {
 		0%,
 		100% {
-			transform: translateY(0) rotate(0);
+			transform: translateY(0);
 		}
 		50% {
-			transform: translateY(-3px) rotate(-8deg);
+			transform: translateY(-3px);
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.playing .wave,
-		.playing .notes {
+		.playing .wave path,
+		.playing .notes g {
 			animation: none;
 		}
 	}
