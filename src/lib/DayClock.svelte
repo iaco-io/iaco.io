@@ -38,11 +38,11 @@
 	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
 	// one full swing there and back is 1.728 s, kept in step with the time of day
 	let swing = $state(0);
-	// the cloud rains at random: time is cut into 0.216 s slots, and in most slots a drop starts at a random moment
+	// the cloud rains at random: time is cut into 0.108 s slots, and in most slots a drop starts at a random moment
 	// and place under the cloud, falling for 0.864 s. the randomness comes from the time itself, so every screen
 	// shows the same rain. every 8.64 s (0.01% of a day) it also thunders, over the rain
 	let now_ms = $state(0);
-	const SLOT = 216;
+	const SLOT = 108;
 	const random = (/** @type {number} */ n) => {
 		const x = Math.sin(n * 12.9898) * 43758.5453;
 		return x - Math.floor(x);
@@ -53,19 +53,19 @@
 	const drops = $derived.by(() => {
 		const list = [];
 		for (let n = Math.floor((now_ms - 864) / SLOT); n <= Math.floor(now_ms / SLOT); n++) {
-			if (random(n) > 0.6) continue;
+			if (random(n) > 0.75) continue;
 			const p = (now_ms - (n + random(n + 0.5)) * SLOT) / 864;
 			if (p >= 0 && p < 1) list.push({ k: n, p });
 		}
 		return list;
 	});
-	/** where a drop is at p (0 to 1): it swells for the first 15%, falls with gravity, stretches, then splashes */
+	/** where a drop is at p (0 to 1): it appears in the first 15%, falls with gravity, stretches, then splashes */
 	function drop(/** @type {number} */ k, /** @type {number} */ p) {
 		const fallT = Math.max(0, (p - 0.15) / 0.67);
 		return {
 			x: 9 + random(k + 0.25) * 10,
 			grow: Math.min(1, p / 0.15),
-			fall: 9.6 * fallT * fallT,
+			fall: 5.6 * fallT * fallT,
 			stretch: 1 + 0.5 * fallT,
 			splash: p < 0.82 ? -1 : (p - 0.82) / 0.18
 		};
@@ -90,25 +90,26 @@
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
 		{#if icon === 'cloud'}
 			<!-- a small cloud raining at random, with a thunder every 8.64 s -->
-			<svg viewBox="0 0 28 30" width="27" height="29" aria-hidden="true">
+			<svg viewBox="0 0 28 26" width="27" height="25" aria-hidden="true">
 				<path class:flash={thunder >= 0 && thunder < 0.5} d="M8.5 16.5h11.5a4.2 4.2 0 0 0 .4-8.4 6 6 0 0 0-11.6-1.2 4.8 4.8 0 0 0-.3 9.6Z" />
 				{#if thunder >= 0}
-					<path class="bolt" style:opacity={thunder < 0.12 || (thunder > 0.2 && thunder < 0.32) ? 1 : Math.max(0, 1 - (thunder - 0.32) * 2.2)} d="M15 17.5l-3 5h3.4l-2.4 5" />
+					<path class="bolt" style:opacity={thunder < 0.12 || (thunder > 0.2 && thunder < 0.32) ? 1 : Math.max(0, 1 - (thunder - 0.32) * 2.2)} d="M15 17.3l-2 3.1h2.4l-1.6 3.2" />
 				{/if}
-				<!-- teardrops that swell under the cloud, let go, fall faster and faster, stretch, and splash -->
+				<!-- little lines of rain that appear under the cloud, fall faster and faster, stretch, and splash -->
 				{#each drops as { k, p } (k)}
 					{@const d = drop(k, p)}
 					{#if d.splash < 0}
 						<path
 							class="drop"
-							style:transform="translate({d.x}px, {17.2 + d.fall}px) scale({d.grow}, {d.grow * d.stretch})"
-							d="M0-1.6C.5-.6 1-.1 1 .5a1 1 0 0 1-2 0c0-.6.5-1.1 1-2.1Z"
+							style:opacity={d.grow}
+							style:transform="translate({d.x}px, {17.4 + d.fall}px) scale(1, {d.stretch})"
+							d="M0 0v1.4"
 						/>
 					{:else}
 						<path
 							class="splash"
 							style:opacity={1 - d.splash}
-							d="M{d.x - 1 - d.splash * 1.6} {27.4 - d.splash * 0.6}l-.7-.7M{d.x + 1 + d.splash * 1.6} {27.4 - d.splash * 0.6}l.7-.7M{d.x} {26.9 - d.splash * 1.2}v-.6"
+							d="M{d.x - 0.7 - d.splash * 1.2} {24.4 - d.splash * 0.4}l-.5-.5M{d.x + 0.7 + d.splash * 1.2} {24.4 - d.splash * 0.4}l.5-.5"
 						/>
 					{/if}
 				{/each}
@@ -189,8 +190,7 @@
 	}
 
 	.drop {
-		fill: currentColor;
-		stroke: none;
+		stroke-width: 0.9;
 	}
 
 	.splash {
