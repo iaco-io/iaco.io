@@ -262,6 +262,9 @@
 
 	h1 {
 		margin: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
 		font-size: 2.4rem;
 		letter-spacing: -0.04em;
 	}
