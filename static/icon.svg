@@ -7,7 +7,7 @@
 	<circle cx="256" cy="232" r="186" fill="none" stroke="#f4ecdc" stroke-width="2" opacity="0.5"/>
 	<path d="M200 440 L330 292 Q342 280 354 292 L490 440 Z" fill="#6f9cc6" stroke="#0b1f38" stroke-width="4" stroke-linejoin="round"/>
 	<path d="M310 315 L330 292 Q342 280 354 292 L376 317 L362 310 L354 322 L344 309 L334 322 L324 309 Z" fill="#f4ecdc" stroke="#0b1f38" stroke-width="3" stroke-linejoin="round"/>
-	<g transform="translate(0 512) scale(0.86) translate(0 -512)">
+	<g transform="scale(0.86 1)">
 	<use href="#body" fill="#17457e"/>
 	<g clip-path="url(#c)" fill="none" stroke="#6f9cc6" stroke-width="5" stroke-linecap="round">
 		<path d="M30 512 C40 380 120 240 240 196 C290 178 330 186 352 204"/>
