@@ -1,6 +1,7 @@
 <script>
 	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
 	import Device from './Device.svelte';
+	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
 
 	/**
@@ -10,14 +11,16 @@
 	 *   images: string[],
 	 *   resolve: (name: string) => string,
 	 *   onsave: () => Promise<void>,
-	 *   onupload: (file: File) => Promise<string>,
+	 *   onupload: (file: File, name: string) => Promise<string>,
+	 *   ask: (props: Record<string, any>) => Promise<any>,
+	 *   manage: (name: string) => Promise<string>,
 	 *   ondelete: () => Promise<void>,
 	 *   onback: () => void,
 	 *   partial: boolean,
 	 *   ondiscard: () => void
 	 * }}
 	 */
-	let { item = $bindable(), images, resolve, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
+	let { item = $bindable(), images, resolve, ask, manage, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
 
 	let busy = $state('');
 	/** @type {HTMLTextAreaElement | undefined} */
@@ -75,27 +78,70 @@
 		item.body = item.body.slice(0, start) + text + item.body.slice(end);
 	}
 
+	/** asks for a name, then uploads; null when cancelled */
+	async function named(/** @type {File} */ file) {
+		const ext = file.name.match(/\.[^./]+$/)?.[0]?.toLowerCase() || `.${file.type.split('/')[1] ?? 'png'}`;
+		const base = file.name.replace(/\.[^./]+$/, '').toLowerCase();
+		const src = URL.createObjectURL(file);
+		const result = /** @type {{ rename: string } | null} */ (await ask({ name: base + ext, src }));
+		if (!result) return null;
+		return onupload(file, result.rename);
+	}
+
+	let imageNote = $state('');
+
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
 	async function upload(e) {
 		const files = [...(e.currentTarget.files ?? [])];
 		e.currentTarget.value = '';
-		await run('uploading…', async () => {
-			for (const file of files) {
-				const name = await onupload(file);
+		for (const file of files) {
+			const name = await named(file);
+			if (!name) continue;
+			await run('uploading…', async () => {
 				added.push(name);
 				insert(`\n![](${name})\n`);
 				if (!item.meta.image) item.meta.image = name;
-			}
-		});
+			});
+		}
 	}
 
 	/** uploads a file and makes it the main image */
 	async function setCover(/** @type {File} */ file) {
-		await run('uploading…', async () => {
-			item.meta.image = await onupload(file);
-			added.push(item.meta.image);
-		});
+		const name = await named(file);
+		if (!name) return;
+		item.meta.image = name;
+		added.push(name);
 	}
+
+	/** long press on a thumbnail: rename, replace or delete */
+	async function hold(/** @type {string} */ name) {
+		imageNote = '';
+		imageNote = await manage(name);
+	}
+
+	// tell a long press from a tap on the thumbnails
+	/** @type {ReturnType<typeof setTimeout> | undefined} */
+	let pressTimer;
+	let pressed = false;
+	const press = (/** @type {string} */ name) => {
+		pressed = false;
+		pressTimer = setTimeout(() => ((pressed = true), hold(name)), 500);
+	};
+	const release = () => clearTimeout(pressTimer);
+
+	/** title and description grow with their text; they stay one line in the file */
+	const fit = (/** @type {() => string} */ read) => (/** @type {HTMLTextAreaElement} */ el) => {
+		read();
+		el.style.height = 'auto';
+		el.style.height = `${el.scrollHeight + 2}px`;
+	};
+	const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	const pretty = (/** @type {string} */ d) => {
+		const [y, m, day] = d.split('-');
+		return y && m && day ? `${y}-${MONTHS[Number(m) - 1]}-${day}` : '';
+	};
+	const oneLine = (/** @type {KeyboardEvent} */ e) => e.key === 'Enter' && e.preventDefault();
+	const flat = (/** @type {string} */ t) => t.replace(/\s*\n\s*/g, ' ');
 
 	// live previews: the iframes load /preview/ and get the unsaved post by postMessage
 	/** @type {HTMLIFrameElement | undefined} */
@@ -146,15 +192,24 @@
 	async function pasteCover() {
 		coverNote = '';
 		try {
-			for (const entry of await navigator.clipboard.read()) {
-				const type = entry.types.find((t) => t.startsWith('image/'));
-				if (!type) continue;
-				const blob = await entry.getType(type);
-				return await setCover(new File([blob], `image-${Date.now()}.${type.split('/')[1]}`, { type }));
-			}
-			coverNote = 'no image in the clipboard';
-		} catch {
-			coverNote = "couldn't read the clipboard";
+			await setCover(await pasteFile());
+		} catch (err) {
+			coverNote = /** @type {Error} */ (err).message;
+		}
+	}
+
+	/** paste an image into the body, like uploading one */
+	async function pasteImage() {
+		imageNote = '';
+		try {
+			const file = await pasteFile();
+			const name = await named(file);
+			if (!name) return;
+			added.push(name);
+			insert(`\n![](${name})\n`);
+			if (!item.meta.image) item.meta.image = name;
+		} catch (err) {
+			imageNote = /** @type {Error} */ (err).message;
 		}
 	}
 
@@ -190,7 +245,7 @@
 <div class="fields">
 	<label class="wide">
 		<span>title</span>
-		<input bind:value={item.meta.title} placeholder="title" />
+		<textarea class="grow" rows="1" bind:value={() => item.meta.title, (v) => (item.meta.title = flat(v))} placeholder="title" onkeydown={oneLine} {@attach fit(() => item.meta.title)}></textarea>
 	</label>
 	<label>
 		<span>file name {links ? `→ ${links}` : ''}</span>
@@ -202,11 +257,15 @@
 	{#if !short}
 		<label>
 			<span>date (rss only)</span>
-			<input type="date" bind:value={item.meta.date} />
+			<!-- shown as 2026-Nov-16; the real (invisible) date field on top opens the picker -->
+			<span class="date">
+				{pretty(item.meta.date) || 'no date'}
+				<input type="date" bind:value={item.meta.date} />
+			</span>
 		</label>
 		<label class="wide">
 			<span>description</span>
-			<input bind:value={item.meta.description} placeholder="a short summary for lists and rss" />
+			<textarea class="grow" rows="1" bind:value={() => item.meta.description, (v) => (item.meta.description = flat(v))} placeholder="a short summary for lists and rss" onkeydown={oneLine} {@attach fit(() => item.meta.description)}></textarea>
 		</label>
 		<div>
 			<span class="label">main image</span>
@@ -267,8 +326,18 @@
 			<ImagePlus size={18} /> upload image
 			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 		</label>
+		<button class="pill" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /> paste</button>
 		{#each [...shown, ...(showAll ? others : [])] as name (name)}
-			<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>
+			<button
+				class="thumb"
+				title="insert {name} · hold to rename, replace or delete"
+				onpointerdown={() => press(name)}
+				onpointerup={release}
+				onpointerleave={release}
+				onpointercancel={release}
+				oncontextmenu={(e) => e.preventDefault()}
+				onclick={() => (pressed ? (pressed = false) : insert(`![](${name})`))}
+			>
 				<img src={resolve(name)} alt={name} />
 			</button>
 		{/each}
@@ -278,6 +347,7 @@
 			</button>
 		{/if}
 	</div>
+	{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
 
 	<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
 
@@ -513,6 +583,58 @@
 		overflow: hidden;
 		cursor: pointer;
 		background: var(--glass);
+	}
+
+	.thumb {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
+	}
+
+	.image-note {
+		margin: -0.5rem 0 1rem;
+	}
+
+	/* one-line fields that wrap and grow instead of scrolling sideways */
+	.grow {
+		display: block;
+		resize: none;
+		overflow: hidden;
+		font-family: inherit;
+		font-size: 16px;
+		line-height: 1.4;
+	}
+
+	.date {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: fit-content;
+		min-width: 9rem;
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--glass-edge);
+		border-radius: 0.9rem;
+		font-size: 16px;
+		background: var(--glass);
+	}
+
+	.date input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+
+	.date input::-webkit-calendar-picker-indicator {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
 	}
 
 	.thumb img {

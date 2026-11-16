@@ -67,6 +67,29 @@ export function github(token) {
 			return /** @type {string} */ (content.sha);
 		},
 
+		/**
+		 * several changes in one commit. a change has `content` (text), or `sha` (an existing blob, e.g. to move a
+		 * file), or `sha: null` to delete the file
+		 * @param {{ path: string, content?: string, sha?: string | null }[]} changes @param {string} message
+		 */
+		async commit(changes, message) {
+			const ref = await request(`/repos/${REPO}/git/ref/heads/${BRANCH}`);
+			const parent = ref.object.sha;
+			const { tree: base } = await request(`/repos/${REPO}/git/commits/${parent}`);
+			const tree = await request(`/repos/${REPO}/git/trees`, {
+				method: 'POST',
+				body: JSON.stringify({
+					base_tree: base.sha,
+					tree: changes.map(({ path, content, sha }) => ({ path, mode: '100644', type: 'blob', ...(content === undefined ? { sha } : { content }) }))
+				})
+			});
+			const commit = await request(`/repos/${REPO}/git/commits`, {
+				method: 'POST',
+				body: JSON.stringify({ message, tree: tree.sha, parents: [parent] })
+			});
+			await request(`/repos/${REPO}/git/refs/heads/${BRANCH}`, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha }) });
+		},
+
 		/** @param {string} path @param {string} sha @param {string} message */
 		async remove(path, sha, message) {
 			await request(`/repos/${REPO}/contents/${encodePath(path)}`, {

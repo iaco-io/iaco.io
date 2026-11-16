@@ -1,0 +1,347 @@
+<script>
+	// a small popup for naming a media file on upload, and for renaming, replacing or deleting one.
+	// the extension can't be changed; "/" makes folders, like animals/panda.
+	// replacing points every post and page that uses it to another file (picked or uploaded now);
+	// the old file can be kept or deleted. deleting a file that is still used asks for a replacement too.
+	import { Trash2, Upload, ArrowLeft, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
+	import { pasteFile } from './clipboard.js';
+
+	/**
+	 * @typedef {{ rename: string } | { remove: true, keep: boolean, replacement?: string, upload?: { file: File, name: string } } | null} Result
+	 * @type {{
+	 *   name: string,
+	 *   src: string,
+	 *   images: string[],
+	 *   resolve: (name: string) => string,
+	 *   uses?: string[],
+	 *   manage?: boolean,
+	 *   ondone: (result: Result) => void
+	 * }}
+	 */
+	let { name, src, images, resolve, uses = [], manage = false, ondone } = $props();
+
+	const extOf = (/** @type {string} */ n) => n.match(/\.[^./]+$/)?.[0] ?? '';
+	/** lowercase, letters, digits and dashes, with "/" between folders */
+	const clean = (/** @type {string} */ base) =>
+		base
+			.toLowerCase()
+			.split('/')
+			.map((part) => part.replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, ''))
+			.filter(Boolean)
+			.join('/');
+
+	const ext = extOf(name);
+	let base = $state(name.slice(0, name.length - ext.length));
+	const next = $derived(clean(base) && clean(base) + ext);
+	const taken = $derived(next !== name && images.includes(next));
+
+	const image = /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name);
+
+	// delete / replace flow; `keep` keeps the old file after replacing it
+	let removing = $state(false);
+	let keep = $state(false);
+	let replacement = $state('');
+	/** @type {{ file: File, src: string, ext: string } | null} */
+	let fresh = $state(null);
+	let freshBase = $state('');
+	const freshName = $derived(fresh && clean(freshBase) && clean(freshBase) + fresh.ext);
+
+	let pasteNote = $state('');
+	async function paste() {
+		pasteNote = '';
+		try {
+			use(await pasteFile());
+		} catch (err) {
+			pasteNote = /** @type {Error} */ (err).message;
+		}
+	}
+
+	/** @param {Event & { currentTarget: HTMLInputElement }} e */
+	function pick(e) {
+		const file = e.currentTarget.files?.[0];
+		e.currentTarget.value = '';
+		if (file) use(file);
+	}
+
+	function use(/** @type {File} */ file) {
+		const ext = extOf(file.name.toLowerCase()) || `.${file.type.split('/')[1] ?? 'png'}`;
+		fresh = { file, src: URL.createObjectURL(file), ext };
+		freshBase = clean(file.name.slice(0, file.name.length - extOf(file.name).length));
+		replacement = '';
+	}
+
+	function confirm() {
+		if (!removing) {
+			if (!next || taken) return;
+			if (manage && next === name) return ondone(null);
+			return ondone({ rename: next });
+		}
+		if (fresh) {
+			if (!freshName || images.includes(freshName)) return;
+			return ondone({ remove: true, keep, upload: { file: fresh.file, name: freshName } });
+		}
+		if (keep && !replacement) return;
+		ondone({ remove: true, keep: keep && !!replacement, ...(replacement ? { replacement } : {}) });
+	}
+
+	const swapping = $derived(!!(fresh || replacement));
+	const options = $derived(images.filter((i) => i !== name && /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(i) === image));
+
+	/** @type {HTMLDialogElement | undefined} */
+	let dialog = $state();
+	$effect(() => dialog?.showModal());
+</script>
+
+{#snippet used(/** @type {string} */ after)}
+	<div class="uses">
+		<small>used in:</small>
+		<ul>
+			{#each uses as title}<li>{title}</li>{/each}
+		</ul>
+		{#if after}<small>{after}</small>{/if}
+	</div>
+{/snippet}
+
+<dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))}>
+	<form onsubmit={(e) => (e.preventDefault(), confirm())}>
+		{#if image || fresh}
+			<img class="big" src={fresh?.src ?? src} alt="" />
+		{:else}
+			<span class="big file">{#if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={40} />{:else}<FileIcon size={40} />{/if}</span>
+		{/if}
+
+		{#if !removing}
+			<span class="label">{manage ? 'name' : 'name the file'}</span>
+			<span class="suffix" style:--ext="{ext.length + 2}ch">
+				<!-- svelte-ignore a11y_autofocus -->
+				<input bind:value={base} autofocus autocapitalize="off" autocorrect="off" spellcheck="false" />
+				<em>{ext}</em>
+			</span>
+			<small>{taken ? (manage ? 'that name is taken' : 'replaces the image with that name') : 'use / for folders, like animals/panda'}</small>
+			{#if manage && uses.length}
+				{@render used('renaming updates them all.')}
+			{/if}
+		{:else}
+			<span class="label">{keep ? 'replace' : 'delete'} {name}</span>
+			{#if uses.length || keep}
+				{#if uses.length}{@render used('')}{/if}
+				<small>pick what goes there instead:</small>
+				{#if fresh}
+					<span class="suffix" style:--ext="{fresh.ext.length + 2}ch">
+						<input bind:value={freshBase} autocapitalize="off" autocorrect="off" spellcheck="false" />
+						<em>{fresh.ext}</em>
+					</span>
+					{#if freshName && images.includes(freshName)}<small>that name is taken</small>{/if}
+				{:else}
+					<div class="picker">
+						<select bind:value={replacement}>
+							<option value="">{keep ? 'pick one…' : 'nothing'}</option>
+							{#each options as other}<option value={other}>{other}</option>{/each}
+						</select>
+						<label class="pill square" title="upload a replacement">
+							<Upload size={18} />
+							<input type="file" accept={image ? 'image/*' : ''} onchange={pick} hidden />
+						</label>
+						<button type="button" class="pill square" title="paste a replacement" onclick={paste}><ClipboardPaste size={18} /></button>
+					</div>
+					{#if pasteNote}<small>{pasteNote}</small>{/if}
+					{#if replacement && image}<img class="small" src={resolve(replacement)} alt="" />{/if}
+				{/if}
+				{#if swapping}
+					<button type="button" class="switch" role="switch" aria-checked={keep} onclick={() => (keep = !keep)}>
+						<span class="track"><span class="knob"></span></span>
+						keep {name}
+					</button>
+				{/if}
+			{:else}
+				<small>no post or page uses it.</small>
+			{/if}
+		{/if}
+
+		<div class="buttons">
+			{#if manage && !removing}
+				<button type="button" class="pill danger" aria-label="delete" onclick={() => ((removing = true), (keep = false))}><Trash2 size={18} /></button>
+				<button type="button" class="pill" aria-label="replace" onclick={() => ((removing = true), (keep = true))}><Replace size={18} /></button>
+			{:else if removing}
+				<button type="button" class="pill" aria-label="back" onclick={() => ((removing = false), (fresh = null))}><ArrowLeft size={18} /></button>
+			{/if}
+			<span class="gap"></span>
+			<button type="button" class="pill" onclick={() => ondone(null)}>cancel</button>
+			{#if removing}
+				{#if keep}
+					<button class="pill primary" disabled={!swapping}>replace</button>
+				{:else}
+					<button class="pill danger">{swapping ? 'replace & delete' : 'delete'}</button>
+				{/if}
+			{:else}
+				<button class="pill primary" disabled={!next || (manage && taken)}>{manage ? 'save' : 'upload'}</button>
+			{/if}
+		</div>
+	</form>
+</dialog>
+
+<style>
+	dialog {
+		width: min(22rem, calc(100vw - 2rem));
+		padding: 1.25rem;
+		border-radius: 1.5rem;
+		color: var(--fg);
+		background: color-mix(in srgb, var(--bg) 85%, transparent);
+	}
+
+	dialog::backdrop {
+		background: rgb(0 0 0 / 0.3);
+		-webkit-backdrop-filter: blur(4px);
+		backdrop-filter: blur(4px);
+	}
+
+	form {
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.big {
+		width: 100%;
+		max-height: 10rem;
+		object-fit: cover;
+		border-radius: 0.9rem;
+	}
+
+	.uses {
+		display: grid;
+		gap: 0.2rem;
+	}
+
+	.uses ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.875rem;
+	}
+
+	.uses li::before {
+		content: '• ';
+		color: var(--muted);
+	}
+
+	.file {
+		display: grid;
+		place-items: center;
+		height: 6rem;
+		color: var(--muted);
+		background: var(--panel);
+	}
+
+	.switch {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0;
+		border: 0;
+		font: inherit;
+		color: var(--fg);
+		background: none;
+		cursor: pointer;
+		overflow-wrap: anywhere;
+		text-align: left;
+	}
+
+	.track {
+		position: relative;
+		flex: none;
+		width: 2.75rem;
+		height: 1.6rem;
+		border-radius: 999px;
+		background: var(--glass);
+		border: 1px solid var(--glass-edge);
+		transition: background 0.2s ease;
+	}
+
+	.knob {
+		position: absolute;
+		top: 0.15rem;
+		left: 0.15rem;
+		width: 1.2rem;
+		height: 1.2rem;
+		border-radius: 999px;
+		background: var(--bg);
+		box-shadow: 0 0 8px var(--shadow-soft);
+		transition: transform 0.2s ease;
+	}
+
+	.switch[aria-checked='true'] .track {
+		background: var(--accent);
+	}
+
+	.switch[aria-checked='true'] .knob {
+		transform: translateX(1.15rem);
+	}
+
+	.small {
+		width: 4rem;
+		height: 4rem;
+		object-fit: cover;
+		border-radius: 0.75rem;
+	}
+
+	.label {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--muted);
+		overflow-wrap: anywhere;
+	}
+
+	small {
+		color: var(--muted);
+	}
+
+	.suffix {
+		position: relative;
+		display: block;
+	}
+
+	.suffix input {
+		padding-right: calc(1rem + var(--ext));
+	}
+
+	.suffix em {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		font-style: normal;
+		color: var(--muted);
+		pointer-events: none;
+		transform: translateY(-50%);
+	}
+
+	.picker {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.picker select {
+		flex: 1;
+	}
+
+	.square {
+		flex: none;
+		width: 2.9rem;
+		height: auto;
+		padding: 0;
+		box-shadow: none;
+	}
+
+	.buttons {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 0.4rem;
+	}
+
+	.buttons .pill {
+		box-shadow: none;
+	}
+
+	.gap {
+		flex: 1;
+	}
+</style>

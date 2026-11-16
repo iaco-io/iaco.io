@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { Lock, Feather, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
+	import { ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -10,11 +10,14 @@
 	import { keyOf, contentOf, listPartials, storePartial, dropPartial } from '#lib/cms/partials.js';
 	import Login from '#lib/cms/Login.svelte';
 	import Editor from '#lib/cms/Editor.svelte';
+	import ImageDialog from '#lib/cms/ImageDialog.svelte';
+	import { pasteFile } from '#lib/cms/clipboard.js';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
 	import { encrypt, decrypt } from '#lib/crypto.js';
 	import { parse, serialize } from '#lib/markdown.js';
 
 	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
+	/** @typedef {Kind | 'media'} Section */
 	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta */
 	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
@@ -63,7 +66,7 @@
 
 	/** @type {ReturnType<typeof github> | null} */
 	let api = $state(savedToken ? github(savedToken) : null);
-	let kind = $state(/** @type {Kind} */ ('posts'));
+	let kind = $state(/** @type {Section} */ ('posts'));
 	let entries = $state(/** @type {Entry[]} */ (cached?.entries ?? []));
 	let files = $state(/** @type {string[]} */ (cached?.files ?? []));
 	let loading = $state(false);
@@ -73,14 +76,15 @@
 	const KINDS = /** @type {const} */ ([
 		{ kind: 'posts', icon: Feather },
 		{ kind: 'pages', icon: FileIcon },
-		{ kind: 'redirects', icon: ExternalLink }
+		{ kind: 'redirects', icon: ExternalLink },
+		{ kind: 'media', icon: ImageIcon }
 	]);
 
 	// the three lists sit side by side; swiping scrolls between them and the toggle follows
 	/** @type {HTMLElement | undefined} */
 	let track = $state();
 	let progress = $state(0);
-	const indexOf = (/** @type {Kind} */ k) => KINDS.findIndex((x) => x.kind === k);
+	const indexOf = (/** @type {Section} */ k) => KINDS.findIndex((x) => x.kind === k);
 
 	function onTrackScroll() {
 		if (!track) return;
@@ -89,7 +93,7 @@
 		if (k && k !== kind) kind = k;
 	}
 
-	/** @param {Kind} k */
+	/** @param {Section} k */
 	function go(k) {
 		track?.scrollTo({ left: indexOf(k) * track.clientWidth, behavior: 'smooth' });
 	}
@@ -102,7 +106,7 @@
 		progress = i;
 	});
 
-	/** @param {Kind} k */
+	/** @param {Section} k */
 	function show(k) {
 		kind = k;
 		editing = null;
@@ -235,12 +239,16 @@
 		else open(entry, { ignorePartial: true });
 	}
 
+	/** @type {HTMLInputElement | undefined} */
+	let mediaInput = $state();
+
 	function create() {
+		if (kind === 'media') return mediaInput?.click();
 		const today = new Date().toISOString().slice(0, 10);
 		baseline = '';
 		editing = {
 			id: crypto.randomUUID(),
-			kind,
+			kind: kind === 'media' ? 'posts' : kind,
 			name: '',
 			from: '',
 			isNew: true,
@@ -286,10 +294,9 @@
 		}
 	}
 
-	/** @param {File} file */
-	async function upload(file) {
-		if (!api || !editing) throw new Error('not editing');
-		const name = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '');
+	/** uploads `file` to src/media/`name` (the name may hold folders, like animals/panda.jpg) */
+	async function upload(/** @type {File} */ file, /** @type {string} */ name) {
+		if (!api) throw new Error('not logged in');
 		const path = MEDIA + name;
 		const base64 = await new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -316,6 +323,126 @@
 			refresh();
 		} catch (err) {
 			flash(/** @type {Error} */ (err).message);
+		}
+	}
+
+	const linksTo = (/** @type {string} */ name) => new RegExp(`\\]\\(${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[)\\s]`);
+
+	/** titles of the posts and pages that use an image (the one being edited counts as it is now) */
+	async function usesOf(/** @type {string} */ name) {
+		const found = [];
+		const current = editing;
+		const same = (/** @type {Entry} */ e) => current && !current.isNew && e.kind === current.kind && e.name === current.from;
+		for (const e of entries) {
+			if (e.kind === 'redirects' || same(e)) continue;
+			const body = await decrypt(e.body).catch(() => e.body);
+			if (e.meta.image === name || linksTo(name).test(body + ' ')) found.push(e.meta.title || e.name);
+		}
+		if (current && (current.meta.image === name || linksTo(name).test(current.body + ' '))) found.unshift(`${current.meta.title || 'this one'} (open now)`);
+		return found;
+	}
+
+	/**
+	 * renames, replaces or deletes a media file in one commit. every post and page that uses it is rewritten to
+	 * point to `to` (the new name, or a replacement). 'move' renames the file, 'delete' deletes it, 'keep' leaves it.
+	 * @param {string} from @param {string | null} to @param {'move' | 'delete' | 'keep'} mode
+	 */
+	async function relink(from, to, mode) {
+		const move = mode === 'move';
+		if (!api) return 0;
+		const fromPath = MEDIA + from;
+		const tree = await api.list();
+		const blob = tree.find((f) => f.path === fromPath);
+		if (!blob) throw new Error(`${from} isn't there anymore`);
+		if (move && to && tree.some((f) => f.path === MEDIA + to)) throw new Error(`${to} already exists`);
+		const swap = (/** @type {string} */ text) => (to ? text.replace(new RegExp(linksTo(from).source, 'g'), (m) => `](${to}${m.at(-1)}`) : text);
+		const image = (/** @type {string} */ value) => (value === from ? (to ?? '') : value);
+		// keep showing a moved image while github's raw cache catches up
+		const preview = move ? (uploaded[fromPath] ?? (await fetch(rawUrl(fromPath)).then((r) => r.blob()).then((b) => URL.createObjectURL(b)).catch(() => undefined))) : undefined;
+		/** @type {{ path: string, content?: string, sha?: string | null }[]} */
+		const changes = mode === 'keep' ? [] : [{ path: fromPath, sha: null }];
+		if (move && to) changes.push({ path: MEDIA + to, sha: blob.sha });
+		let count = 0;
+		for (const e of entries) {
+			if (e.kind === 'redirects') continue;
+			const body = await decrypt(e.body).catch(() => e.body);
+			const next = swap(body + ' ').slice(0, -1);
+			if (e.meta.image !== from && next === body) continue;
+			count++;
+			changes.push({ path: fileOf(e.kind, e.name), content: serialize({ ...e.meta, image: image(e.meta.image) }, await encrypt(next)) });
+		}
+		if (!changes.length) return 0;
+		await api.commit(changes, `cms: ${move ? `rename ${from} to ${to}` : mode === 'keep' ? `use ${to} instead of ${from}` : `delete ${from}${to ? `, use ${to} instead` : ''}`}`);
+		if (preview && to) uploaded[MEDIA + to] = preview;
+		// the open item and its saved version follow too, so nothing looks unsaved because of this
+		const current = editing;
+		if (current) {
+			current.meta.image = image(current.meta.image);
+			current.body = swap(current.body + ' ').slice(0, -1);
+			if (baseline) {
+				const saved = JSON.parse(baseline);
+				saved.meta.image = image(saved.meta.image);
+				saved.body = swap(saved.body + ' ').slice(0, -1);
+				baseline = contentOf(saved);
+			}
+		}
+		await refresh();
+		if (current && !current.isNew) current.sha = entries.find((e) => e.kind === current.kind && e.name === current.from)?.sha ?? current.sha;
+		return count;
+	}
+
+	// the media popup (naming, renaming, replacing, deleting), shown above everything
+	/** @type {{ props: Record<string, any>, done: (r: any) => void } | null} */
+	let dialog = $state(null);
+	/** @param {Record<string, any>} props @returns {Promise<any>} */
+	const ask = (props) => new Promise((done) => (dialog = { props, done: (r) => ((dialog = null), done(r)) }));
+
+	const isImage = (/** @type {string} */ name) => /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name);
+	const plural = (/** @type {number} */ n) => (n ? `, ${n} ${n === 1 ? 'post' : 'posts'} updated` : '');
+
+	/** rename, replace or delete a media file; returns what happened */
+	async function manage(/** @type {string} */ name) {
+		const uses = await usesOf(name);
+		const result = await ask({ name, src: isImage(name) ? resolve(name) : '', uses, manage: true });
+		if (!result) return '';
+		message = 'saving…';
+		try {
+			if (result.rename) return (message = `renamed to ${result.rename}${plural(await relink(name, result.rename, 'move'))}`);
+			const to = result.upload ? await upload(result.upload.file, result.upload.name) : (result.replacement ?? null);
+			const n = await relink(name, to, result.keep ? 'keep' : 'delete');
+			return (message = result.keep ? `replaced with ${to}${plural(n)}` : `deleted ${name}${plural(n)}`);
+		} catch (err) {
+			return (message = /** @type {Error} */ (err).message);
+		} finally {
+			setTimeout(() => (message = ''), 4000);
+		}
+	}
+
+	/** new media from the + button (or the clipboard): name it, then upload */
+	async function addMedia(/** @type {Event & { currentTarget: HTMLInputElement }} */ e) {
+		await addFiles([...(e.currentTarget.files ?? [])]);
+		e.currentTarget.value = '';
+	}
+
+	async function pasteMedia() {
+		try {
+			await addFiles([await pasteFile()]);
+		} catch (err) {
+			flash(/** @type {Error} */ (err).message);
+		}
+	}
+
+	async function addFiles(/** @type {File[]} */ list) {
+		for (const file of list) {
+			const ext = file.name.match(/\.[^./]+$/)?.[0]?.toLowerCase() || `.${file.type.split('/')[1] ?? 'bin'}`;
+			const result = await ask({ name: file.name.replace(/\.[^./]+$/, '').toLowerCase() + ext, src: isImage(ext) ? URL.createObjectURL(file) : '' });
+			if (!result) continue;
+			try {
+				await upload(file, result.rename);
+				flash(`uploaded ${result.rename}`);
+			} catch (err) {
+				flash(/** @type {Error} */ (err).message);
+			}
 		}
 	}
 
@@ -349,7 +476,34 @@
 	});
 </script>
 
-{#snippet listOf(/** @type {Kind} */ k)}
+{#snippet mediaList()}
+	{#if loading && !files.length}
+		<p class="empty">loading…</p>
+	{:else if !images.length}
+		<p class="empty">no media yet.</p>
+	{:else}
+		<ul>
+			{#each [...images].sort((a, b) => a.localeCompare(b, 'en', { numeric: true })) as name (name)}
+				<li>
+					<button class="row glass media" onclick={() => manage(name)}>
+						<span class="preview">
+							{#if isImage(name)}
+								<img src={resolve(name)} alt="" loading="lazy" />
+							{:else if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={20} />
+							{:else if /\.(mp4|mov|webm|m4v)$/i.test(name)}<Film size={20} />
+							{:else}<FileIcon size={20} />{/if}
+						</span>
+						<span class="title">{name.replace(/\.[^./]+$/, '')}</span>
+						<span class="detail">{name.match(/\.([^./]+)$/)?.[1] ?? ''}</span>
+					</button>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+{/snippet}
+
+{#snippet listOf(/** @type {Section} */ k)}
+	{#if k === 'media'}{@render mediaList()}{:else}
 	<!-- posts: z to a (newest first); pages and redirects: a to z -->
 	{@const items = entries
 		.filter((e) => e.kind === k)
@@ -402,6 +556,7 @@
 			{/each}
 		</ul>
 	{/if}
+	{/if}
 {/snippet}
 
 <svelte:head>
@@ -413,7 +568,7 @@
 	{#if !api}
 		<Login onlogin={login} />
 	{:else if editing}
-		<Editor bind:item={editing} {images} {resolve} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
+		<Editor bind:item={editing} {images} {resolve} {ask} {manage} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
 	{:else}
 		<header>
 			<div class="top">
@@ -439,13 +594,21 @@
 	{/if}
 
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
+
+	{#if dialog}
+		<ImageDialog {...dialog.props} {images} {resolve} ondone={dialog.done} />
+	{/if}
 </main>
+<input type="file" bind:this={mediaInput} onchange={addMedia} multiple hidden />
 
 {#if api}
 	<Fabs onmenu={() => (menu = true)}>
 		{#snippet extra()}
+			{#if !editing && kind === 'media'}
+				<button class="round glass" onclick={pasteMedia} aria-label="paste media"><ClipboardPaste size={22} /></button>
+			{/if}
 			{#if !editing}
-				<button class="round create" onclick={create} aria-label="new {kind.slice(0, -1)}">
+				<button class="round create" onclick={create} aria-label={kind === 'media' ? 'upload media' : `new ${kind.slice(0, -1)}`}>
 					<CreateIcon {kind} />
 				</button>
 			{/if}

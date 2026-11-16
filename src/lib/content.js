@@ -9,7 +9,7 @@ const files = import.meta.glob(['/src/posts/*.md', '/src/pages/*.md', '/src/redi
 
 /** image name to built url */
 export const media = Object.fromEntries(
-	Object.entries(import.meta.glob('/src/media/*', { query: '?url', import: 'default', eager: true })).map(
+	Object.entries(import.meta.glob(['/src/media/**/*', '!**/*.md'], { query: '?url', import: 'default', eager: true })).map(
 		([path, url]) => [path.slice('/src/media/'.length), /** @type {string} */ (url)]
 	)
 );
