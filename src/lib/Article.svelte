@@ -38,11 +38,11 @@
 
 	h1 {
 		margin: 0;
-		font-family: var(--serif);
+		font-family: var(--title);
 		font-style: italic;
 		font-size: clamp(2.2rem, 6vw, 3.6rem);
 		line-height: 1.06;
-		letter-spacing: -0.04em;
+		letter-spacing: -0.01em;
 	}
 
 	.lead {
@@ -70,7 +70,7 @@
 	.prose :global(h2),
 	.prose :global(h3) {
 		margin: 2.2em 0 0.6em;
-		font-family: var(--serif);
+		font-family: var(--title);
 		line-height: 1.2;
 		letter-spacing: -0.02em;
 	}

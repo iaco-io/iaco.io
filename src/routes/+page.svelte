@@ -71,11 +71,11 @@
 
 	h1 {
 		margin: 0;
-		font-family: var(--serif);
+		font-family: var(--title);
 		font-size: clamp(2.75rem, 8vw, 5.5rem);
 		line-height: 1.04;
 		font-weight: 700;
-		letter-spacing: -0.045em;
+		letter-spacing: -0.02em;
 		background: linear-gradient(180deg, var(--fg), var(--accent));
 		-webkit-background-clip: text;
 		background-clip: text;
@@ -123,7 +123,7 @@
 
 	.card h2 {
 		margin: 1rem 0 0.35rem;
-		font-family: var(--serif);
+		font-family: var(--title);
 		font-style: italic;
 		font-size: 1.25rem;
 		letter-spacing: -0.02em;
