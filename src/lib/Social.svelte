@@ -55,6 +55,7 @@
 <style>
 	ul {
 		display: flex;
+		justify-content: center;
 		gap: 0.5rem;
 		margin: 0;
 		padding: 0;

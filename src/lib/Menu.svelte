@@ -39,8 +39,8 @@
 			<button class="entry" onclick={copyRss}><Rss size={24} strokeWidth={2.25} /> rss</button>
 		</li>
 	</ul>
-	<div class="social"><Social /></div>
 	<div class="rain"><Rain /></div>
+	<div class="social"><Social /></div>
 	{#snippet bottom()}
 		<ThemeToggle />
 		<Refresh />
@@ -52,15 +52,15 @@
 </div>
 
 <style>
-	.social {
-		margin-top: auto;
-		margin-bottom: 1.75rem;
-	}
-
 	.rain {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 1.75rem;
+		margin-top: auto;
+		margin-bottom: 0.5rem;
+	}
+
+	.social {
+		margin-bottom: 0.75rem;
 	}
 
 	.toast {
