@@ -1,11 +1,13 @@
 # redirects
 
-short links: `youtube.md` makes iaco.io/youtube/ go to its `redirect` url.
+short links: `instagram.md` makes iaco.io/instagram/ (and its aliases) go to `redirect`.
 
 ```md
 ---
-title: youtube
-redirect: https://youtube.com/@iaco
-alias: ['/yt']
+title: instagram
+redirect: https://instagram.com/iaco.io
+alias:
+  - /ig
+  - /insta
 ---
 ```
