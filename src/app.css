@@ -49,6 +49,8 @@
 
 html {
 	scroll-behavior: smooth;
+	/* no double-tap zoom */
+	touch-action: manipulation;
 }
 
 body {

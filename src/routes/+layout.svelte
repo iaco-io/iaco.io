@@ -1,5 +1,6 @@
 <script>
 	import '../app.css';
+	import { onMount } from 'svelte';
 	import { Menu as MenuIcon, ArrowDown, ArrowUp } from '@lucide/svelte';
 	import Menu from '#lib/Menu.svelte';
 
@@ -32,6 +33,13 @@
 		if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) open = dx < 0;
 		start = null;
 	};
+
+	// safari ignores user-scalable=no, so block pinch zoom directly
+	onMount(() => {
+		const block = (/** @type {Event} */ e) => e.preventDefault();
+		document.addEventListener('gesturestart', block);
+		return () => document.removeEventListener('gesturestart', block);
+	});
 
 	const jump = () =>
 		window.scrollTo({ top: atTop ? document.documentElement.scrollHeight : 0 });
