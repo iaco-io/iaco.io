@@ -1,6 +1,6 @@
 <script>
-	import { ArrowLeft, Eye, Pencil, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
-	import Article from '../Article.svelte';
+	import { ArrowLeft, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
+	import Device from './Device.svelte';
 	import { urls, serialize } from '../markdown.js';
 
 	/**
@@ -17,7 +17,6 @@
 	 */
 	let { item = $bindable(), images, resolve, onsave, onupload, ondelete, onback } = $props();
 
-	let preview = $state(false);
 	let busy = $state('');
 	/** @type {HTMLTextAreaElement | undefined} */
 	let textarea = $state();
@@ -72,7 +71,6 @@
 		const start = textarea?.selectionStart ?? item.body.length;
 		const end = textarea?.selectionEnd ?? start;
 		item.body = item.body.slice(0, start) + text + item.body.slice(end);
-		preview = false;
 	}
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
@@ -96,6 +94,32 @@
 			added.push(item.meta.image);
 		});
 	}
+
+	// live previews: the iframes load /preview/ and get the unsaved post by postMessage
+	/** @type {HTMLIFrameElement | undefined} */
+	let phone = $state();
+	/** @type {HTMLIFrameElement | undefined} */
+	let desktop = $state();
+	const payload = $derived(
+		JSON.parse(
+			JSON.stringify({
+				type: 'preview',
+				item: { title: item.meta.title, description: item.meta.description, image: item.meta.image },
+				body: item.body,
+				images: Object.fromEntries(images.map((name) => [name, resolve(name)]))
+			})
+		)
+	);
+	const send = () => {
+		for (const frame of [phone, desktop]) frame?.contentWindow?.postMessage(payload, location.origin);
+	};
+	$effect(send);
+	$effect(() => {
+		/** @param {MessageEvent} e */
+		const ready = (e) => e.origin === location.origin && e.data?.type === 'preview-ready' && send();
+		addEventListener('message', ready);
+		return () => removeEventListener('message', ready);
+	});
 
 	let coverNote = $state('');
 
@@ -141,11 +165,6 @@
 <div class="bar">
 	<button class="pill" onclick={onback}><ArrowLeft size={18} /> back</button>
 	<div class="actions">
-		{#if !short}
-				<button class="pill" onclick={() => (preview = !preview)}>
-					{#if preview}<Pencil size={18} /> edit{:else}<Eye size={18} /> preview{/if}
-				</button>
-		{/if}
 		<button
 			class="pill primary"
 			disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
@@ -157,109 +176,108 @@
 	</div>
 </div>
 
-{#if preview}
-	<div class="preview">
-		<Article item={item.meta} body={item.body} {resolve} />
-	</div>
-{:else}
-	<div class="fields">
-		<label class="wide">
-			<span>title</span>
-			<input bind:value={item.meta.title} placeholder="title" />
-		</label>
+<div class="fields">
+	<label class="wide">
+		<span>title</span>
+		<input bind:value={item.meta.title} placeholder="title" />
+	</label>
+	<label>
+		<span>file name {links ? `→ ${links}` : ''}</span>
+		<span class="suffix">
+			<input bind:value={item.name} placeholder="file-name" />
+			<em>.md</em>
+		</span>
+	</label>
+	{#if !short}
 		<label>
-			<span>file name {links ? `→ ${links}` : ''}</span>
-			<span class="suffix">
-				<input bind:value={item.name} placeholder="file-name" />
-				<em>.md</em>
-			</span>
+			<span>date (rss only)</span>
+			<input type="date" bind:value={item.meta.date} />
 		</label>
-		{#if !short}
-			<label>
-				<span>date (rss only)</span>
-				<input type="date" bind:value={item.meta.date} />
-			</label>
-			<label class="wide">
-				<span>description</span>
-				<input bind:value={item.meta.description} placeholder="a short summary for lists and rss" />
-			</label>
-			<div>
-				<span class="label">main image</span>
-				<div class="picker">
-					<select bind:value={item.meta.image}>
-						<option value="">none</option>
-						{#each images as name}<option value={name}>{name}</option>{/each}
-					</select>
-					<label class="pill square" title="upload a new main image">
-						<Upload size={18} />
-						<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
-					</label>
-					<button class="pill square" title="paste main image from clipboard" disabled={!!busy} onclick={pasteCover}>
-						<ClipboardPaste size={18} />
+		<label class="wide">
+			<span>description</span>
+			<input bind:value={item.meta.description} placeholder="a short summary for lists and rss" />
+		</label>
+		<div>
+			<span class="label">main image</span>
+			<div class="picker">
+				<select bind:value={item.meta.image}>
+					<option value="">none</option>
+					{#each images as name}<option value={name}>{name}</option>{/each}
+				</select>
+				<label class="pill square" title="upload a new main image">
+					<Upload size={18} />
+					<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
+				</label>
+				<button class="pill square" title="paste main image from clipboard" disabled={!!busy} onclick={pasteCover}>
+					<ClipboardPaste size={18} />
+				</button>
+			</div>
+			{#if coverNote}<small class="note">{coverNote}</small>{/if}
+		</div>
+	{/if}
+	<label class="wide">
+		<span>redirect to</span>
+		<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
+	</label>
+	<div class="wide">
+		<span class="label">aliases</span>
+		<div class="aliases">
+			{#each item.meta.alias, i}
+				<div class="alias">
+					<input bind:value={item.meta.alias[i]} placeholder="alias" />
+					<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
+						<X size={16} />
 					</button>
 				</div>
-				{#if coverNote}<small class="note">{coverNote}</small>{/if}
-			</div>
-		{/if}
-		<label class="wide">
-			<span>redirect to</span>
-			<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
-		</label>
-		<div class="wide">
-			<span class="label">aliases</span>
-			<div class="aliases">
-				{#each item.meta.alias, i}
-					<div class="alias">
-						<input bind:value={item.meta.alias[i]} placeholder="alias" />
-						<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
-							<X size={16} />
-						</button>
-					</div>
-				{/each}
-				<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
-			</div>
+			{/each}
+			<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
 		</div>
-		<button
-			class="switch wide"
-			role="switch"
-			aria-checked={item.meta.draft}
-			onclick={() => (item.meta.draft = !item.meta.draft)}
-		>
-			<span class="track"><span class="knob"></span></span>
-			draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
-		</button>
-		{#if short}
-			<div class="wide">
-				<span class="label">file · src/redirects/{item.name || '…'}.md</span>
-				<pre class="source">{@html source}</pre>
-			</div>
+	</div>
+	<button
+		class="switch wide"
+		role="switch"
+		aria-checked={item.meta.draft}
+		onclick={() => (item.meta.draft = !item.meta.draft)}
+	>
+		<span class="track"><span class="knob"></span></span>
+		draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
+	</button>
+	{#if short}
+		<div class="wide">
+			<span class="label">file · src/redirects/{item.name || '…'}.md</span>
+			<pre class="source">{@html source}</pre>
+		</div>
+	{/if}
+</div>
+
+{#if !short}
+	<div class="images">
+		<label class="pill">
+			<ImagePlus size={18} /> upload image
+			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
+		</label>
+		{#each [...shown, ...(showAll ? others : [])] as name (name)}
+			<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>
+				<img src={resolve(name)} alt={name} />
+			</button>
+		{/each}
+		{#if others.length}
+			<button class="pill more" onclick={() => (showAll = !showAll)}>
+				{showAll ? 'less' : `more (${others.length})`}
+			</button>
 		{/if}
 	</div>
 
-	{#if !short}
-		<div class="images">
-			<label class="pill">
-				<ImagePlus size={18} /> upload image
-				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
-			</label>
-			{#each [...shown, ...(showAll ? others : [])] as name (name)}
-				<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>
-					<img src={resolve(name)} alt={name} />
-				</button>
-			{/each}
-			{#if others.length}
-				<button class="pill more" onclick={() => (showAll = !showAll)}>
-					{showAll ? 'less' : `more (${others.length})`}
-				</button>
-			{/if}
-		</div>
+	<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
 
-		<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
-	{/if}
+	<div class="previews">
+		<Device label="phone" width={390} height={844} bind:frame={phone} />
+		<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
+	</div>
+{/if}
 
-	{#if !item.isNew}
-		<button class="pill danger delete" disabled={!!busy} onclick={remove}><Trash2 size={18} /> delete</button>
-	{/if}
+{#if !item.isNew}
+	<button class="pill danger delete" disabled={!!busy} onclick={remove}><Trash2 size={18} /> delete</button>
 {/if}
 
 <style>
@@ -487,8 +505,12 @@
 		object-fit: cover;
 	}
 
-	.preview {
-		padding: 1rem 0 4rem;
+	.previews {
+		display: grid;
+		grid-template-columns: 1fr 2.4fr;
+		align-items: start;
+		gap: 1rem;
+		margin-top: 1.5rem;
 	}
 
 	.delete {
@@ -496,6 +518,15 @@
 	}
 
 	@media (max-width: 600px) {
+		.previews {
+			grid-template-columns: 1fr;
+		}
+
+		.previews > :global(figure:first-child) {
+			justify-self: center;
+			width: min(20rem, 100%);
+		}
+
 		.fields {
 			grid-template-columns: 1fr;
 		}
