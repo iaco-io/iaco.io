@@ -207,7 +207,7 @@
 			<div class="aliases">
 				{#each item.meta.alias, i}
 					<div class="alias">
-						<input bind:value={item.meta.alias[i]} placeholder="ig" />
+						<input bind:value={item.meta.alias[i]} placeholder="alias" />
 						<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
 							<X size={16} />
 						</button>
