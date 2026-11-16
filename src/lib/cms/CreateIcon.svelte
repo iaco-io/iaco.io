@@ -23,8 +23,8 @@
 
 	.plus {
 		position: absolute;
-		right: -0.45em;
-		bottom: -0.35em;
+		right: -0.3em;
+		bottom: -0.1em;
 		display: flex;
 	}
 </style>
