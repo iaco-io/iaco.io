@@ -1,7 +1,8 @@
 <script>
-	// a floating glass panel that slides in from the right.
-	// it stays clear of the screen edges and has no full-screen backdrop:
-	// safari 26 paints solid toolbars over anything fixed that touches the edges
+	// a glass panel that slides in from the right over a dimmed page.
+	// safari 26 paints solid toolbars over anything *fixed* near the screen edges, so the panel and its
+	// backdrop are placed in the page instead (absolute, where it is scrolled to), reaching well past the
+	// screen so they also show through safari's glass bars. the page can't scroll while it's open.
 	import { X } from '@lucide/svelte';
 
 	/** @type {{ open: boolean, label: string, children: import('svelte').Snippet, bottom?: import('svelte').Snippet }} */
@@ -9,19 +10,44 @@
 
 	const close = () => (open = false);
 
-	/** @type {HTMLElement | undefined} */
-	let panel = $state();
+	const BLEED = 200; // px drawn beyond the visible screen, above and below
+	let top = $state(0);
+	let height = $state(0);
+	/** @type {ReturnType<typeof setTimeout>} */
+	let timer;
 
-	// a tap anywhere outside the panel closes it
-	/** @param {PointerEvent} e */
-	function outside(e) {
-		if (open && panel && !panel.contains(/** @type {Node} */ (e.target))) close();
-	}
+	$effect(() => {
+		if (!open) {
+			// after sliding out, take no space, so the page doesn't get longer
+			timer = setTimeout(() => (height = 0), 450);
+			return;
+		}
+		clearTimeout(timer);
+		const vv = window.visualViewport;
+		top = (vv?.pageTop ?? window.scrollY) - BLEED;
+		height = (vv?.height ?? window.innerHeight) + 2 * BLEED;
+		const still = (/** @type {Event} */ e) => e.preventDefault();
+		addEventListener('touchmove', still, { passive: false });
+		addEventListener('wheel', still, { passive: false });
+		return () => {
+			removeEventListener('touchmove', still);
+			removeEventListener('wheel', still);
+		};
+	});
 </script>
 
-<svelte:window onkeydown={(e) => e.key === 'Escape' && close()} onpointerdown={outside} />
+<svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
 
-<nav bind:this={panel} class="panel glass" class:open aria-label={label} inert={!open}>
+<div
+	class="backdrop"
+	class:open
+	style:top="{top}px"
+	style:height="{height}px"
+	onclick={close}
+	aria-hidden="true"
+></div>
+
+<nav class="panel glass" class:open style:top="{top}px" style:height="{height}px" style:--bleed="{BLEED}px" aria-label={label} inert={!open}>
 	<button class="round glass close" onclick={close} aria-label="Close menu">
 		<X size={20} />
 	</button>
@@ -30,20 +56,40 @@
 </nav>
 
 <style>
+	.backdrop {
+		position: absolute;
+		right: 0;
+		left: 0;
+		z-index: 20;
+		background: var(--scrim);
+		opacity: 0;
+		pointer-events: none;
+		visibility: hidden;
+		transition:
+			opacity 0.35s ease,
+			visibility 0s 0.35s;
+	}
+
+	.backdrop.open {
+		opacity: 1;
+		pointer-events: auto;
+		visibility: visible;
+		transition: opacity 0.35s ease;
+	}
+
 	.panel {
-		position: fixed;
-		top: calc(var(--top) + var(--gap));
-		right: var(--gap);
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
+		position: absolute;
+		right: 0;
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
-		width: min(21rem, calc(100vw - 4.5rem));
-		padding: 4.5rem 1.75rem 1.75rem;
-		border-radius: 2rem;
+		width: min(22rem, 85vw);
+		overflow: hidden;
+		/* the bleed above and below is padding, so the content sits on the visible screen */
+		padding: calc(var(--bleed) + var(--top) + 5.5rem) 2rem calc(var(--bleed) + env(safe-area-inset-bottom) + 2rem);
 		background: var(--panel);
-		box-shadow: 0 20px 60px var(--shadow);
-		transform: translateX(calc(100% + 2 * var(--gap)));
+		border-width: 0 0 0 1px;
+		transform: translateX(100%);
 		visibility: hidden;
 		transition:
 			transform 0.45s cubic-bezier(0.32, 0.72, 0, 1),
@@ -53,15 +99,13 @@
 	.panel.open {
 		transform: none;
 		visibility: visible;
-		/* safari 26 skips slightly see-through fixed elements when it decides how to paint its toolbar */
-		opacity: 0.99;
 		transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
 	.close {
 		position: absolute;
-		top: 0.75rem;
-		right: 0.75rem;
+		top: calc(var(--bleed) + var(--top) + var(--gap));
+		right: var(--gap);
 	}
 
 	/* fills the panel, so content can push itself down with margin-top: auto */

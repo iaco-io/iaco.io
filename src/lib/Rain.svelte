@@ -91,8 +91,8 @@
 </script>
 
 <button class="rain glass" class:playing onclick={() => (playing ? stop() : start())} aria-pressed={playing}>
-	<span class="wave"><Waves size={18} /></span>
-	<span class="notes"><Music size={15} /></span>
+	<span class="wave"><Waves size={16} /></span>
+	<span class="notes"><Music size={13} /></span>
 	<em>raiɳ</em>
 </button>
 
@@ -101,17 +101,17 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.45rem;
-		height: 2.75rem;
-		padding: 0 1.2rem 0 1rem;
+		height: 2.4rem;
+		padding: 0 1rem 0 0.9rem;
 		border-radius: 999px;
 		color: var(--fg);
 		cursor: pointer;
-		box-shadow: 0 6px 24px var(--shadow);
+		border: 0;
 	}
 
 	em {
 		font-family: 'Iowan Old Style', 'Palatino', Georgia, 'Times New Roman', serif;
-		font-size: 1.15rem;
+		font-size: 0.95rem;
 		font-style: italic;
 		letter-spacing: 0.02em;
 	}
