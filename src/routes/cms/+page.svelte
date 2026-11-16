@@ -350,10 +350,10 @@
 </script>
 
 {#snippet listOf(/** @type {Kind} */ k)}
-	<!-- posts: newest (highest file name) first; pages: a to z -->
+	<!-- posts: z to a (newest first); pages and redirects: a to z -->
 	{@const items = entries
 		.filter((e) => e.kind === k)
-		.sort((a, b) => (k === 'pages' ? 1 : -1) * a.name.localeCompare(b.name, 'en', { numeric: true }))}
+		.sort((a, b) => (k === 'posts' ? -1 : 1) * a.name.localeCompare(b.name, 'en', { numeric: true }))}
 	{@const fresh = newPartials.filter(([, p]) => p.kind === k)}
 	{#if loading && !entries.length}
 		<p class="empty">loading…</p>
