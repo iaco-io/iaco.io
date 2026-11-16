@@ -34,8 +34,9 @@
 		position: fixed;
 		top: calc(var(--top) + var(--gap));
 		right: var(--gap);
-		/* same distance from the bottom as the round buttons, which safari leaves alone */
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
+		/* ends well above the bottom: safari paints its toolbar over large fixed things near the bottom edge */
+		height: min(36rem, 72svh);
+		overflow-y: auto;
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
