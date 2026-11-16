@@ -762,8 +762,15 @@
 		flex: 0 0 100%;
 		min-height: 60svh;
 		padding-inline: 1.25rem;
+		/* room to scroll the last items above the floating buttons */
+		padding-bottom: 7rem;
 		scroll-snap-align: start;
 		scroll-snap-stop: always;
+	}
+
+	/* the media tab has one more floating button */
+	.list:last-child {
+		padding-bottom: 11rem;
 	}
 
 	h2 {
