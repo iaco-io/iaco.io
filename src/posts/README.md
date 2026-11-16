@@ -11,8 +11,8 @@ image: img.jpg
 date: 2026-11-16
 draft: true
 alias:
-  - /ig
-  - /instagram
+  - ig
+  - instagram
 redirect: https://example.com
 ---
 enc:v1:...

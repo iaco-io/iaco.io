@@ -31,12 +31,16 @@
 		return [url.slice(0, -1), id && `/${id}`].filter(Boolean).join(' and ');
 	});
 
+	/** aliases are saved without slashes: 'ig', not '/ig/' */
+	const cleanAliases = (/** @type {string[]} */ list) =>
+		list.map((a) => a.trim().replace(/^\/+|\/+$/g, '')).filter(Boolean);
+
 	const escape = (/** @type {string} */ t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 	/** the .md file as it will be saved, with the yaml part coloured */
 	const source = $derived(
 		serialize(
-			{ ...item.meta, alias: item.meta.alias.map((a) => a.trim()).filter((a) => a.replace(/\//g, '')) },
+			{ ...item.meta, alias: cleanAliases(item.meta.alias) },
 			short ? '' : item.body
 		)
 			.split('\n')
@@ -188,13 +192,13 @@
 			<div class="aliases">
 				{#each item.meta.alias, i}
 					<div class="alias">
-						<input bind:value={item.meta.alias[i]} placeholder="/ig" />
+						<input bind:value={item.meta.alias[i]} placeholder="ig" />
 						<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
 							<X size={16} />
 						</button>
 					</div>
 				{/each}
-				<button class="pill add" onclick={() => item.meta.alias.push('/')}><Plus size={16} /> alias</button>
+				<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
 			</div>
 		</div>
 		<button

@@ -117,7 +117,7 @@
 
 	async function save() {
 		if (!api || !editing) return;
-		editing.meta.alias = editing.meta.alias.map((x) => x.trim()).filter((x) => x.replace(/\//g, ''));
+		editing.meta.alias = editing.meta.alias.map((x) => x.trim().replace(/^\/+|\/+$/g, '')).filter(Boolean);
 		const { kind: k, name, from, isNew } = editing;
 		const path = fileOf(k, name);
 		const renamed = !isNew && name !== from;
@@ -227,7 +227,7 @@
 								<span class="title">
 									/{entry.name}
 									{#if entry.meta.alias.length}
-										<small>{entry.meta.alias.map((x) => x.replace(/\/+$/, '')).join(' · ')}</small>
+										<small>{entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' · ')}</small>
 									{/if}
 								</span>
 							{:else}
