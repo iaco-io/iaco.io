@@ -604,12 +604,12 @@
 {#if api}
 	<Fabs onmenu={() => (menu = true)}>
 		{#snippet extra()}
-			{#if !editing && progress > 2}
-				<!-- fades in while sliding to the media tab -->
+			{#if !editing && progress > 2.3}
+				<!-- fades in over the last 70% of the slide to the media tab -->
 				<button
 					class="round create paste"
-					style:opacity={Math.min(1, progress - 2)}
-					style:pointer-events={progress > 2.5 ? null : 'none'}
+					style:opacity={Math.min(1, (progress - 2.3) / 0.7)}
+					style:pointer-events={progress > 2.65 ? null : 'none'}
 					onclick={pasteMedia}
 					aria-label="paste media"
 				>
