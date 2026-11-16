@@ -23,7 +23,7 @@
 </script>
 
 <form class="card glass" onsubmit={submit} autocomplete="on">
-	<h1>cms</h1>
+	<h1>iaco.io <small>v {__VERSION__}</small></h1>
 	<p>log in with a github token that can write to the blog repo.</p>
 
 	<!-- lets password managers save the token under a username -->
@@ -62,6 +62,13 @@
 		margin: 0;
 		font-size: 2.2rem;
 		letter-spacing: -0.04em;
+	}
+
+	h1 small {
+		font-size: 0.8rem;
+		font-weight: 500;
+		letter-spacing: 0;
+		color: var(--muted);
 	}
 
 	p {

@@ -200,7 +200,7 @@
 		<Editor bind:item={editing} {images} {resolve} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} />
 	{:else}
 		<header>
-			<h1>cms</h1>
+			<h1>iaco.io <small>v {__VERSION__}</small></h1>
 			<div class="actions">
 				<button class="pill primary" onclick={create}><Plus size={18} /> new {kind.slice(0, -1)}</button>
 				<button class="pill" onclick={logout} aria-label="log out"><Lock size={18} /></button>
@@ -264,6 +264,13 @@
 		margin: 0;
 		font-size: 2.4rem;
 		letter-spacing: -0.04em;
+	}
+
+	h1 small {
+		font-size: 0.8rem;
+		font-weight: 500;
+		letter-spacing: 0;
+		color: var(--muted);
 	}
 
 	.actions {
