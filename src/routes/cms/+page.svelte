@@ -76,6 +76,19 @@
 		{ kind: 'redirects', icon: ExternalLink }
 	]);
 
+	/** @type {{ x: number, y: number } | null} */
+	let swipe = null;
+	const swipeStart = (/** @type {TouchEvent} */ e) => (swipe = { x: e.touches[0].clientX, y: e.touches[0].clientY });
+	function swipeEnd(/** @type {TouchEvent} */ e) {
+		if (!swipe) return;
+		const dx = e.changedTouches[0].clientX - swipe.x;
+		const dy = e.changedTouches[0].clientY - swipe.y;
+		swipe = null;
+		if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+		const i = KINDS.findIndex((k) => k.kind === kind) + (dx < 0 ? 1 : -1);
+		if (KINDS[i]) show(KINDS[i].kind);
+	}
+
 	/** @param {Kind} k */
 	function show(k) {
 		kind = k;
@@ -336,48 +349,61 @@
 		<Editor bind:item={editing} {images} {resolve} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
 	{:else}
 		<header>
-			<h1>iaco.io <small>v {__VERSION__}</small></h1>
+			<div class="top">
+				<h1>iaco.io <small>v {__VERSION__}</small></h1>
+				<div class="kinds glass" role="tablist" aria-label="sections">
+					{#each KINDS as { kind: k, icon: Icon }}
+						<button role="tab" aria-selected={kind === k} aria-label={k} class:active={kind === k} onclick={() => show(k)}>
+							<Icon size={18} />
+						</button>
+					{/each}
+				</div>
+			</div>
 			<h2>{kind}</h2>
 		</header>
 
-		{#if loading && !entries.length}
-			<p class="empty">loading…</p>
-		{:else if !list.length && !newPartials.length}
-			<p class="empty">no {kind} yet.</p>
-		{:else}
-			<ul>
-				{#each newPartials as [key, p] (key)}
-					<li>
-						<button class="row glass" onclick={() => openPartial(key)}>
-							<span class="unsaved"><CloudAlert size={20} /></span>
-							<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
-						</button>
-					</li>
-				{/each}
-				{#each list as entry (entry.kind + entry.name)}
-					<li>
-						<button class="row glass" onclick={() => open(entry)}>
-							{#if entry.kind === 'posts'}<Feather size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
-							{#if entry.kind === 'redirects'}
-								<span class="title">
-									/{entry.name}
-									{#if entry.meta.alias.length}
-										<small>{entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' · ')}</small>
-									{/if}
-								</span>
-							{:else}
-								<span class="title">{entry.meta.title || entry.name}</span>
-							{/if}
-							{#if partials[`${entry.kind}/${entry.name}`]}
-								<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
-							{/if}
-							{#if entry.meta.draft}<span class="badge">draft</span>{/if}
-							<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
-						</button>
-					</li>
-				{/each}
-			</ul>
-		{/if}
+		<!-- swipe left or right on the list to change section -->
+		<div class="lists" ontouchstart={swipeStart} ontouchend={swipeEnd}>
+
+			{#if loading && !entries.length}
+				<p class="empty">loading…</p>
+			{:else if !list.length && !newPartials.length}
+				<p class="empty">no {kind} yet.</p>
+			{:else}
+				<ul>
+					{#each newPartials as [key, p] (key)}
+						<li>
+							<button class="row glass" onclick={() => openPartial(key)}>
+								<span class="unsaved"><CloudAlert size={20} /></span>
+								<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
+							</button>
+						</li>
+					{/each}
+					{#each list as entry (entry.kind + entry.name)}
+						<li>
+							<button class="row glass" onclick={() => open(entry)}>
+								{#if entry.kind === 'posts'}<Feather size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
+								{#if entry.kind === 'redirects'}
+									<span class="title">
+										/{entry.name}
+										{#if entry.meta.alias.length}
+											<small>{entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' · ')}</small>
+										{/if}
+									</span>
+								{:else}
+									<span class="title">{entry.meta.title || entry.name}</span>
+								{/if}
+								{#if partials[`${entry.kind}/${entry.name}`]}
+									<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
+								{/if}
+								{#if entry.meta.draft}<span class="badge">draft</span>{/if}
+								<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
+							</button>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
 	{/if}
 
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
@@ -450,6 +476,49 @@
 
 	header {
 		margin-bottom: 1.5rem;
+	}
+
+	.top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.kinds {
+		display: inline-flex;
+		flex: none;
+		gap: 0.25rem;
+		padding: 0.25rem;
+		border-radius: 999px;
+	}
+
+	.kinds button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.4rem;
+		height: 2.4rem;
+		padding: 0;
+		border: 0;
+		border-radius: 999px;
+		color: var(--muted);
+		background: none;
+		cursor: pointer;
+		transition:
+			background 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.kinds button.active {
+		color: var(--fg);
+		background: var(--bg);
+		box-shadow: 0 0 8px var(--shadow-soft);
+	}
+
+	.lists {
+		min-height: 60svh;
+		touch-action: pan-y;
 	}
 
 	h2 {
