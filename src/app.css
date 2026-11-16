@@ -66,11 +66,19 @@ body {
 	margin: 0;
 	overflow-x: clip;
 	min-height: 100dvh;
+}
+
+/* the glows stay put while scrolling (ios ignores background-attachment: fixed) */
+body::before {
+	content: '';
+	position: fixed;
+	inset: -20vh 0;
+	z-index: -1;
 	background:
-		radial-gradient(120% 60% at 100% 0%, var(--glow-1), transparent 60%),
-		radial-gradient(90% 50% at 0% 100%, var(--glow-2), transparent 60%),
+		radial-gradient(120% 60% at 100% 20%, var(--glow-1), transparent 60%),
+		radial-gradient(90% 50% at 0% 80%, var(--glow-2), transparent 60%),
 		var(--bg);
-	background-attachment: fixed;
+	pointer-events: none;
 }
 
 a {

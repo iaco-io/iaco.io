@@ -395,12 +395,10 @@
 	</Fabs>
 
 	<Panel bind:open={menu} label="cms">
-		<ul class="entries">
-			<li class="separated">
-				<button class="entry" onclick={() => ((menu = false), logout())}>
-					<Lock size={24} strokeWidth={2.25} /> lock
-				</button>
-			</li>
+		<button class="entry" onclick={() => ((menu = false), logout())}>
+			<Lock size={24} strokeWidth={2.25} /> lock
+		</button>
+		<ul class="entries sections">
 			{#each KINDS as { kind: k, icon: Icon }}
 				<li>
 					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
@@ -442,10 +440,9 @@
 		color: var(--soft);
 	}
 
-	.separated {
-		margin-bottom: 0.75rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 1px solid var(--glass-edge);
+	/* sections sit in the middle of the menu, between lock and the theme toggle */
+	:global(.panel) ul.sections {
+		margin-block: auto;
 	}
 
 	/* the opposite of the glass buttons: solid cream on blue, ink on cream */
