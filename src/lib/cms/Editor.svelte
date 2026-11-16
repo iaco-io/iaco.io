@@ -109,7 +109,7 @@
 	// slide from the left edge to go back: the back button charges up as the finger moves
 	/** @type {{ x: number, y: number, dx: number, horizontal: boolean | null } | null} */
 	let edge = $state(null);
-	const charge = $derived(edge?.horizontal ? edge.dx / (innerWidth * 0.3) : 0);
+	const charge = $derived(edge?.horizontal ? edge.dx / Math.min(innerWidth * 0.2, 120) : 0);
 	$effect(() => {
 		/** @param {TouchEvent} e */
 		const start = (e) => {
