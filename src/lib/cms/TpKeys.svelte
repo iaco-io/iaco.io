@@ -64,7 +64,7 @@
 
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
+		grid-template-columns: repeat(7, 1fr);
 		gap: 0.25rem;
 		/* two rows; the rest scrolls */
 		max-height: 6.9rem;
