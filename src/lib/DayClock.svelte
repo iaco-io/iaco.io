@@ -1,5 +1,5 @@
 <script>
-	// a little tower clock, top right. the pendulum swings each 0.864 s (a hundred-thousandth of a day).
+	// a little old grandfather clock, top right. the pendulum swings each 0.864 s (a hundred-thousandth of a day).
 	// next to it: the date as year and day of the year (2026-32•0), and the time as how much of the day has passed (45.67%)
 	import { onMount } from 'svelte';
 
@@ -34,17 +34,21 @@
 	<div class="dayclock" title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
-		<svg viewBox="0 0 28 32" width="26" height="30" aria-hidden="true">
-			<path d="M14 1.5v2.5" />
-			<path d="M4.5 12 14 4l9.5 8Z" />
-			<rect x="6.5" y="12" width="15" height="18.5" rx="1.5" />
-			<circle cx="14" cy="17" r="4.2" />
-			<path d="M14 17V14.6" style:transform="rotate({hours}deg)" />
-			<path d="M14 17V13.5" style:transform="rotate({minutes}deg)" />
+		<!-- an old grandfather clock: arched hood with the face, a narrow case with a window for the pendulum, a base -->
+		<svg viewBox="0 0 20 36" width="17" height="31" aria-hidden="true">
+			<circle cx="10" cy="1.6" r=".8" />
+			<path d="M4.5 12.5V6.2C4.5 3.9 7 2.6 10 2.6s5.5 1.3 5.5 3.6v6.3Z" />
+			<circle cx="10" cy="7.6" r="3" />
+			<path class="hand" d="M10 7.6V6" style:transform="rotate({hours}deg)" />
+			<path class="hand" d="M10 7.6V5.1" style:transform="rotate({minutes}deg)" />
+			<path d="M6 12.5v17.5h8V12.5" />
+			<rect x="7.6" y="14.6" width="4.8" height="12.6" rx="2.4" />
 			<g class="pendulum" style:animation-delay="{delay}s">
-				<path d="M14 21.6v5.4" />
-				<circle cx="14" cy="27.6" r="1.3" />
+				<path d="M10 13.4v9.4" />
+				<circle cx="10" cy="24" r="1.3" />
 			</g>
+			<path d="M4.8 30h10.4v2.2H4.8Z" />
+			<path d="M5.8 32.2v1.5M14.2 32.2v1.5" />
 		</svg>
 	</div>
 {/if}
@@ -88,29 +92,29 @@
 	svg {
 		fill: none;
 		stroke: currentColor;
-		stroke-width: 1.5;
+		stroke-width: 1.2;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
-	svg path,
-	.pendulum {
-		transform-origin: 14px 17px;
+	.hand {
 		transform-box: view-box;
+		transform-origin: 10px 7.6px;
 	}
 
 	.pendulum {
-		transform-origin: 14px 21.6px;
+		transform-box: view-box;
+		transform-origin: 10px 13.4px;
 		animation: swing 1.728s ease-in-out infinite;
 	}
 
 	@keyframes swing {
 		0%,
 		100% {
-			transform: rotate(-16deg);
+			transform: rotate(-9deg);
 		}
 		50% {
-			transform: rotate(16deg);
+			transform: rotate(9deg);
 		}
 	}
 
