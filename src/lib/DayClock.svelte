@@ -1,12 +1,12 @@
 <script>
-	// the date and time of day, with a little animation beside them: on the blog a raining cloud, in the cms an old
+	// the date and time of day, with a little animation beside them: on the blog a tiny grid of dots, in the cms an old
 	// grandfather clock. both move in steps of 0.864 s (a hundred-thousandth of a day), in step with the time of day.
 	// next to it: the date as year and day of the year (2026-32•0), and the time as how much of the day has passed (45.67%)
 	import { onMount } from 'svelte';
 
 	/**
 	 * inline: sits where it's placed (e.g. in the cms menu) instead of the page's top right
-	 * icon: 'clock' (grandfather clock) or 'cloud' (raining cloud)
+	 * icon: 'clock' (grandfather clock) or 'grid' (counting dots)
 	 */
 	let { inline = false, icon = 'clock' } = $props();
 
@@ -30,7 +30,7 @@
 	);
 	// the day of the year as DD•D, with a very small dot
 	const day = $derived(String(ordinal).padStart(3, '0'));
-	// read from the animation clock when it runs, so the % changes at the same moment as the thunder
+	// read from the animation clock when it runs, so the % changes at the same moment as the dots gather
 	const percent = $derived((Math.floor(((now_ms || sinceMidnight) / DAY) * 10_000) / 100).toFixed(2).split('.'));
 	// the hands show the usual time, the pendulum keeps in step with the day
 	const hours = $derived(now ? ((now.getHours() % 12) + now.getMinutes() / 60) * 30 : 0);
@@ -38,36 +38,26 @@
 	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
 	// one full swing there and back is 1.728 s, kept in step with the time of day
 	let swing = $state(0);
-	// the cloud rains like real rain: drops fall at a steady speed (rain soon stops speeding up). five drippers each
-	// drip at their own slightly different pace, with a loose jitter and an occasional skip, and every drop falls from a
-	// random spot under the cloud — so it never bunches up and never settles into a pattern. it's worked out from the
-	// time, so every screen shows the same rain. every 8.64 s (0.01% of a day) it also thunders, over the rain
 	let now_ms = $state(0);
-	const BEATS = [470, 530, 610, 500, 570]; // ms between drops, one pace per dripper
-	const FALL = 640; // ms a drop takes to fall
-	const random = (/** @type {number} */ n) => {
-		const x = Math.sin(n * 12.9898) * 43758.5453;
-		return x - Math.floor(x);
-	};
-	const cycle = $derived(now_ms % 8640);
-	// the thunder starts the moment the last digit of the % changes
-	const thunder = $derived(cycle < 864 ? cycle / 864 : -1);
-	const drops = $derived.by(() => {
-		const list = [];
-		BEATS.forEach((beat, lane) => {
-			const offset = random(lane + 1) * beat;
-			const n0 = Math.floor((now_ms - offset) / beat);
-			for (const n of [n0 - 2, n0 - 1, n0]) {
-				const id = n * 8 + lane;
-				if (random(id + 0.3) < 0.2) continue; // now and then a dripper skips a drop
-				const start = n * beat + offset + (random(id) - 0.5) * beat * 0.7;
-				// no new drops start while it thunders; those already falling finish
-				if (((start % 8640) + 8640) % 8640 < 864) continue;
-				const p = (now_ms - start) / FALL;
-				if (p >= 0 && p < 1) list.push({ id, x: 9.2 + random(id + 0.5) * 9.6, p });
-			}
-		});
-		return list;
+
+	// the dots: a tiny 3×3 grid that counts the ten 0.864 s ticks of each 8.64 s (0.01% of a day).
+	// tick 1: one dot top left. ticks 2–9: a copy of the newest dot slides to the next spot (top middle, top right,
+	// middle right, centre, middle left, bottom left, bottom middle, bottom right) while the others stay.
+	// tick 10, when the % changes: all dots gather in the centre, then that one dot moves back to the top left
+	const SPOTS = [[2, 2], [6, 2], [10, 2], [10, 6], [6, 6], [2, 6], [2, 10], [6, 10], [10, 10]];
+	const ease = (/** @type {number} */ x) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
+	const mix = (/** @type {number[]} */ a, /** @type {number[]} */ b, /** @type {number} */ t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+	const dots = $derived.by(() => {
+		const cycle = now_ms % 8640;
+		const tick = Math.floor(cycle / 864); // 0 is the 10th tick, right when the % changes
+		const f = (cycle % 864) / 864;
+		const move = ease(Math.min(1, f / 0.45)); // each move takes the first part of its tick
+		if (tick === 0) {
+			if (f < 0.5) return SPOTS.map((s) => mix(s, SPOTS[4], ease(f / 0.5)));
+			return [mix(SPOTS[4], SPOTS[0], ease((f - 0.5) / 0.5))];
+		}
+		const placed = SPOTS.slice(0, Math.max(1, tick - 1));
+		return tick === 1 ? placed : [...placed, mix(SPOTS[tick - 2], SPOTS[tick - 1], move)];
 	});
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -87,21 +77,10 @@
 	<div class="dayclock" class:inline title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
-		{#if icon === 'cloud'}
-			<!-- a small cloud raining at random, with a thunder every 8.64 s -->
-			<svg viewBox="0 0 28 26" width="27" height="25" aria-hidden="true">
-				<path class:flash={thunder >= 0 && thunder < 0.5} d="M8.5 16.5h11.5a4.2 4.2 0 0 0 .4-8.4 6 6 0 0 0-11.6-1.2 4.8 4.8 0 0 0-.3 9.6Z" />
-				{#if thunder >= 0}
-					<path class="bolt" style:opacity={thunder < 0.12 || (thunder > 0.2 && thunder < 0.32) ? 1 : Math.max(0, 1 - (thunder - 0.32) * 2.2)} d="M15 17.3l-2 3.1h2.4l-1.6 3.2" />
-				{/if}
-				<!-- little lines of rain falling steadily from under the cloud, fading in and out -->
-				{#each drops as { id, x, p } (id)}
-					<path
-						class="drop"
-						style:opacity={p < 0.12 ? p / 0.12 : p > 0.75 ? (1 - p) / 0.25 : 1}
-						style:transform="translate({x}px, {17.2 + p * 6.8}px)"
-						d="M0 0v1.6"
-					/>
+		{#if icon === 'grid'}
+			<svg class="grid" viewBox="0 0 12 12" width="13" height="13" aria-hidden="true">
+				{#each dots as [x, y], i (i)}
+					<circle cx={x} cy={y} r="1.1" />
 				{/each}
 			</svg>
 		{:else}
@@ -175,16 +154,9 @@
 		stroke-linejoin: round;
 	}
 
-	.flash {
-		fill: color-mix(in srgb, var(--accent) 18%, transparent);
-	}
-
-	.drop {
-		stroke-width: 0.9;
-	}
-
-	.bolt {
-		stroke-width: 1.1;
+	.grid circle {
+		fill: currentColor;
+		stroke: none;
 	}
 
 	.hand {
