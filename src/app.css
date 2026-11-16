@@ -7,14 +7,12 @@
 	--bg: light-dark(#faf6ee, #081526);
 	--glow-1: light-dark(rgb(95 143 184 / 0.18), rgb(95 143 184 / 0.22));
 	--glow-2: light-dark(rgb(29 78 137 / 0.12), rgb(29 78 137 / 0.3));
-	--glass: light-dark(rgb(250 246 238 / 0.6), rgb(29 62 102 / 0.6));
-	--glass-edge: light-dark(rgb(255 255 255 / 0.5), rgb(244 236 220 / 0.18));
+	--glass: light-dark(rgb(250 246 238 / 0.6), rgb(20 44 72 / 0.55));
+	--glass-edge: light-dark(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.08));
 	--panel: light-dark(rgb(244 236 220 / 0.55), rgb(11 26 46 / 0.6));
 	--scrim: light-dark(rgb(15 42 71 / 0.15), rgb(0 0 0 / 0.35));
 	--shadow: light-dark(rgb(15 42 71 / 0.12), rgb(0 0 0 / 0.35));
 	--blur: blur(20px) saturate(180%);
-	/* dark theme: uneven touches of cream foam on buttons */
-	--sheen: none;
 
 	/* iOS standalone: status bar overlays content; add 16px so it blurs cleanly */
 	--top: 0px;
@@ -37,42 +35,6 @@
 
 :root[data-theme='dark'] {
 	color-scheme: dark;
-	--sheen: var(--foam);
-}
-
-@media (prefers-color-scheme: dark) {
-	:root:not([data-theme='light']) {
-		--sheen: var(--foam);
-	}
-}
-
-:root {
-	--foam:
-		radial-gradient(38% 46% at 22% 24%, rgb(244 236 220 / 0.34), transparent 70%),
-		radial-gradient(30% 36% at 78% 72%, rgb(244 236 220 / 0.2), transparent 70%),
-		radial-gradient(22% 28% at 60% 12%, rgb(244 236 220 / 0.12), transparent 70%),
-		radial-gradient(26% 30% at 12% 88%, rgb(143 182 216 / 0.18), transparent 70%);
-}
-
-/* selectable things get the foam, each one placed a little differently */
-:is(.round, .pill, .row, a.card, .toggle, .tabs) {
-	background-image: var(--sheen) !important;
-	background-size: 230% 230% !important;
-}
-
-:is(.round, .pill, .row, a.card):nth-child(2n),
-li:nth-child(2n) > :is(.round, .row) {
-	background-position: 100% 100% !important;
-}
-
-:is(.round, .pill, .row, a.card):nth-child(3n),
-li:nth-child(3n) > :is(.round, .row) {
-	background-position: 100% 0 !important;
-}
-
-:is(.round, .pill, .row, a.card):nth-child(5n),
-li:nth-child(5n) > :is(.round, .row) {
-	background-position: 0 100% !important;
 }
 
 @media (display-mode: standalone) {
