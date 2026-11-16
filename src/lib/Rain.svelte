@@ -1,5 +1,6 @@
 <script>
-	// gentle rain made in the browser (no audio files): soft noise plus scattered drops
+	// forest rain made in the browser (no audio files): a soft rain bed with gusts,
+	// patter on the leaves, heavier drips, and now and then a distant thunder
 	import { onDestroy } from 'svelte';
 
 	let playing = $state(false);
@@ -7,28 +8,35 @@
 	let ctx = null;
 	/** @type {GainNode | null} */
 	let master = null;
-	/** @type {ReturnType<typeof setTimeout>} */
-	let dropTimer;
+	/** @type {{ white: AudioBuffer, brown: AudioBuffer } | null} */
+	let buffers = null;
+	/** @type {ReturnType<typeof setTimeout>[]} */
+	let timers = [];
 
-	/** a looping noise source; brown noise is deep and soft, white is the hiss of rain */
-	function noise(/** @type {AudioContext} */ c, /** @type {'white' | 'brown'} */ kind) {
-		const buffer = c.createBuffer(1, c.sampleRate * 3, c.sampleRate);
-		const data = buffer.getChannelData(0);
-		let last = 0;
-		for (let i = 0; i < data.length; i++) {
-			const white = Math.random() * 2 - 1;
-			last = (last + 0.02 * white) / 1.02;
-			data[i] = kind === 'white' ? white : last * 3.5;
-		}
-		const source = c.createBufferSource();
-		source.buffer = buffer;
-		source.loop = true;
-		return source;
+	const rand = (/** @type {number} */ a, /** @type {number} */ b) => a + Math.random() * (b - a);
+	const later = (/** @type {() => void} */ fn, /** @type {number} */ ms) => timers.push(setTimeout(fn, ms));
+
+	/** a few seconds of white noise (the hiss) and brown noise (the deep, soft part) */
+	function makeBuffers(/** @type {AudioContext} */ c) {
+		const make = (/** @type {boolean} */ brown) => {
+			const buffer = c.createBuffer(1, c.sampleRate * 4, c.sampleRate);
+			const data = buffer.getChannelData(0);
+			let last = 0;
+			for (let i = 0; i < data.length; i++) {
+				const white = Math.random() * 2 - 1;
+				last = (last + 0.02 * white) / 1.02;
+				data[i] = brown ? last * 3.5 : white;
+			}
+			return buffer;
+		};
+		return { white: make(false), brown: make(true) };
 	}
 
-	/** @param {AudioContext} c @param {AudioNode} out */
-	function chain(c, out, /** @type {AudioNode[]} */ ...nodes) {
-		nodes.reduce((a, b) => (a.connect(b), b)).connect(out);
+	function source(/** @type {AudioContext} */ c, /** @type {AudioBuffer} */ buffer, loop = true) {
+		const s = c.createBufferSource();
+		s.buffer = buffer;
+		s.loop = loop;
+		return s;
 	}
 
 	function filter(/** @type {AudioContext} */ c, /** @type {BiquadFilterType} */ type, frequency, Q = 0.7) {
@@ -45,65 +53,124 @@
 		return g;
 	}
 
-	/** a single soft drop: a tiny burst of filtered noise */
-	function drop() {
+	function pan(/** @type {AudioContext} */ c) {
+		const p = c.createStereoPanner();
+		p.pan.value = rand(-0.8, 0.8);
+		return p;
+	}
+
+	/** connects nodes in a row and the last one to `out` */
+	function chain(/** @type {AudioNode} */ out, /** @type {AudioNode[]} */ ...nodes) {
+		nodes.reduce((a, b) => (a.connect(b), b)).connect(out);
+	}
+
+	/** tiny drops on the leaves, many per second */
+	function patter() {
+		if (!ctx || !master || !buffers) return;
+		const t = ctx.currentTime;
+		const s = source(ctx, buffers.white, false);
+		const env = gain(ctx, 0);
+		chain(master, s, filter(ctx, 'bandpass', rand(2500, 6500), 3), env, pan(ctx));
+		env.gain.linearRampToValueAtTime(rand(0.015, 0.045), t + 0.004);
+		env.gain.exponentialRampToValueAtTime(0.0001, t + rand(0.03, 0.08));
+		s.start(t, rand(0, 3));
+		s.stop(t + 0.12);
+		later(patter, rand(15, 90));
+	}
+
+	/** a heavier drip falling from a leaf: a short "plink" */
+	function drip() {
 		if (!ctx || !master) return;
 		const t = ctx.currentTime;
-		const src = noise(ctx, 'white');
+		const o = ctx.createOscillator();
 		const env = gain(ctx, 0);
-		chain(ctx, master, src, filter(ctx, 'bandpass', 1800 + Math.random() * 3000, 4), env);
-		env.gain.linearRampToValueAtTime(0.05 + Math.random() * 0.08, t + 0.005);
-		env.gain.exponentialRampToValueAtTime(0.0001, t + 0.05 + Math.random() * 0.08);
-		src.start(t);
-		src.stop(t + 0.2);
-		dropTimer = setTimeout(drop, 20 + Math.random() * 120);
+		const f = rand(650, 1500);
+		o.frequency.setValueAtTime(f, t);
+		o.frequency.exponentialRampToValueAtTime(f * 0.7, t + 0.12);
+		chain(master, o, env, pan(ctx));
+		env.gain.linearRampToValueAtTime(rand(0.04, 0.09), t + 0.003);
+		env.gain.exponentialRampToValueAtTime(0.0001, t + rand(0.09, 0.18));
+		o.start(t);
+		o.stop(t + 0.25);
+		later(drip, rand(350, 2400));
+	}
+
+	/** a distant thunder: a slow, deep rumble that rolls in and fades */
+	function thunder() {
+		if (!ctx || !master || !buffers) return;
+		const t = ctx.currentTime;
+		const s = source(ctx, buffers.brown);
+		const env = gain(ctx, 0);
+		const peak = rand(0.5, 0.95);
+		chain(master, s, filter(ctx, 'lowpass', rand(110, 190)), env);
+		env.gain.linearRampToValueAtTime(peak * 0.4, t + rand(0.3, 0.8));
+		env.gain.linearRampToValueAtTime(peak, t + rand(1, 1.8));
+		env.gain.linearRampToValueAtTime(peak * 0.6, t + rand(2.4, 3.2));
+		env.gain.linearRampToValueAtTime(peak * 0.75, t + rand(3.5, 4.2));
+		env.gain.exponentialRampToValueAtTime(0.0001, t + rand(8, 11));
+		s.start(t, rand(0, 3));
+		s.stop(t + 12);
+		later(thunder, rand(25_000, 60_000));
 	}
 
 	function start() {
 		ctx = new AudioContext();
+		buffers = makeBuffers(ctx);
 		master = gain(ctx, 0);
 		master.connect(ctx.destination);
-		const hiss = noise(ctx, 'white');
-		const body = noise(ctx, 'brown');
-		chain(ctx, master, hiss, filter(ctx, 'highpass', 500), filter(ctx, 'lowpass', 6000), gain(ctx, 0.12));
-		chain(ctx, master, body, filter(ctx, 'lowpass', 700), gain(ctx, 0.5));
-		hiss.start();
-		body.start();
-		master.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 2);
-		drop();
+
+		// the rain bed, softly breathing like gusts of wind
+		const bed = gain(ctx, 1);
+		bed.connect(master);
+		const hiss = source(ctx, buffers.white);
+		const body = source(ctx, buffers.brown);
+		const gust = ctx.createOscillator();
+		gust.frequency.value = 0.11;
+		chain(bed, hiss, filter(ctx, 'highpass', 250), filter(ctx, 'lowpass', 3500), gain(ctx, 0.16));
+		chain(bed, body, filter(ctx, 'lowpass', 450), gain(ctx, 0.35));
+		chain(bed.gain, gust, gain(ctx, 0.2));
+		for (const node of [hiss, body, gust]) node.start();
+
+		master.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 2.5);
 		playing = true;
+		patter();
+		drip();
+		later(thunder, rand(8_000, 15_000));
 	}
 
 	function stop() {
 		playing = false;
-		clearTimeout(dropTimer);
+		timers.forEach(clearTimeout);
+		timers = [];
 		const c = ctx;
 		if (!c || !master) return;
 		master.gain.cancelScheduledValues(c.currentTime);
 		master.gain.setValueAtTime(master.gain.value, c.currentTime);
-		master.gain.linearRampToValueAtTime(0, c.currentTime + 1);
-		setTimeout(() => c.close(), 1100);
-		ctx = master = null;
+		master.gain.linearRampToValueAtTime(0, c.currentTime + 1.2);
+		setTimeout(() => c.close(), 1300);
+		ctx = master = buffers = null;
 	}
 
 	onDestroy(() => playing && stop());
 </script>
 
-<button class="rain glass" class:playing onclick={() => (playing ? stop() : start())} aria-pressed={playing}>
-	<!-- waves that flow while it plays -->
-	<svg class="wave" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-		<defs><clipPath id="rain-clip"><rect x="1" y="0" width="22" height="24" /></clipPath></defs>
-		<g clip-path="url(#rain-clip)">
-			<path class="w1" d="M-24 7 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
-			<path class="w2" d="M-24 12 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
-			<path class="w3" d="M-24 17 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
-		</g>
-	</svg>
-	<!-- two notes that take turns to rise -->
-	<svg class="notes" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-		<g class="n1"><circle cx="6" cy="18" r="2.5" /><path d="M8.5 18V6l5 2" /></g>
-		<g class="n2"><circle cx="16" cy="15" r="2.5" /><path d="M18.5 15V3l4 1.6" /></g>
-	</svg>
+<button class="rain" class:playing onclick={() => (playing ? stop() : start())} aria-pressed={playing}>
+	<span class="icons">
+		<!-- waves that flow while it plays -->
+		<svg class="wave" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+			<defs><clipPath id="rain-clip"><rect x="1" y="0" width="22" height="24" /></clipPath></defs>
+			<g clip-path="url(#rain-clip)">
+				<path class="w1" d="M-24 7 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+				<path class="w2" d="M-24 12 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+				<path class="w3" d="M-24 17 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+			</g>
+		</svg>
+		<!-- two notes that take turns to rise -->
+		<svg class="notes" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<g class="n1"><circle cx="6" cy="18" r="2.5" /><path d="M8.5 18V6l5 2" /></g>
+			<g class="n2"><circle cx="16" cy="15" r="2.5" /><path d="M18.5 15V3l4 1.6" /></g>
+		</svg>
+	</span>
 	<em>raiɳ</em>
 </button>
 
@@ -114,10 +181,17 @@
 		gap: 0.45rem;
 		height: 2.4rem;
 		padding: 0 1rem 0 0.9rem;
+		border: 0;
 		border-radius: 999px;
+		background: none;
 		color: var(--fg);
 		cursor: pointer;
-		border: 0;
+	}
+
+	.icons {
+		display: flex;
+		align-items: center;
+		gap: 1px;
 	}
 
 	em {
