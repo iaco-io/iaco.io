@@ -28,7 +28,7 @@
 	const links = $derived.by(() => {
 		if (!validName) return '';
 		const { id, url } = urls(item.kind, item.name);
-		return [url, id && `/${id}/`].filter(Boolean).join(' and ');
+		return [url.slice(0, -1), id && `/${id}`].filter(Boolean).join(' and ');
 	});
 
 	const escape = (/** @type {string} */ t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');

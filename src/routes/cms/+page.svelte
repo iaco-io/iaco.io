@@ -223,7 +223,16 @@
 					<li>
 						<button class="row glass" onclick={() => open(entry)}>
 							{#if entry.kind === 'posts'}<FileText size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
-							<span class="title">{entry.meta.title || entry.name}</span>
+							{#if entry.kind === 'redirects'}
+								<span class="title">
+									/{entry.name}
+									{#if entry.meta.alias.length}
+										<small>{entry.meta.alias.map((x) => x.replace(/\/+$/, '')).join(' · ')}</small>
+									{/if}
+								</span>
+							{:else}
+								<span class="title">{entry.meta.title || entry.name}</span>
+							{/if}
 							{#if entry.meta.draft}<span class="badge">draft</span>{/if}
 							<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
 						</button>
@@ -310,7 +319,16 @@
 
 	.title {
 		flex: 1;
+		min-width: 0;
 		font-weight: 600;
+	}
+
+	.title small {
+		display: block;
+		margin-top: 0.15rem;
+		font-size: 0.8rem;
+		font-weight: 400;
+		color: var(--muted);
 	}
 
 	.badge {
