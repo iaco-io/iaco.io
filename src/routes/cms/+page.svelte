@@ -14,7 +14,7 @@
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
 	import { encrypt, decrypt } from '#lib/crypto.js';
-	import { parse, serialize } from '#lib/markdown.js';
+	import { parse, serialize, urls } from '#lib/markdown.js';
 
 	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
 	/** @typedef {Kind | 'media'} Section */
@@ -397,6 +397,14 @@
 	/** @param {Record<string, any>} props @returns {Promise<any>} */
 	const ask = (props) => new Promise((done) => (dialog = { props, done: (r) => ((dialog = null), done(r)) }));
 
+	/** where a post or page can be opened: its url, its number, then its aliases */
+	function addresses(/** @type {Entry} */ entry) {
+		const { url, id } = urls(entry.kind, entry.name);
+		return [url, id && `/${id}`, ...entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`)]
+			.filter(Boolean)
+			.map((x) => x.replace(/(.)\/$/, '$1'));
+	}
+
 	const isImage = (/** @type {string} */ name) => /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name);
 	const plural = (/** @type {number} */ n) => (n ? `, ${n} ${n === 1 ? 'post' : 'posts'} updated` : '');
 
@@ -546,7 +554,7 @@
 						{:else}
 							<span class="title">
 								{entry.meta.title || entry.name}
-								<small>{[entry.name, ...entry.meta.alias].map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' • ')}</small>
+								<small>{addresses(entry).join(' • ')}</small>
 							</span>
 						{/if}
 						{#if partials[`${entry.kind}/${entry.name}`]}
