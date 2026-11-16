@@ -70,6 +70,7 @@
 
 	h1 {
 		margin: 0;
+		font-family: var(--serif);
 		font-size: clamp(2.75rem, 8vw, 5.5rem);
 		line-height: 1.04;
 		font-weight: 700;
@@ -121,6 +122,7 @@
 
 	.card h2 {
 		margin: 1rem 0 0.35rem;
+		font-family: var(--serif);
 		font-size: 1.25rem;
 		letter-spacing: -0.02em;
 		color: var(--fg);

@@ -37,6 +37,7 @@
 
 	h1 {
 		margin: 0;
+		font-family: var(--serif);
 		font-size: clamp(2.2rem, 6vw, 3.6rem);
 		line-height: 1.06;
 		letter-spacing: -0.04em;
@@ -44,7 +45,9 @@
 
 	.lead {
 		margin: 1rem 0 0;
-		font-size: 1.2rem;
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 1.35rem;
 		line-height: 1.45;
 		color: var(--muted);
 	}
@@ -65,6 +68,7 @@
 	.prose :global(h2),
 	.prose :global(h3) {
 		margin: 2.2em 0 0.6em;
+		font-family: var(--serif);
 		line-height: 1.2;
 		letter-spacing: -0.02em;
 	}
