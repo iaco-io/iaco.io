@@ -90,6 +90,60 @@
 	}
 
 	let imageNote = $state('');
+
+	// the bar (back, unsaved) is fixed where its spot first sits
+	/** @type {HTMLElement | undefined} */
+	let spot = $state();
+	let place = $state({ top: 0, left: 0, width: 0 });
+	$effect(() => {
+		const measure = () => {
+			if (!spot) return;
+			const r = spot.getBoundingClientRect();
+			place = { top: r.top + scrollY, left: r.left, width: r.width };
+		};
+		measure();
+		addEventListener('resize', measure);
+		return () => removeEventListener('resize', measure);
+	});
+
+	// slide from the left edge to go back, the form following the finger
+	/** @type {{ x: number, y: number, dx: number, horizontal: boolean | null } | null} */
+	let edge = $state(null);
+	$effect(() => {
+		/** @param {TouchEvent} e */
+		const start = (e) => {
+			const t = e.touches[0];
+			edge = t.clientX < 30 ? { x: t.clientX, y: t.clientY, dx: 0, horizontal: null } : null;
+		};
+		/** @param {TouchEvent} e */
+		const move = (e) => {
+			if (!edge) return;
+			const t = e.touches[0];
+			const dx = t.clientX - edge.x;
+			const dy = t.clientY - edge.y;
+			if (edge.horizontal === null && Math.hypot(dx, dy) > 5) edge.horizontal = Math.abs(dx) > Math.abs(dy) * 0.6;
+			if (edge.horizontal === false) return void (edge = null);
+			if (!edge.horizontal) return;
+			e.preventDefault();
+			edge.dx = Math.max(0, dx);
+		};
+		const end = () => {
+			if (!edge) return;
+			const go = edge.horizontal && edge.dx > innerWidth * 0.3;
+			edge = null;
+			if (go) onback();
+		};
+		addEventListener('touchstart', start, { passive: true });
+		addEventListener('touchmove', move, { passive: false });
+		addEventListener('touchend', end);
+		addEventListener('touchcancel', end);
+		return () => {
+			removeEventListener('touchstart', start);
+			removeEventListener('touchmove', move);
+			removeEventListener('touchend', end);
+			removeEventListener('touchcancel', end);
+		};
+	});
 	let gallery = $state(false);
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
@@ -228,7 +282,8 @@
 	}
 </script>
 
-<div class="bar">
+<!-- back stays where it first appears, also while scrolling -->
+<div class="bar" style:top="{place.top}px" style:left="{place.left}px" style:width="{place.width}px">
 	<button class="pill" aria-label="back" title="back" onclick={onback}><ArrowLeft size={18} /></button>
 	<div class="actions">
 		{#if partial}
@@ -240,167 +295,211 @@
 				<CloudAlert size={18} />
 			</button>
 		{/if}
-		<button
-			class="pill primary"
-			aria-label={busy || 'save'}
-			title={busy || 'save'}
-			disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
-			onclick={() => run('saving…', onsave)}
-		>
-			<Save size={18} class={busy ? 'pulse' : ''} />
-		</button>
-	</div>
-</div>
-
-<div class="fields">
-	<label class="wide">
-		<span>title</span>
-		<textarea class="grow" rows="1" bind:value={() => item.meta.title, (v) => (item.meta.title = flat(v))} placeholder="title" onkeydown={oneLine} {@attach fit(() => item.meta.title)}></textarea>
-	</label>
-	<label>
-		<span>file name {links ? `→ ${links}` : ''}</span>
-		<span class="suffix">
-			<input bind:value={item.name} placeholder="file-name" />
-			<em>.md</em>
-		</span>
-	</label>
-	{#if !short}
-		<label>
-			<span>date (rss only)</span>
-			<!-- shown as 2026-Nov-16; the real (invisible) date field on top opens the picker -->
-			<span class="date">
-				<Calendar size={18} />
-				{pretty(item.meta.date) || 'no date'}
-				<input type="date" bind:value={item.meta.date} />
-			</span>
-		</label>
-		<label class="wide">
-			<span>description</span>
-			<textarea class="grow" rows="1" bind:value={() => item.meta.description, (v) => (item.meta.description = flat(v))} placeholder="a short summary for lists and rss" onkeydown={oneLine} {@attach fit(() => item.meta.description)}></textarea>
-		</label>
-		<div>
-			<span class="label">main image</span>
-			<div class="picker">
-				{#if item.meta.image}
-					<button
-						class="thumb cover"
-						title="hold to rename, replace or delete"
-						onpointerdown={() => press(item.meta.image)}
-						onpointerup={release}
-						onpointerleave={release}
-						onpointercancel={release}
-						oncontextmenu={(e) => e.preventDefault()}
-						onclick={() => (pressed = false)}
-					>
-						<img src={resolve(item.meta.image)} alt={item.meta.image} />
-					</button>
-				{/if}
-				<button class="choose" title="pick the main image" onclick={() => (gallery = true)}>
-					{item.meta.image || 'none'}
-					<ChevronDown size={18} />
-				</button>
-				<label class="pill square" title="upload a new main image">
-					<ImagePlus size={18} />
-					<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
-				</label>
-				<button class="pill square" title="paste main image from clipboard" disabled={!!busy} onclick={pasteCover}>
-					<ClipboardPaste size={18} />
-				</button>
-			</div>
-			{#if coverNote}<small class="note">{coverNote}</small>{/if}
-		</div>
-	{/if}
-	<label class="wide">
-		<span>redirect to</span>
-		<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
-	</label>
-	<div class="wide">
-		<span class="label">aliases</span>
-		<div class="aliases">
-			{#each item.meta.alias, i}
-				<div class="alias">
-					<input bind:value={item.meta.alias[i]} placeholder="alias" />
-					<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
-						<X size={16} />
-					</button>
-				</div>
-			{/each}
-			<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
-		</div>
-	</div>
-	<button
-		class="switch wide"
-		role="switch"
-		aria-checked={item.meta.draft}
-		onclick={() => (item.meta.draft = !item.meta.draft)}
-	>
-		<span class="track"><span class="knob"></span></span>
-		draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
-	</button>
-	{#if short}
-		<div class="wide">
-			<span class="label">file · src/redirects/{item.name || '…'}.md</span>
-			<pre class="source">{@html source}</pre>
-		</div>
-	{/if}
-</div>
-
-{#if !short}
-	<div class="images">
-		<label class="pill square" title="upload images">
-			<ImagePlus size={18} />
-			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
-		</label>
-		<button class="pill square" title="paste an image" aria-label="paste an image" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /></button>
-		{#each [...shown, ...(showAll ? others : [])] as name (name)}
-			<button
-				class="thumb"
-				title="insert {name} · hold to rename, replace or delete"
-				onpointerdown={() => press(name)}
-				onpointerup={release}
-				onpointerleave={release}
-				onpointercancel={release}
-				oncontextmenu={(e) => e.preventDefault()}
-				onclick={() => (pressed ? (pressed = false) : insert(snippet(name)))}
-			>
-				{#if isImage(name)}
-					<img src={resolve(name)} alt={name} />
-				{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
-			</button>
-		{/each}
-		{#if others.length}
-			<button class="pill more" onclick={() => (showAll = !showAll)}>
-				{showAll ? 'less' : `more (${others.length})`}
-			</button>
+		{#if !item.isNew}
+			<button class="pill danger" aria-label="delete" title="delete" disabled={!!busy} onclick={remove}><Trash2 size={18} /></button>
 		{/if}
 	</div>
-	{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
+</div>
 
-	<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
+<!-- slide from the left edge to go back -->
+<div class="sheet" class:sliding={!!edge} style:transform={edge?.dx ? `translateX(${edge.dx}px)` : null}>
+	<div class="spot" bind:this={spot}></div>
 
-	<div class="previews">
-		<Device label="phone" width={390} height={844} bind:frame={phone} />
-		<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
+
+
+	<div class="fields">
+		<label class="wide">
+			<span>title</span>
+			<textarea class="grow" rows="1" bind:value={() => item.meta.title, (v) => (item.meta.title = flat(v))} placeholder="title" onkeydown={oneLine} {@attach fit(() => item.meta.title)}></textarea>
+		</label>
+		<label>
+			<span>file name {links ? `→ ${links}` : ''}</span>
+			<span class="suffix">
+				<input bind:value={item.name} placeholder="file-name" />
+				<em>.md</em>
+			</span>
+		</label>
+		{#if !short}
+			<label>
+				<span>date (rss only)</span>
+				<!-- shown as 2026-Nov-16; the real (invisible) date field on top opens the picker -->
+				<span class="date">
+					<Calendar size={18} />
+					{pretty(item.meta.date) || 'no date'}
+					<input type="date" bind:value={item.meta.date} />
+				</span>
+			</label>
+			<label class="wide">
+				<span>description</span>
+				<textarea class="grow" rows="1" bind:value={() => item.meta.description, (v) => (item.meta.description = flat(v))} placeholder="a short summary for lists and rss" onkeydown={oneLine} {@attach fit(() => item.meta.description)}></textarea>
+			</label>
+			<div>
+				<span class="label">main image</span>
+				<div class="picker">
+					{#if item.meta.image}
+						<button
+							class="thumb cover"
+							title="hold to rename, replace or delete"
+							onpointerdown={() => press(item.meta.image)}
+							onpointerup={release}
+							onpointerleave={release}
+							onpointercancel={release}
+							oncontextmenu={(e) => e.preventDefault()}
+							onclick={() => (pressed = false)}
+						>
+							<img src={resolve(item.meta.image)} alt={item.meta.image} />
+						</button>
+					{/if}
+					<button class="choose" title="pick the main image" onclick={() => (gallery = true)}>
+						{item.meta.image || 'none'}
+						<ChevronDown size={18} />
+					</button>
+					<label class="pill square" title="upload a new main image">
+						<ImagePlus size={18} />
+						<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
+					</label>
+					<button class="pill square" title="paste main image from clipboard" disabled={!!busy} onclick={pasteCover}>
+						<ClipboardPaste size={18} />
+					</button>
+				</div>
+				{#if coverNote}<small class="note">{coverNote}</small>{/if}
+			</div>
+		{/if}
+		<label class="wide">
+			<span>redirect to</span>
+			<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
+		</label>
+		<div class="wide">
+			<span class="label">aliases</span>
+			<div class="aliases">
+				{#each item.meta.alias, i}
+					<div class="alias">
+						<input bind:value={item.meta.alias[i]} placeholder="alias" />
+						<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
+							<X size={16} />
+						</button>
+					</div>
+				{/each}
+				<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
+			</div>
+		</div>
+		<button
+			class="switch wide"
+			role="switch"
+			aria-checked={item.meta.draft}
+			onclick={() => (item.meta.draft = !item.meta.draft)}
+		>
+			<span class="track"><span class="knob"></span></span>
+			draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
+		</button>
+		{#if short}
+			<div class="wide">
+				<span class="label">file · src/redirects/{item.name || '…'}.md</span>
+				<pre class="source">{@html source}</pre>
+			</div>
+		{/if}
 	</div>
-{/if}
+
+	{#if !short}
+		<div class="images">
+			<label class="pill square" title="upload images">
+				<ImagePlus size={18} />
+				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
+			</label>
+			<button class="pill square" title="paste an image" aria-label="paste an image" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /></button>
+			{#each [...shown, ...(showAll ? others : [])] as name (name)}
+				<button
+					class="thumb"
+					title="insert {name} · hold to rename, replace or delete"
+					onpointerdown={() => press(name)}
+					onpointerup={release}
+					onpointerleave={release}
+					onpointercancel={release}
+					oncontextmenu={(e) => e.preventDefault()}
+					onclick={() => (pressed ? (pressed = false) : insert(snippet(name)))}
+				>
+					{#if isImage(name)}
+						<img src={resolve(name)} alt={name} />
+					{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
+				</button>
+			{/each}
+			{#if others.length}
+				<button class="pill more" onclick={() => (showAll = !showAll)}>
+					{showAll ? 'less' : `more (${others.length})`}
+				</button>
+			{/if}
+		</div>
+		{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
+
+		<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
+
+		<div class="previews">
+			<Device label="phone" width={390} height={844} bind:frame={phone} />
+			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
+		</div>
+	{/if}
+
+
+
+</div>
+
+<!-- save floats above the menu button (above the scroll button on big screens, where the menu is at the top) -->
+<button
+	class="round save"
+	aria-label={busy || 'save'}
+	title={busy || 'save'}
+	disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
+	onclick={() => run('saving…', onsave)}
+>
+	<Save size={22} class={busy ? 'pulse' : ''} />
+</button>
 
 {#if gallery}
 	<Gallery images={pictures} {resolve} current={item.meta.image} ondone={(name) => ((gallery = false), name !== null && (item.meta.image = name))} />
 {/if}
 
-{#if !item.isNew}
-	<button class="pill danger delete" disabled={!!busy} onclick={remove}><Trash2 size={18} /> delete</button>
-{/if}
-
 <style>
 	.bar {
-		position: sticky;
-		top: calc(var(--top) + 0.75rem);
+		position: fixed;
 		z-index: 5;
 		display: flex;
 		justify-content: space-between;
 		gap: 0.5rem;
+	}
+
+	/* keeps the bar's room in the form */
+	.spot {
+		height: 2.75rem;
 		margin-bottom: 1.5rem;
+	}
+
+	.sheet {
+		transition: transform 0.25s ease;
+	}
+
+	.sheet.sliding {
+		transition: none;
+	}
+
+	.save {
+		position: fixed;
+		right: var(--gap);
+		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 7.5rem);
+		z-index: 15;
+		border: 0;
+		color: var(--bg);
+		background: var(--fg);
+	}
+
+	.save:disabled {
+		opacity: 0.4;
+		cursor: default;
+	}
+
+	@media (min-width: 768px) {
+		.save {
+			bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 3.75rem);
+		}
 	}
 
 	.actions {
@@ -741,12 +840,6 @@
 	}
 
 	/* on big screens the menu button sits at the top right, so the bar stays below it */
-	@media (min-width: 768px) {
-		.bar {
-			top: calc(var(--top) + 5rem);
-		}
-	}
-
 	@media (max-width: 600px) {
 		.previews {
 			grid-template-columns: 1fr;
