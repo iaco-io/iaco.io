@@ -30,13 +30,13 @@
 		{#each links as { href, label, icon: Icon }}
 			<li>
 				<a class="entry" {href} onclick={close}>
-					{#if Icon}<Icon size={24} strokeWidth={2.25} />{/if}
+					{#if Icon}<Icon size={24} strokeWidth={1.75} />{/if}
 					{label}
 				</a>
 			</li>
 		{/each}
 		<li>
-			<button class="entry" onclick={copyRss}><Rss size={24} strokeWidth={2.25} /> rss</button>
+			<button class="entry" onclick={copyRss}><Rss size={24} strokeWidth={1.75} /> rss</button>
 		</li>
 	</ul>
 	<div class="rain"><Rain /></div>

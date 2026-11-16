@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { Hexagon, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -12,6 +12,7 @@
 	import Editor from '#lib/cms/Editor.svelte';
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
+	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
 	import savedAlphabet from '../../alphabet.json';
@@ -674,21 +675,21 @@
 
 	<Panel bind:open={menu} label="cms">
 		<button class="entry" onclick={() => ((menu = false), logout())}>
-			<Lock size={24} strokeWidth={2.25} /> lock
+			<Lock size={24} strokeWidth={1.75} /> lock
 		</button>
 		<ul class="entries sections">
 			{#each KINDS as { kind: k, icon: Icon }}
 				<li>
 					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
-						<Icon size={24} strokeWidth={2.25} />
+						<Icon size={24} strokeWidth={1.75} />
 						{k}
 					</button>
 				</li>
 			{/each}
 			<li>
-				<!-- iaco's alphabet is called abelus, written in itself (a honeycomb cell for the bee) -->
+				<!-- iaco's alphabet is called abelus, written in itself (a bee) -->
 				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>
-					<Hexagon size={24} strokeWidth={2.25} />
+					<BeeIcon size={24} strokeWidth={1.75} />
 					{alphabetName}
 				</button>
 			</li>
