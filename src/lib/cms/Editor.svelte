@@ -1,12 +1,12 @@
 <script>
-	import { ArrowLeft, Eye, Pencil, ImagePlus, Save, Trash2 } from '@lucide/svelte';
+	import { ArrowLeft, Eye, Pencil, ImagePlus, Save, Trash2, Plus, X } from '@lucide/svelte';
 	import Article from '../Article.svelte';
-	import { urls } from '../markdown.js';
+	import { urls, serialize } from '../markdown.js';
 
 	/**
 	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta
 	 * @type {{
-	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, isNew: boolean, meta: Meta, body: string },
+	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, from: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
 	 *   resolve: (name: string) => string,
 	 *   onsave: () => Promise<void>,
@@ -31,9 +31,27 @@
 		return [url, id && `/${id}/`].filter(Boolean).join(' and ');
 	});
 
-	// aliases are typed as "/ig, /instagram"
-	let aliasText = $state(item.meta.alias.join(', '));
-	const setAlias = () => (item.meta.alias = aliasText.split(',').map((a) => a.trim()).filter(Boolean));
+	const escape = (/** @type {string} */ t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+	/** the .md file as it will be saved, with the yaml part coloured */
+	const source = $derived(
+		serialize(
+			{ ...item.meta, alias: item.meta.alias.map((a) => a.trim()).filter((a) => a.replace(/\//g, '')) },
+			short ? '' : item.body
+		)
+			.split('\n')
+			.map((line, i, lines) => {
+				const yaml = lines.slice(0, i).filter((l) => l === '---').length < 2;
+				if (line === '---') return `<span class="fence">---</span>`;
+				if (!yaml) return escape(line);
+				const pair = line.match(/^(\w+):(.*)$/);
+				if (pair) return `<span class="key">${pair[1]}</span>:<span class="value">${escape(pair[2])}</span>`;
+				const item = line.match(/^(\s+-)(.*)$/);
+				if (item) return `<span class="dash">${item[1]}</span><span class="value">${escape(item[2])}</span>`;
+				return escape(line);
+			})
+			.join('\n')
+	);
 
 	/** @param {string} label @param {() => Promise<unknown>} task */
 	async function run(label, task) {
@@ -103,7 +121,7 @@
 		</label>
 		<label>
 			<span>file name {links ? `→ ${links}` : ''}</span>
-			<input bind:value={item.name} disabled={!item.isNew} placeholder={item.kind === 'posts' ? '001-my-intro' : short ? 'youtube' : '01-hello-world'} />
+			<input bind:value={item.name} placeholder={item.kind === 'posts' ? '001-my-intro' : short ? 'youtube' : '01-hello-world'} />
 		</label>
 		{#if !short}
 			<label>
@@ -122,18 +140,39 @@
 				</select>
 			</label>
 		{/if}
-		<label>
-			<span>aliases</span>
-			<input bind:value={aliasText} oninput={setAlias} placeholder="/ig, /instagram" />
-		</label>
-		<label>
+		<label class="wide">
 			<span>redirect to</span>
 			<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
 		</label>
-		<label class="toggle">
-			<input type="checkbox" bind:checked={item.meta.draft} />
-			<span>draft {short ? "(link not published)" : "(hidden from the blog and rss)"}</span>
-		</label>
+		<div class="wide">
+			<span class="label">aliases</span>
+			<div class="aliases">
+				{#each item.meta.alias, i}
+					<div class="alias">
+						<input bind:value={item.meta.alias[i]} placeholder="/ig" />
+						<button class="icon" aria-label="remove alias" onclick={() => item.meta.alias.splice(i, 1)}>
+							<X size={16} />
+						</button>
+					</div>
+				{/each}
+				<button class="pill add" onclick={() => item.meta.alias.push('/')}><Plus size={16} /> alias</button>
+			</div>
+		</div>
+		<button
+			class="switch wide"
+			role="switch"
+			aria-checked={item.meta.draft}
+			onclick={() => (item.meta.draft = !item.meta.draft)}
+		>
+			<span class="track"><span class="knob"></span></span>
+			draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
+		</button>
+		{#if short}
+			<div class="wide">
+				<span class="label">file · src/redirects/{item.name || '…'}.md</span>
+				<pre class="source">{@html source}</pre>
+			</div>
+		{/if}
 	</div>
 
 	{#if !short}
@@ -184,7 +223,8 @@
 		grid-column: 1 / -1;
 	}
 
-	label span {
+	label span,
+	.label {
 		display: block;
 		margin-bottom: 0.4rem;
 		font-size: 0.85rem;
@@ -192,22 +232,118 @@
 		color: var(--muted);
 	}
 
-	.toggle {
+	.aliases {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.alias {
+		position: relative;
+		width: 10rem;
+	}
+
+	.alias input {
+		padding-right: 2.4rem;
+	}
+
+	.icon {
+		position: absolute;
+		top: 50%;
+		right: 0.5rem;
+		display: flex;
+		padding: 0.3rem;
+		border: 0;
+		border-radius: 999px;
+		color: var(--muted);
+		background: none;
+		cursor: pointer;
+		transform: translateY(-50%);
+	}
+
+	.add {
+		height: auto;
+		padding: 0.7rem 1rem;
+		box-shadow: none;
+	}
+
+	.switch {
 		display: flex;
 		align-items: center;
-		gap: 0.6rem;
-		align-self: end;
-		padding-bottom: 0.8rem;
+		gap: 0.75rem;
+		padding: 0;
+		border: 0;
+		font: inherit;
+		font-weight: 600;
+		color: var(--fg);
+		background: none;
+		cursor: pointer;
+		text-align: left;
 	}
 
-	.toggle input {
+	.switch small {
+		font-weight: 400;
+		color: var(--muted);
+	}
+
+	.track {
+		position: relative;
+		flex: none;
+		width: 2.75rem;
+		height: 1.6rem;
+		border-radius: 999px;
+		background: var(--glass);
+		border: 1px solid var(--glass-edge);
+		box-shadow: inset 0 1px 3px var(--shadow);
+		transition: background 0.2s ease;
+	}
+
+	.knob {
+		position: absolute;
+		top: 0.15rem;
+		left: 0.15rem;
 		width: 1.2rem;
 		height: 1.2rem;
-		accent-color: var(--accent);
+		border-radius: 999px;
+		background: var(--bg);
+		box-shadow: 0 1px 4px var(--shadow);
+		transition: transform 0.2s ease;
 	}
 
-	.toggle span {
+	.switch[aria-checked='true'] .track {
+		background: var(--accent);
+	}
+
+	.switch[aria-checked='true'] .knob {
+		transform: translateX(1.15rem);
+	}
+
+	.source {
 		margin: 0;
+		padding: 1rem 1.2rem;
+		border-radius: 0.9rem;
+		border: 1px solid var(--glass-edge);
+		background: var(--glass);
+		font: 14px/1.6 ui-monospace, 'SF Mono', Menlo, monospace;
+		white-space: pre-wrap;
+		word-break: break-all;
+	}
+
+	.source :global(.fence) {
+		color: var(--muted);
+	}
+
+	.source :global(.key) {
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	.source :global(.dash) {
+		color: var(--soft);
+	}
+
+	.source :global(.value) {
+		color: #b5734a;
 	}
 
 	.images {

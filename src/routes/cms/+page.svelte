@@ -25,7 +25,8 @@
 	let loading = $state(false);
 	let message = $state('');
 
-	/** @type {{ kind: Kind, name: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
+	/** `from` is the saved file name, so a changed name renames the file */
+	/** @type {{ kind: Kind, name: string, from: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
 	let editing = $state(null);
 
 	/** object urls for images uploaded in this session, until github's raw cache catches up */
@@ -99,7 +100,7 @@
 	/** @param {Entry} entry */
 	async function open(entry) {
 		const body = await decrypt(entry.body).catch(() => entry.body);
-		editing = { kind: entry.kind, name: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias] }, body };
+		editing = { kind: entry.kind, name: entry.name, from: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias] }, body };
 	}
 
 	function create() {
@@ -107,6 +108,7 @@
 		editing = {
 			kind,
 			name: '',
+			from: '',
 			isNew: true,
 			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', alias: [], redirect: '' },
 			body: ''
@@ -115,13 +117,22 @@
 
 	async function save() {
 		if (!api || !editing) return;
-		const { kind: k, name, isNew } = editing;
+		editing.meta.alias = editing.meta.alias.map((x) => x.trim()).filter((x) => x.replace(/\//g, ''));
+		const { kind: k, name, from, isNew } = editing;
 		const path = fileOf(k, name);
-		if (isNew && files.includes(path)) return flash(`${name} already exists`);
+		const renamed = !isNew && name !== from;
+		if ((isNew || renamed) && files.includes(path)) return flash(`${name} already exists`);
 		try {
 			// redirects have no body to encrypt
 			const file = serialize(editing.meta, k === 'redirects' ? '' : await encrypt(editing.body));
-			editing.sha = await api.write(path, utf8ToBase64(file), editing.sha, `cms: ${isNew ? 'add' : 'update'} ${k}/${name}`);
+			const message = `cms: ${isNew ? 'add' : renamed ? `rename ${from} to` : 'update'} ${k}/${name}`;
+			const sha = await api.write(path, utf8ToBase64(file), renamed ? undefined : editing.sha, message);
+			if (renamed && editing.sha) {
+				await api.remove(fileOf(k, from), editing.sha, message);
+				files = files.filter((f) => f !== fileOf(k, from));
+			}
+			editing.sha = sha;
+			editing.from = name;
 			editing.isNew = false;
 			if (!files.includes(path)) files.push(path);
 			flash(editing.meta.draft ? 'saved as draft' : 'saved. the site updates in a minute or two');
@@ -152,7 +163,7 @@
 	async function remove() {
 		if (!api || !editing?.sha) return;
 		try {
-			await api.remove(fileOf(editing.kind, editing.name), editing.sha, `cms: delete ${editing.kind}/${editing.name}`);
+			await api.remove(fileOf(editing.kind, editing.from), editing.sha, `cms: delete ${editing.kind}/${editing.name}`);
 			editing = null;
 			flash('deleted');
 			refresh();
