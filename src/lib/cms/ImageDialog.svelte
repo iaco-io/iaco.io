@@ -64,7 +64,7 @@
 	}
 
 	function use(/** @type {File} */ file) {
-		const ext = extOf(file.name.toLowerCase()) || `.${file.type.split('/')[1] ?? 'png'}`;
+		const ext = (extOf(file.name.toLowerCase()) || `.${file.type.split('/')[1] ?? 'png'}`).replace(/^\.jpeg$/, '.jpg'); // .jpeg uploads become .jpg
 		fresh = { file, src: URL.createObjectURL(file), ext };
 		freshBase = clean(file.name.slice(0, file.name.length - extOf(file.name).length));
 		replacement = '';

@@ -434,7 +434,7 @@
 
 	async function addFiles(/** @type {File[]} */ list) {
 		for (const file of list) {
-			const ext = file.name.match(/\.[^./]+$/)?.[0]?.toLowerCase() || `.${file.type.split('/')[1] ?? 'bin'}`;
+			const ext = (file.name.match(/\.[^./]+$/)?.[0]?.toLowerCase() || `.${file.type.split('/')[1] ?? 'bin'}`).replace(/^\.jpeg$/, '.jpg'); // .jpeg uploads become .jpg
 			const result = await ask({ name: file.name.replace(/\.[^./]+$/, '').toLowerCase() + ext, src: isImage(ext) ? URL.createObjectURL(file) : '' });
 			if (!result) continue;
 			try {

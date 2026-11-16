@@ -80,7 +80,7 @@
 
 	/** asks for a name, then uploads; null when cancelled */
 	async function named(/** @type {File} */ file) {
-		const ext = file.name.match(/\.[^./]+$/)?.[0]?.toLowerCase() || `.${file.type.split('/')[1] ?? 'png'}`;
+		const ext = (file.name.match(/\.[^./]+$/)?.[0]?.toLowerCase() || `.${file.type.split('/')[1] ?? 'png'}`).replace(/^\.jpeg$/, '.jpg'); // .jpeg uploads become .jpg
 		const base = file.name.replace(/\.[^./]+$/, '').toLowerCase();
 		const src = URL.createObjectURL(file);
 		const result = /** @type {{ rename: string } | null} */ (await ask({ name: base + ext, src }));
