@@ -38,14 +38,13 @@
 	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
 	// one full swing there and back is 1.728 s, kept in step with the time of day
 	let swing = $state(0);
-	// the cloud rains like real rain: drops fall at a steady speed (rain soon stops speeding up), quickly, in five
-	// lanes under the cloud. each lane drips at a steady beat with a little jitter, and the lanes are out of step,
-	// so it looks random without bunching up or leaving gaps. it's worked out from the time, so every screen shows
-	// the same rain. every 8.64 s (0.01% of a day) it also thunders, over the rain
+	// the cloud rains like real rain: drops fall at a steady speed (rain soon stops speeding up). five drippers each
+	// drip at their own slightly different pace, with a loose jitter and an occasional skip, and every drop falls from a
+	// random spot under the cloud — so it never bunches up and never settles into a pattern. it's worked out from the
+	// time, so every screen shows the same rain. every 8.64 s (0.01% of a day) it also thunders, over the rain
 	let now_ms = $state(0);
-	const LANES = [9.6, 11.8, 14, 16.2, 18.4];
-	const BEAT = 432; // ms between drops in a lane
-	const FALL = 380; // ms a drop takes to fall
+	const BEATS = [470, 530, 610, 500, 570]; // ms between drops, one pace per dripper
+	const FALL = 640; // ms a drop takes to fall
 	const random = (/** @type {number} */ n) => {
 		const x = Math.sin(n * 12.9898) * 43758.5453;
 		return x - Math.floor(x);
@@ -55,16 +54,17 @@
 	const thunder = $derived(cycle < 864 ? cycle / 864 : -1);
 	const drops = $derived.by(() => {
 		const list = [];
-		LANES.forEach((x, lane) => {
-			const offset = random(lane + 1) * BEAT;
-			const n0 = Math.floor((now_ms - offset) / BEAT);
-			for (const n of [n0 - 1, n0]) {
+		BEATS.forEach((beat, lane) => {
+			const offset = random(lane + 1) * beat;
+			const n0 = Math.floor((now_ms - offset) / beat);
+			for (const n of [n0 - 2, n0 - 1, n0]) {
 				const id = n * 8 + lane;
-				const start = n * BEAT + offset + (random(id) - 0.5) * 120;
+				if (random(id + 0.3) < 0.2) continue; // now and then a dripper skips a drop
+				const start = n * beat + offset + (random(id) - 0.5) * beat * 0.7;
 				// no new drops start while it thunders; those already falling finish
 				if (((start % 8640) + 8640) % 8640 < 864) continue;
 				const p = (now_ms - start) / FALL;
-				if (p >= 0 && p < 1) list.push({ id, x: x + (random(id + 0.5) - 0.5) * 0.8, p });
+				if (p >= 0 && p < 1) list.push({ id, x: 9.2 + random(id + 0.5) * 9.6, p });
 			}
 		});
 		return list;
