@@ -51,6 +51,13 @@ html {
 	scroll-behavior: smooth;
 	/* no double-tap zoom */
 	touch-action: manipulation;
+	/* scroll without visible scrollbars */
+	scrollbar-width: none;
+	overflow-x: clip;
+}
+
+::-webkit-scrollbar {
+	display: none;
 }
 
 body {
