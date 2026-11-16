@@ -371,8 +371,17 @@
 			{/each}
 			{#each items as entry (entry.kind + entry.name)}
 				<li>
-					<button class="row glass" onclick={() => open(entry)}>
-						{#if entry.kind === 'posts'}<Feather size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
+					<button class="row glass" class:media={entry.kind !== 'redirects'} onclick={() => open(entry)}>
+						{#if entry.kind === 'redirects'}
+							<ExternalLink size={20} />
+						{:else}
+							<!-- the main image, or the kind's icon when there is none -->
+							<span class="preview">
+								{#if entry.meta.image}
+									<img src={resolve(entry.meta.image)} alt="" loading="lazy" />
+								{:else if entry.kind === 'posts'}<Feather size={20} />{:else}<FileIcon size={20} />{/if}
+							</span>
+						{/if}
 						{#if entry.kind === 'redirects'}
 							<span class="title">
 								/{entry.name}
@@ -637,6 +646,27 @@
 		cursor: pointer;
 		/* close to the page background, so the list stays calm */
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
+	}
+
+	.row.media {
+		padding: 0.85rem 1.25rem 0.85rem 0.85rem;
+	}
+
+	.preview {
+		display: grid;
+		flex: none;
+		place-items: center;
+		width: 3.5rem;
+		height: 3.5rem;
+		overflow: hidden;
+		border-radius: 0.75rem;
+		background: var(--panel);
+	}
+
+	.preview img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	.title {
