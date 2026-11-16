@@ -41,6 +41,13 @@
 	// `step` is which of the ten, `p` how far into it (0 to 1)
 	let step = $state(0);
 	let p = $state(0);
+	// the drop: forms for the first 15%, then falls with gravity (distance grows with the square of time)
+	const grow = $derived(Math.min(1, p / 0.15));
+	const fallT = $derived(Math.max(0, (p - 0.15) / 0.67));
+	const fall = $derived(9.6 * fallT * fallT);
+	const stretch = $derived(1 + 0.5 * fallT);
+	// each drop lands a little off the centre, different for every drop but the same on every screen
+	const drift = $derived(((Math.sin(step * 12.9898 + Math.floor(Date.now() / 8640) * 78.233) * 43758.5453) % 1) * 0.8);
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		let frame = 0;
@@ -67,12 +74,23 @@
 				{#if step === 9}
 					<path class="bolt" style:opacity={p < 0.12 || (p > 0.2 && p < 0.32) ? 1 : Math.max(0, 1 - (p - 0.32) * 2.2)} d="M15 17.5l-3 5h3.4l-2.4 5" />
 				{:else}
-					<path
-						class="drop"
-						style:opacity={1 - p * p}
-						style:transform="translateY({p * 9}px)"
-						d="M{[9.5, 14, 18.5][step % 3]} 18.5v2.2"
-					/>
+					<!-- a teardrop that swells under the cloud, lets go, falls faster and faster (gravity),
+					     stretches with speed, and ends in a tiny splash -->
+					{@const x = [9.5, 14, 18.5][step % 3] + drift}
+					{#if p < 0.82}
+						<path
+							class="drop"
+							style:transform="translate({x}px, {17.2 + fall}px) scale({grow}, {grow * stretch})"
+							d="M0-1.6C.5-.6 1-.1 1 .5a1 1 0 0 1-2 0c0-.6.5-1.1 1-2.1Z"
+						/>
+					{:else}
+						{@const s = (p - 0.82) / 0.18}
+						<path
+							class="splash"
+							style:opacity={1 - s}
+							d="M{x - 1 - s * 1.6} {27.4 - s * 0.6}l-.7-.7M{x + 1 + s * 1.6} {27.4 - s * 0.6}l.7-.7M{x} {26.9 - s * 1.2}v-.6"
+						/>
+					{/if}
 				{/if}
 			</svg>
 		{:else}
@@ -148,6 +166,15 @@
 
 	.flash {
 		fill: color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+
+	.drop {
+		fill: currentColor;
+		stroke: none;
+	}
+
+	.splash {
+		stroke-width: 0.8;
 	}
 
 	.bolt {
