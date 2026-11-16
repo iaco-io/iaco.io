@@ -90,6 +90,6 @@
 	button.active {
 		background: var(--bg);
 		color: var(--fg);
-		box-shadow: 0 1px 3px var(--shadow-soft);
+		box-shadow: 0 2px 6px var(--shadow-soft);
 	}
 </style>
