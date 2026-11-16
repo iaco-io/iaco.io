@@ -106,9 +106,10 @@
 		return () => removeEventListener('resize', measure);
 	});
 
-	// slide from the left edge to go back, the form following the finger
+	// slide from the left edge to go back: the back button charges up as the finger moves
 	/** @type {{ x: number, y: number, dx: number, horizontal: boolean | null } | null} */
 	let edge = $state(null);
+	const charge = $derived(edge?.horizontal ? edge.dx / (innerWidth * 0.3) : 0);
 	$effect(() => {
 		/** @param {TouchEvent} e */
 		const start = (e) => {
@@ -129,7 +130,7 @@
 		};
 		const end = () => {
 			if (!edge) return;
-			const go = edge.horizontal && edge.dx > innerWidth * 0.3;
+			const go = charge >= 1;
 			edge = null;
 			if (go) onback();
 		};
@@ -284,7 +285,15 @@
 
 <!-- back stays where it first appears, also while scrolling -->
 <div class="bar" style:top="{place.top}px" style:left="{place.left}px" style:width="{place.width}px">
-	<button class="pill" aria-label="back" title="back" onclick={onback}><ArrowLeft size={18} /></button>
+	<!-- while sliding from the left edge, the ring fills clockwise; full = let go to go back -->
+	<button class="pill back" class:charged={charge >= 1} aria-label="back" title="back" onclick={onback}>
+		<ArrowLeft size={18} />
+		{#if charge > 0}
+			<span class="ring" aria-hidden="true">
+				<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" pathLength="1" stroke-dasharray="{Math.min(charge, 1)} 1" /></svg>
+			</span>
+		{/if}
+	</button>
 	<div class="actions">
 		{#if partial}
 			<button
@@ -301,8 +310,7 @@
 	</div>
 </div>
 
-<!-- slide from the left edge to go back -->
-<div class="sheet" class:sliding={!!edge} style:transform={edge?.dx ? `translateX(${edge.dx}px)` : null}>
+<div class="sheet">
 	<div class="spot" bind:this={spot}></div>
 
 
@@ -473,12 +481,38 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.sheet {
-		transition: transform 0.25s ease;
+	.back {
+		position: relative;
+		width: 2.75rem;
+		padding: 0;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
 	}
 
-	.sheet.sliding {
-		transition: none;
+	.back.charged {
+		color: var(--bg);
+		background: var(--fg);
+	}
+
+	.ring {
+		position: absolute;
+		inset: -1px;
+		pointer-events: none;
+	}
+
+	.ring svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		transform: rotate(-90deg);
+	}
+
+	.ring circle {
+		fill: none;
+		stroke: var(--fg);
+		stroke-width: 2;
+		stroke-linecap: round;
 	}
 
 	.save {
