@@ -6,13 +6,23 @@
 	let { open = $bindable(), label, children, bottom } = $props();
 
 	const close = () => (open = false);
+
+	// safari 26 paints solid toolbars over anything fixed at the screen edges, so the panel is not fixed:
+	// it's placed where the page is scrolled to, and the page doesn't scroll while it's open
+	let top = $state(0);
+	$effect(() => {
+		if (!open) return;
+		top = window.scrollY;
+		document.documentElement.classList.add('locked');
+		return () => document.documentElement.classList.remove('locked');
+	});
 </script>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
 
-<div class="backdrop" class:open onclick={close} aria-hidden="true"></div>
+<div class="backdrop" class:open style:top="{top}px" onclick={close} aria-hidden="true"></div>
 
-<nav class="panel glass" class:open aria-label={label} inert={!open}>
+<nav class="panel glass" class:open style:top="{top}px" aria-label={label} inert={!open}>
 	<button class="round glass close" onclick={close} aria-label="Close menu">
 		<X size={20} />
 	</button>
@@ -22,8 +32,10 @@
 
 <style>
 	.backdrop {
-		position: fixed;
-		inset: 0;
+		position: absolute;
+		right: 0;
+		left: 0;
+		height: 100lvh;
 		z-index: 20;
 		background: var(--scrim);
 		opacity: 0;
@@ -43,15 +55,15 @@
 	}
 
 	.panel {
-		position: fixed;
-		top: 0;
+		position: absolute;
 		right: 0;
-		bottom: 0;
+		height: 100lvh;
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
 		width: min(22rem, 85vw);
-		padding: calc(var(--top) + 5.5rem) 2rem calc(env(safe-area-inset-bottom) + 2rem);
+		/* reaches behind safari's toolbar, but keeps its content above it */
+		padding: calc(var(--top) + 5.5rem) 2rem calc(100lvh - 100svh + env(safe-area-inset-bottom) + 2rem);
 		background: var(--panel);
 		border-width: 0 0 0 1px;
 		transform: translateX(100%);
