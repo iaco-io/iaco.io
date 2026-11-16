@@ -24,7 +24,7 @@
 </script>
 
 <svelte:head>
-	<title>{plain(item.title)} — iaco</title>
+	<title>{plain(item.title)} — iaco.io</title>
 	<meta name="description" content={plain(item.description)} />
 </svelte:head>
 

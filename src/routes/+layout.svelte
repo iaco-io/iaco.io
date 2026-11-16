@@ -4,6 +4,7 @@
 	import { Waves, Newspaper } from '@lucide/svelte';
 	import Menu from '#lib/Menu.svelte';
 	import Fabs from '#lib/Fabs.svelte';
+	import DayClock from '#lib/DayClock.svelte';
 	import { page } from '$app/state';
 
 	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string }[] } }} */
@@ -34,6 +35,7 @@
 	<header>
 		<a class="logo" href="/">iaco.io</a>
 	</header>
+	<DayClock />
 {/if}
 
 {@render children()}

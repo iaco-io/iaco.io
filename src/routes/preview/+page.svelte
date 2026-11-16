@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-	<title>preview — iaco</title>
+	<title>preview — iaco.io</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 

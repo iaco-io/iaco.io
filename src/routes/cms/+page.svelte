@@ -605,7 +605,7 @@
 {/snippet}
 
 <svelte:head>
-	<title>cms — iaco</title>
+	<title>cms — iaco.io</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
