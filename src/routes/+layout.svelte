@@ -61,12 +61,20 @@
 {/if}
 
 <style>
+	/* only in the installed app: in safari a fixed bar at the edge makes it paint a solid toolbar */
 	.statusbar {
+		display: none;
 		position: fixed;
 		inset: 0 0 auto;
 		z-index: 10;
 		height: var(--top);
 		border: 0;
+	}
+
+	@media (display-mode: standalone) {
+		.statusbar {
+			display: block;
+		}
 	}
 
 	header {

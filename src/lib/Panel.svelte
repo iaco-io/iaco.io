@@ -28,12 +28,18 @@
 		background: var(--scrim);
 		opacity: 0;
 		pointer-events: none;
-		transition: opacity 0.35s ease;
+		/* hidden for real when closed: safari treats fixed layers at the edges as toolbars */
+		visibility: hidden;
+		transition:
+			opacity 0.35s ease,
+			visibility 0s 0.35s;
 	}
 
 	.backdrop.open {
 		opacity: 1;
 		pointer-events: auto;
+		visibility: visible;
+		transition: opacity 0.35s ease;
 	}
 
 	.panel {
@@ -49,11 +55,16 @@
 		background: var(--panel);
 		border-width: 0 0 0 1px;
 		transform: translateX(100%);
-		transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+		visibility: hidden;
+		transition:
+			transform 0.45s cubic-bezier(0.32, 0.72, 0, 1),
+			visibility 0s 0.45s;
 	}
 
 	.panel.open {
 		transform: none;
+		visibility: visible;
+		transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
 	.close {
