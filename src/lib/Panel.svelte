@@ -1,18 +1,27 @@
 <script>
-	// a glass panel that slides in from the right, with a blurred backdrop
+	// a floating glass panel that slides in from the right.
+	// it stays clear of the screen edges and has no full-screen backdrop:
+	// safari 26 paints solid toolbars over anything fixed that touches the edges
 	import { X } from '@lucide/svelte';
 
 	/** @type {{ open: boolean, label: string, children: import('svelte').Snippet, bottom?: import('svelte').Snippet }} */
 	let { open = $bindable(), label, children, bottom } = $props();
 
 	const close = () => (open = false);
+
+	/** @type {HTMLElement | undefined} */
+	let panel = $state();
+
+	// a tap anywhere outside the panel closes it
+	/** @param {PointerEvent} e */
+	function outside(e) {
+		if (open && panel && !panel.contains(/** @type {Node} */ (e.target))) close();
+	}
 </script>
 
-<svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
+<svelte:window onkeydown={(e) => e.key === 'Escape' && close()} onpointerdown={outside} />
 
-<div class="backdrop" class:open onclick={close} aria-hidden="true"></div>
-
-<nav class="panel glass" class:open aria-label={label} inert={!open}>
+<nav bind:this={panel} class="panel glass" class:open aria-label={label} inert={!open}>
 	<button class="round glass close" onclick={close} aria-label="Close menu">
 		<X size={20} />
 	</button>
@@ -21,40 +30,20 @@
 </nav>
 
 <style>
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 20;
-		background: var(--scrim);
-		opacity: 0;
-		pointer-events: none;
-		/* hidden for real when closed: safari treats fixed layers at the edges as toolbars */
-		visibility: hidden;
-		transition:
-			opacity 0.35s ease,
-			visibility 0s 0.35s;
-	}
-
-	.backdrop.open {
-		opacity: 1;
-		pointer-events: auto;
-		visibility: visible;
-		transition: opacity 0.35s ease;
-	}
-
 	.panel {
 		position: fixed;
-		top: 0;
-		right: 0;
-		bottom: 0;
+		top: calc(var(--top) + var(--gap));
+		right: var(--gap);
+		bottom: var(--gap);
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
-		width: min(22rem, 85vw);
-		padding: calc(var(--top) + 5.5rem) 2rem calc(env(safe-area-inset-bottom) + 2rem);
+		width: min(21rem, calc(100vw - 4.5rem));
+		padding: 4.5rem 1.75rem 1.75rem;
+		border-radius: 2rem;
 		background: var(--panel);
-		border-width: 0 0 0 1px;
-		transform: translateX(100%);
+		box-shadow: 0 20px 60px var(--shadow);
+		transform: translateX(calc(100% + 2 * var(--gap)));
 		visibility: hidden;
 		transition:
 			transform 0.45s cubic-bezier(0.32, 0.72, 0, 1),
@@ -69,8 +58,8 @@
 
 	.close {
 		position: absolute;
-		top: calc(var(--top) + var(--gap));
-		right: var(--gap);
+		top: 0.75rem;
+		right: 0.75rem;
 	}
 
 	/* fills the panel, so content can push itself down with margin-top: auto */
