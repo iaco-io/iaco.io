@@ -1,5 +1,6 @@
 <script>
-	import { RotateCw, Rss, Copy } from '@lucide/svelte';
+	import { Rss, Copy } from '@lucide/svelte';
+	import Refresh from './Refresh.svelte';
 	import Panel from './Panel.svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import Social from './Social.svelte';
@@ -9,7 +10,6 @@
 
 	const close = () => (open = false);
 
-	let refreshing = $state(false);
 	let copied = $state(false);
 	/** @type {ReturnType<typeof setTimeout>} */
 	let timer;
@@ -21,16 +21,6 @@
 		copied = true;
 		clearTimeout(timer);
 		timer = setTimeout(() => (copied = false), 2000);
-	}
-
-	// drop cached files and fetch the newest version of this page
-	async function refresh() {
-		refreshing = true;
-		try {
-			await Promise.all((await caches.keys()).map((key) => caches.delete(key)));
-			await (await navigator.serviceWorker?.getRegistration())?.update();
-		} catch {}
-		location.reload();
 	}
 </script>
 
@@ -46,10 +36,7 @@
 	<div class="social"><Social /></div>
 	{#snippet bottom()}
 		<ThemeToggle />
-		<button class="round glass refresh" class:spin={refreshing} onclick={refresh} aria-label="refresh">
-			<RotateCw size={18} />
-		</button>
-		<span class="version">v {__VERSION__}</span>
+		<Refresh />
 	{/snippet}
 </Panel>
 
@@ -61,27 +48,6 @@
 	.social {
 		margin-top: auto;
 		margin-bottom: 2.5rem;
-	}
-
-	.version {
-		margin-left: 0.25rem;
-		font-size: 0.75rem;
-		color: var(--muted);
-	}
-
-	.refresh {
-		width: 3.1rem;
-		height: 3.1rem;
-	}
-
-	.spin :global(svg) {
-		animation: spin 0.8s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.toast {

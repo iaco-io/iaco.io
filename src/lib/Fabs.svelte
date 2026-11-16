@@ -7,7 +7,20 @@
 	let { onmenu, extra } = $props();
 
 	let atTop = $state(true);
+	let scrollable = $state(true);
 	const onscroll = () => (atTop = window.scrollY < window.innerHeight / 3);
+
+	// nothing to scroll to: the scroll button nearly disappears
+	$effect(() => {
+		const check = () => (scrollable = document.documentElement.scrollHeight > window.innerHeight + 8);
+		const observer = new ResizeObserver(check);
+		observer.observe(document.body);
+		addEventListener('resize', check);
+		return () => {
+			observer.disconnect();
+			removeEventListener('resize', check);
+		};
+	});
 	const jump = () => window.scrollTo({ top: atTop ? document.documentElement.scrollHeight : 0 });
 </script>
 
@@ -20,7 +33,13 @@
 	<MenuIcon size={20} />
 </button>
 
-<button class="round glass jump" onclick={jump} aria-label={atTop ? 'Scroll to bottom' : 'Scroll to top'}>
+<button
+	class="round glass jump"
+	class:idle={!scrollable}
+	onclick={jump}
+	disabled={!scrollable}
+	aria-label={atTop ? 'Scroll to bottom' : 'Scroll to top'}
+>
 	{#if atTop}<ArrowDown size={20} />{:else}<ArrowUp size={20} />{/if}
 </button>
 
@@ -35,6 +54,12 @@
 
 	.jump {
 		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
+		transition: opacity 0.3s ease;
+	}
+
+	.jump.idle {
+		opacity: 0.15;
+		cursor: default;
 	}
 
 	.menu {

@@ -5,6 +5,7 @@
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
+	import Refresh from '#lib/Refresh.svelte';
 	import CreateIcon from '#lib/cms/CreateIcon.svelte';
 	import { keyOf, contentOf, listPartials, storePartial, dropPartial } from '#lib/cms/partials.js';
 	import Login from '#lib/cms/Login.svelte';
@@ -384,6 +385,7 @@
 		</ul>
 		{#snippet bottom()}
 			<ThemeToggle />
+			<Refresh />
 		{/snippet}
 	</Panel>
 {/if}
