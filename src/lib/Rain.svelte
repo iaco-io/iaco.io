@@ -154,7 +154,7 @@
 	onDestroy(() => playing && stop());
 </script>
 
-<button class="rain" class:playing onclick={() => (playing ? stop() : start())} aria-pressed={playing}>
+<button class="rain" class:playing onclick={() => (playing ? stop() : start())} aria-pressed={playing} aria-label="rain">
 	<span class="icons">
 		<!-- waves that flow while it plays -->
 		<svg class="wave" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -171,7 +171,6 @@
 			<g class="n2"><circle cx="16" cy="15" r="2.5" /><path d="M18.5 15V3l4 1.6" /></g>
 		</svg>
 	</span>
-	<em>raiɳ</em>
 </button>
 
 <style>
@@ -180,7 +179,7 @@
 		align-items: center;
 		gap: 0.45rem;
 		height: 2.4rem;
-		padding: 0 1rem 0 0.9rem;
+		padding: 0 0.9rem;
 		border: 0;
 		border-radius: 999px;
 		background: none;
@@ -192,13 +191,6 @@
 		display: flex;
 		align-items: center;
 		gap: 1px;
-	}
-
-	em {
-		font-family: 'Iowan Old Style', 'Palatino', Georgia, 'Times New Roman', serif;
-		font-size: 0.95rem;
-		font-style: italic;
-		letter-spacing: 0.02em;
 	}
 
 	.wave,
