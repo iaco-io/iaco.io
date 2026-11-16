@@ -5,7 +5,7 @@
 
 	/**
 	 * @type {{
-	 *   item: { title: string, description: string, image: string, date: string, body: string },
+	 *   item: { title: string, description: string, image: string, body: string },
 	 *   media: Record<string, string>
 	 * }}
 	 */

@@ -3,7 +3,7 @@
 
 	/**
 	 * @type {{
-	 *   item: { title: string, description: string, image: string, date: string },
+	 *   item: { title: string, description: string, image: string },
 	 *   body: string | null,
 	 *   resolve?: (path: string) => string
 	 * }}
@@ -11,15 +11,10 @@
 	let { item, body, resolve = (path) => path } = $props();
 
 	const html = $derived(body === null ? '' : render(body, resolve));
-	const date = $derived(
-		item.date &&
-			new Date(item.date).toLocaleDateString('en', { day: 'numeric', month: 'long', year: 'numeric' }).toLowerCase()
-	);
 </script>
 
 <article>
 	<header>
-		{#if date}<time datetime={item.date}>{date}</time>{/if}
 		<h1>{item.title}</h1>
 		{#if item.description}<p class="lead">{item.description}</p>{/if}
 	</header>
@@ -40,14 +35,8 @@
 		margin-bottom: 2.5rem;
 	}
 
-	time {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--soft);
-	}
-
 	h1 {
-		margin: 0.5rem 0 0;
+		margin: 0;
 		font-size: clamp(2.2rem, 6vw, 3.6rem);
 		line-height: 1.06;
 		letter-spacing: -0.04em;

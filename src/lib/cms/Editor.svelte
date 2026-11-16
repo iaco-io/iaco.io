@@ -125,7 +125,7 @@
 		</label>
 		{#if !short}
 			<label>
-				<span>date</span>
+				<span>date (rss only)</span>
 				<input type="date" bind:value={item.meta.date} />
 			</label>
 			<label class="wide">

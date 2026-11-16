@@ -90,7 +90,7 @@
 					return { kind: /** @type {Kind} */ (k), name, sha, meta: toMeta(meta), body };
 				})
 			);
-			entries.sort((a, b) => b.meta.date.localeCompare(a.meta.date));
+			entries.sort((a, b) => b.name.localeCompare(a.name, 'en', { numeric: true }));
 		} catch (err) {
 			flash(/** @type {Error} */ (err).message);
 		}
@@ -225,7 +225,7 @@
 							{#if entry.kind === 'posts'}<FileText size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
 							<span class="title">{entry.meta.title || entry.name}</span>
 							{#if entry.meta.draft}<span class="badge">draft</span>{/if}
-							<span class="date">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.meta.date}</span>
+							<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
 						</button>
 					</li>
 				{/each}
@@ -322,7 +322,7 @@
 		background: var(--soft);
 	}
 
-	.date {
+	.detail {
 		font-size: 0.85rem;
 		color: var(--muted);
 	}

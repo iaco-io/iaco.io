@@ -25,6 +25,7 @@ function load(kind) {
 			const alias = [meta.alias ?? []].flat().map(normalize);
 			return {
 				kind,
+				name,
 				slug,
 				url,
 				// every url that leads here: the main one, the number and the aliases
@@ -32,14 +33,15 @@ function load(kind) {
 				title: meta.title || slug,
 				description: meta.description ?? '',
 				image: meta.image ? (media[meta.image] ?? meta.image) : '',
-				date: meta.date ?? '',
+				date: meta.date ?? '', // only used by the rss feed
 				redirect: meta.redirect ?? '',
 				draft: meta.draft === 'true',
 				body
 			};
 		})
 		.filter((item) => !item.draft)
-		.sort((a, b) => b.date.localeCompare(a.date));
+		// newest first by file name: 002-… before 001-…
+		.sort((a, b) => b.name.localeCompare(a.name, 'en', { numeric: true }));
 }
 
 export const posts = load('posts');

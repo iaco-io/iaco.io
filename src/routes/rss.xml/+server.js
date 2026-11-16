@@ -10,7 +10,8 @@ const escape = (/** @type {string} */ s) =>
 const absolute = (/** @type {string} */ url) => new URL(url, site).href;
 
 export function GET() {
-	const items = posts
+	const items = [...posts]
+		.sort((a, b) => b.date.localeCompare(a.date))
 		.map((post) => {
 			const link = absolute(post.url);
 			const image = post.image && absolute(post.image);
