@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
 	import Device from './Device.svelte';
 	import { urls, serialize } from '../markdown.js';
 
@@ -12,10 +12,12 @@
 	 *   onsave: () => Promise<void>,
 	 *   onupload: (file: File) => Promise<string>,
 	 *   ondelete: () => Promise<void>,
-	 *   onback: () => void
+	 *   onback: () => void,
+	 *   partial: boolean,
+	 *   ondiscard: () => void
 	 * }}
 	 */
-	let { item = $bindable(), images, resolve, onsave, onupload, ondelete, onback } = $props();
+	let { item = $bindable(), images, resolve, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
 
 	let busy = $state('');
 	/** @type {HTMLTextAreaElement | undefined} */
@@ -165,6 +167,15 @@
 <div class="bar">
 	<button class="pill" onclick={onback}><ArrowLeft size={18} /> back</button>
 	<div class="actions">
+		{#if partial}
+			<button
+				class="pill unsaved"
+				title="changes kept on this device until you save. tap to discard them"
+				onclick={() => confirm('discard the changes you haven\'t saved?') && ondiscard()}
+			>
+				<CloudAlert size={18} />
+			</button>
+		{/if}
 		<button
 			class="pill primary"
 			disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
@@ -314,6 +325,12 @@
 		font-size: 0.85rem;
 		font-weight: 600;
 		color: var(--muted);
+	}
+
+	.unsaved {
+		width: 2.75rem;
+		padding: 0;
+		color: #c98a3a;
 	}
 
 	.more {

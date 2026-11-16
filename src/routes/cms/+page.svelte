@@ -1,7 +1,8 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount } from 'svelte';
-	import { Plus, Lock, FileText, File as FileIcon, ExternalLink } from '@lucide/svelte';
+	import { Plus, Lock, FileText, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
+	import { keyOf, contentOf, listPartials, storePartial, dropPartial } from '#lib/cms/partials.js';
 	import Login from '#lib/cms/Login.svelte';
 	import Editor from '#lib/cms/Editor.svelte';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
@@ -17,6 +18,27 @@
 		matchMedia('(display-mode: standalone)').matches || /** @type {any} */ (navigator).standalone === true;
 	const store = () => (standalone() ? localStorage : sessionStorage);
 
+	// in a browser tab the session ends after an hour without activity; the installed app stays logged in
+	const IDLE = 60 * 60 * 1000;
+	function touch() {
+		try {
+			if (!standalone()) sessionStorage.setItem('cms-active', String(Date.now()));
+		} catch {}
+	}
+	function expired() {
+		if (standalone()) return false;
+		try {
+			return Date.now() - Number(sessionStorage.getItem('cms-active') ?? 0) > IDLE;
+		} catch {
+			return false;
+		}
+	}
+	function checkIdle() {
+		if (!api || !expired()) return;
+		logout();
+		flash('logged out after an hour without activity');
+	}
+
 	/** @type {ReturnType<typeof github> | null} */
 	let api = $state(null);
 	let kind = $state(/** @type {Kind} */ ('posts'));
@@ -26,8 +48,29 @@
 	let message = $state('');
 
 	/** `from` is the saved file name, so a changed name renames the file */
-	/** @type {{ kind: Kind, name: string, from: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
+	/** @type {{ id?: string, kind: Kind, name: string, from: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
 	let editing = $state(null);
+
+	// every change is kept on this device until it's saved; `baseline` is the saved content
+	let baseline = '';
+	let partials = $state(/** @type {Record<string, any>} */ ({}));
+
+	$effect(() => {
+		const current = editing;
+		if (!current) return;
+		const json = JSON.stringify(current);
+		const key = keyOf(current);
+		const timer = setTimeout(() => {
+			if (contentOf(current) === baseline) dropPartial(key);
+			else storePartial(key, json);
+			partials = listPartials();
+		}, 400);
+		return () => clearTimeout(timer);
+	});
+
+	const newPartials = $derived(
+		Object.entries(partials).filter(([key, p]) => key.startsWith('new:') && p.kind === kind && key !== (editing && keyOf(editing)))
+	);
 
 	/** object urls for images uploaded in this session, until github's raw cache catches up */
 	let uploaded = $state(/** @type {Record<string, string>} */ ({}));
@@ -61,6 +104,7 @@
 		try {
 			store().setItem('cms-token', token);
 		} catch {}
+		touch();
 		api = client;
 		await refresh();
 	}
@@ -98,14 +142,34 @@
 	}
 
 	/** @param {Entry} entry */
-	async function open(entry) {
+	async function open(entry, { ignorePartial = false } = {}) {
 		const body = await decrypt(entry.body).catch(() => entry.body);
-		editing = { kind: entry.kind, name: entry.name, from: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias] }, body };
+		const saved = { kind: entry.kind, name: entry.name, from: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias] }, body };
+		baseline = contentOf(saved);
+		const partial = !ignorePartial && partials[`${entry.kind}/${entry.name}`];
+		editing = partial ? { ...partial, from: entry.name, isNew: false, sha: entry.sha } : saved;
+	}
+
+	/** @param {string} key */
+	function openPartial(key) {
+		baseline = '';
+		editing = partials[key];
+	}
+
+	function discard() {
+		if (!editing) return;
+		dropPartial(keyOf(editing));
+		partials = listPartials();
+		const entry = entries.find((e) => e.kind === editing?.kind && e.name === editing.from);
+		if (editing.isNew || !entry) editing = null;
+		else open(entry, { ignorePartial: true });
 	}
 
 	function create() {
 		const today = new Date().toISOString().slice(0, 10);
+		baseline = '';
 		editing = {
+			id: crypto.randomUUID(),
 			kind,
 			name: '',
 			from: '',
@@ -121,6 +185,8 @@
 		if (!api || !current) return;
 		current.meta.alias = current.meta.alias.map((x) => x.trim().replace(/^\/+|\/+$/g, '')).filter(Boolean);
 		const { kind: k, name, from, isNew } = current;
+		const partialKey = keyOf(current);
+		const content = contentOf(current);
 		const path = fileOf(k, name);
 		const renamed = !isNew && name !== from;
 		if ((isNew || renamed) && files.includes(path)) return flash(`${name} already exists`);
@@ -137,6 +203,10 @@
 			current.from = name;
 			current.isNew = false;
 			if (!files.includes(path)) files.push(path);
+			// what was saved is the new baseline; anything typed meanwhile stays a partial
+			dropPartial(partialKey);
+			if (editing === current) baseline = content;
+			partials = listPartials();
 			flash(current.meta.draft ? 'saved as draft' : 'saved. the site updates in a minute or two');
 			refresh();
 		} catch (err) {
@@ -167,6 +237,8 @@
 		if (!api || !current?.sha) return;
 		try {
 			await api.remove(fileOf(current.kind, current.from), current.sha, `cms: delete ${current.kind}/${current.from}`);
+			dropPartial(keyOf(current));
+			partials = listPartials();
 			editing = null;
 			flash('deleted');
 			refresh();
@@ -183,11 +255,24 @@
 	}
 
 	onMount(() => {
+		partials = listPartials();
 		let token = null;
 		try {
 			token = sessionStorage.getItem('cms-token') ?? (standalone() ? localStorage.getItem('cms-token') : null);
 		} catch {}
-		if (token) login(token).catch(logout);
+		if (token && expired()) logout();
+		else if (token) login(token).catch(logout);
+
+		const timer = setInterval(checkIdle, 60_000);
+		addEventListener('pointerdown', touch);
+		addEventListener('keydown', touch);
+		document.addEventListener('visibilitychange', checkIdle);
+		return () => {
+			clearInterval(timer);
+			removeEventListener('pointerdown', touch);
+			removeEventListener('keydown', touch);
+			document.removeEventListener('visibilitychange', checkIdle);
+		};
 	});
 </script>
 
@@ -200,7 +285,7 @@
 	{#if !api}
 		<Login onlogin={login} />
 	{:else if editing}
-		<Editor bind:item={editing} {images} {resolve} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} />
+		<Editor bind:item={editing} {images} {resolve} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
 	{:else}
 		<header>
 			<h1>iaco.io <small>v {__VERSION__}</small></h1>
@@ -218,10 +303,18 @@
 
 		{#if loading && !entries.length}
 			<p class="empty">loading…</p>
-		{:else if !list.length}
+		{:else if !list.length && !newPartials.length}
 			<p class="empty">no {kind} yet.</p>
 		{:else}
 			<ul>
+				{#each newPartials as [key, p] (key)}
+					<li>
+						<button class="row glass" onclick={() => openPartial(key)}>
+							<span class="unsaved"><CloudAlert size={20} /></span>
+							<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
+						</button>
+					</li>
+				{/each}
 				{#each list as entry (entry.kind + entry.name)}
 					<li>
 						<button class="row glass" onclick={() => open(entry)}>
@@ -235,6 +328,9 @@
 								</span>
 							{:else}
 								<span class="title">{entry.meta.title || entry.name}</span>
+							{/if}
+							{#if partials[`${entry.kind}/${entry.name}`]}
+								<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
 							{/if}
 							{#if entry.meta.draft}<span class="badge">draft</span>{/if}
 							<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
@@ -348,6 +444,11 @@
 		font-size: 0.8rem;
 		font-weight: 400;
 		color: var(--muted);
+	}
+
+	.unsaved {
+		display: flex;
+		color: #c98a3a;
 	}
 
 	.badge {
