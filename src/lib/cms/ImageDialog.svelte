@@ -332,15 +332,18 @@
 
 	.buttons {
 		display: flex;
-		gap: 0.5rem;
+		gap: 0.6rem;
 		margin-top: 0.4rem;
 	}
 
+	/* wide buttons, in two groups: delete/replace on the left, cancel/save on the right */
 	.buttons .pill {
+		min-width: 3.75rem;
 		box-shadow: none;
 	}
 
 	.gap {
 		flex: 1;
+		min-width: 1rem;
 	}
 </style>
