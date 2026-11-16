@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { Hexagon, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -14,7 +14,6 @@
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
-	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import savedAlphabet from '../../alphabet.json';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
 	import { encrypt, decrypt } from '#lib/crypto.js';
@@ -687,9 +686,9 @@
 				</li>
 			{/each}
 			<li>
-				<!-- iaco's alphabet is called abelus, written in itself -->
+				<!-- iaco's alphabet is called abelus, written in itself (a honeycomb cell for the bee) -->
 				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>
-					<BeeIcon size={24} strokeWidth={2.25} />
+					<Hexagon size={24} strokeWidth={2.25} />
 					{alphabetName}
 				</button>
 			</li>
