@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar } from '@lucide/svelte';
 	import Device from './Device.svelte';
 	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
@@ -267,6 +267,7 @@
 			<span>date (rss only)</span>
 			<!-- shown as 2026-Nov-16; the real (invisible) date field on top opens the picker -->
 			<span class="date">
+				<Calendar size={18} />
 				{pretty(item.meta.date) || 'no date'}
 				<input type="date" bind:value={item.meta.date} />
 			</span>
@@ -627,9 +628,11 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		width: fit-content;
-		min-width: 9rem;
+		justify-content: flex-start;
+		gap: 0.6rem;
+		width: 100%;
 		padding: 0.75rem 1rem;
+		text-align: left;
 		border: 1px solid var(--glass-edge);
 		border-radius: 0.9rem;
 		font-size: 16px;
