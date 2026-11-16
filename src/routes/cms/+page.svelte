@@ -9,8 +9,8 @@
 	import { parse, serialize } from '#lib/markdown.js';
 
 	/** @typedef {'posts' | 'pages'} Kind */
-	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean }} Meta */
-	/** @typedef {{ kind: Kind, slug: string, sha: string, meta: Meta, body: string }} Entry */
+	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta */
+	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
 	// the token is remembered only in the installed app; in a browser tab it lasts until the tab closes
 	const standalone = () =>
@@ -25,29 +25,27 @@
 	let loading = $state(false);
 	let message = $state('');
 
-	/** @type {{ kind: Kind, slug: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
+	/** @type {{ kind: Kind, name: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
 	let editing = $state(null);
 
 	/** object urls for images uploaded in this session, until github's raw cache catches up */
 	let uploaded = $state(/** @type {Record<string, string>} */ ({}));
 
-	const folder = (/** @type {Kind} */ k, /** @type {string} */ slug) => `src/${k}/${slug}/`;
-	const toMeta = (/** @type {Record<string, string>} */ m) => ({
+	const MEDIA = 'src/media/';
+	const fileOf = (/** @type {Kind} */ k, /** @type {string} */ name) => `src/${k}/${name}.md`;
+	const toMeta = (/** @type {Record<string, any>} */ m) => ({
 		title: m.title ?? '',
 		description: m.description ?? '',
 		image: m.image ?? '',
 		date: m.date ?? '',
-		draft: m.draft === 'true'
+		draft: m.draft === 'true',
+		alias: [m.alias ?? []].flat(),
+		redirect: m.redirect ?? ''
 	});
 
 	const list = $derived(entries.filter((e) => e.kind === kind));
 	const images = $derived(
-		editing
-			? files
-					.filter((path) => path.startsWith(folder(editing.kind, editing.slug)) && !path.endsWith('.md'))
-					.map((path) => path.slice(folder(editing.kind, editing.slug).length))
-					.filter((name) => !name.includes('/'))
-			: []
+		files.filter((p) => p.startsWith(MEDIA) && !p.endsWith('.md')).map((p) => p.slice(MEDIA.length))
 	);
 
 	function flash(/** @type {string} */ text) {
@@ -82,13 +80,13 @@
 		try {
 			const tree = await api.list();
 			files = tree.map((f) => f.path);
-			const paths = files.filter((p) => /^src\/(posts|pages)\/[^/]+\/index\.md$/.test(p));
+			const paths = files.filter((p) => /^src\/(posts|pages)\/[^/]+\.md$/.test(p) && !p.endsWith('/README.md'));
 			entries = await Promise.all(
 				paths.map(async (path) => {
-					const [, k, slug] = /** @type {RegExpMatchArray} */ (path.match(/^src\/(\w+)\/([^/]+)\//));
+					const [, k, name] = /** @type {RegExpMatchArray} */ (path.match(/^src\/(\w+)\/([^/]+)\.md$/));
 					const { sha, text } = await /** @type {NonNullable<typeof api>} */ (api).read(path);
 					const { meta, body } = parse(text);
-					return { kind: /** @type {Kind} */ (k), slug, sha, meta: toMeta(meta), body };
+					return { kind: /** @type {Kind} */ (k), name, sha, meta: toMeta(meta), body };
 				})
 			);
 			entries.sort((a, b) => b.meta.date.localeCompare(a.meta.date));
@@ -101,28 +99,28 @@
 	/** @param {Entry} entry */
 	async function open(entry) {
 		const body = await decrypt(entry.body).catch(() => entry.body);
-		editing = { kind: entry.kind, slug: entry.slug, isNew: false, sha: entry.sha, meta: { ...entry.meta }, body };
+		editing = { kind: entry.kind, name: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias] }, body };
 	}
 
 	function create() {
 		const today = new Date().toISOString().slice(0, 10);
 		editing = {
 			kind,
-			slug: '',
+			name: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: today, draft: true },
+			meta: { title: '', description: '', image: '', date: today, draft: true, alias: [], redirect: '' },
 			body: ''
 		};
 	}
 
 	async function save() {
 		if (!api || !editing) return;
-		const { kind: k, slug, isNew } = editing;
-		const path = `${folder(k, slug)}index.md`;
-		if (isNew && files.includes(path)) return flash(`${slug} already exists`);
+		const { kind: k, name, isNew } = editing;
+		const path = fileOf(k, name);
+		if (isNew && files.includes(path)) return flash(`${name} already exists`);
 		try {
 			const file = serialize(editing.meta, await encrypt(editing.body));
-			editing.sha = await api.write(path, utf8ToBase64(file), editing.sha, `cms: ${isNew ? 'add' : 'update'} ${k}/${slug}`);
+			editing.sha = await api.write(path, utf8ToBase64(file), editing.sha, `cms: ${isNew ? 'add' : 'update'} ${k}/${name}`);
 			editing.isNew = false;
 			if (!files.includes(path)) files.push(path);
 			flash(editing.meta.draft ? 'saved as draft' : 'saved. the site updates in a minute or two');
@@ -136,7 +134,7 @@
 	async function upload(file) {
 		if (!api || !editing) throw new Error('not editing');
 		const name = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '');
-		const path = folder(editing.kind, editing.slug) + name;
+		const path = MEDIA + name;
 		const base64 = await new Promise((resolve, reject) => {
 			const reader = new FileReader();
 			reader.onload = () => resolve(String(reader.result).split(',')[1]);
@@ -152,11 +150,8 @@
 
 	async function remove() {
 		if (!api || !editing?.sha) return;
-		const prefix = folder(editing.kind, editing.slug);
 		try {
-			for (const f of (await api.list()).filter((f) => f.path.startsWith(prefix))) {
-				await api.remove(f.path, f.sha, `cms: delete ${f.path.slice(4)}`);
-			}
+			await api.remove(fileOf(editing.kind, editing.name), editing.sha, `cms: delete ${editing.kind}/${editing.name}`);
 			editing = null;
 			flash('deleted');
 			refresh();
@@ -167,8 +162,8 @@
 
 	/** @param {string} name */
 	function resolve(name) {
-		if (/^([a-z]+:|\/)/i.test(name) || !editing) return name;
-		const path = folder(editing.kind, editing.slug) + name;
+		if (/^([a-z]+:|\/)/i.test(name)) return name;
+		const path = MEDIA + name;
 		return uploaded[path] ?? rawUrl(path);
 	}
 
@@ -212,11 +207,11 @@
 			<p class="empty">no {kind} yet.</p>
 		{:else}
 			<ul>
-				{#each list as entry (entry.kind + entry.slug)}
+				{#each list as entry (entry.kind + entry.name)}
 					<li>
 						<button class="row glass" onclick={() => open(entry)}>
 							{#if entry.kind === 'posts'}<FileText size={20} />{:else}<FileIcon size={20} />{/if}
-							<span class="title">{entry.meta.title || entry.slug}</span>
+							<span class="title">{entry.meta.title || entry.name}</span>
 							{#if entry.meta.draft}<span class="badge">draft</span>{/if}
 							<span class="date">{entry.meta.date}</span>
 						</button>

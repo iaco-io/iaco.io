@@ -13,20 +13,7 @@
 	/** @type {ReturnType<typeof setTimeout>} */
 	let timer;
 
-	// holding rss for 5 seconds opens the cms instead of copying the link
-	let pressedAt = 0;
-	let longPress = false;
-	const press = () => ((pressedAt = Date.now()), (longPress = false));
-	function release() {
-		if (pressedAt && Date.now() - pressedAt >= 5000) {
-			longPress = true;
-			window.open('/cms/', '_blank');
-		}
-		pressedAt = 0;
-	}
-
 	async function copyRss() {
-		if (longPress) return;
 		try {
 			await navigator.clipboard.writeText(new URL('/rss.xml', location.href).href);
 		} catch {}
@@ -59,14 +46,7 @@
 			<li><a href={link.href} onclick={close}>{link.label}</a></li>
 		{/each}
 		<li>
-			<button
-				class="link"
-				onclick={copyRss}
-				onpointerdown={press}
-				onpointerup={release}
-				onpointercancel={() => (pressedAt = 0)}
-				oncontextmenu={(e) => e.preventDefault()}
-			><Rss size={24} strokeWidth={2.25} /> rss</button>
+			<button class="link" onclick={copyRss}><Rss size={24} strokeWidth={2.25} /> rss</button>
 		</li>
 	</ul>
 	<div class="social"><Social /></div>
@@ -178,9 +158,6 @@
 
 	.link {
 		width: 100%;
-		user-select: none;
-		-webkit-user-select: none;
-		-webkit-touch-callout: none;
 		border: 0;
 		background: none;
 		font-family: inherit;

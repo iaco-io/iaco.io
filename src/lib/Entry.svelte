@@ -3,8 +3,13 @@
 	import { decrypt } from './crypto.js';
 	import Article from './Article.svelte';
 
-	/** @type {{ item: { title: string, description: string, image: string, date: string, body: string, files: Record<string, string> } }} */
-	let { item } = $props();
+	/**
+	 * @type {{
+	 *   item: { title: string, description: string, image: string, date: string, body: string },
+	 *   media: Record<string, string>
+	 * }}
+	 */
+	let { item, media } = $props();
 
 	let body = $state(/** @type {string | null} */ (null));
 
@@ -23,7 +28,7 @@
 </svelte:head>
 
 <main>
-	<Article {item} {body} resolve={(path) => item.files[path] ?? path} />
+	<Article {item} {body} resolve={(path) => media[path] ?? path} />
 </main>
 
 <style>

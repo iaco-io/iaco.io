@@ -11,6 +11,21 @@
 
 	let theme = $state('system');
 
+	// three taps on "system" within 1.5 seconds open the cms
+	/** @type {number[]} */
+	let taps = [];
+	function tap(/** @type {string} */ value) {
+		if (value === 'system') {
+			const now = Date.now();
+			taps = [...taps.filter((t) => now - t < 1500), now];
+			if (taps.length >= 3) {
+				taps = [];
+				window.open('/cms/', '_blank');
+			}
+		}
+		set(value);
+	}
+
 	/** @param {string} value */
 	function set(value) {
 		theme = value;
@@ -40,7 +55,7 @@
 			aria-checked={theme === value}
 			aria-label={label}
 			class:active={theme === value}
-			onclick={() => set(value)}
+			onclick={() => tap(value)}
 		>
 			<Icon size={18} />
 		</button>

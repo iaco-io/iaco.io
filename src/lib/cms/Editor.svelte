@@ -1,11 +1,12 @@
 <script>
 	import { ArrowLeft, Eye, Pencil, ImagePlus, Save, Trash2 } from '@lucide/svelte';
 	import Article from '../Article.svelte';
+	import { urls } from '../markdown.js';
 
 	/**
-	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean }} Meta
+	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta
 	 * @type {{
-	 *   item: { kind: 'posts' | 'pages', slug: string, isNew: boolean, meta: Meta, body: string },
+	 *   item: { kind: 'posts' | 'pages', name: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
 	 *   resolve: (name: string) => string,
 	 *   onsave: () => Promise<void>,
@@ -21,7 +22,16 @@
 	/** @type {HTMLTextAreaElement | undefined} */
 	let textarea = $state();
 
-	const validSlug = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.slug));
+	const validName = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.name));
+	const links = $derived.by(() => {
+		if (!validName) return '';
+		const { id, url } = urls(item.kind, item.name);
+		return [url, id && `/${id}/`].filter(Boolean).join(' and ');
+	});
+
+	// aliases are typed as "/ig, /instagram"
+	let aliasText = $state(item.meta.alias.join(', '));
+	const setAlias = () => (item.meta.alias = aliasText.split(',').map((a) => a.trim()).filter(Boolean));
 
 	/** @param {string} label @param {() => Promise<unknown>} task */
 	async function run(label, task) {
@@ -55,7 +65,7 @@
 	}
 
 	async function remove() {
-		if (!confirm(`delete "${item.meta.title || item.slug}"? this can't be undone here.`)) return;
+		if (!confirm(`delete "${item.meta.title || item.name}"? this can't be undone here.`)) return;
 		await run('deleting…', ondelete);
 	}
 </script>
@@ -68,7 +78,7 @@
 		</button>
 		<button
 			class="pill primary"
-			disabled={!!busy || !validSlug || !item.meta.title.trim()}
+			disabled={!!busy || !validName || !item.meta.title.trim()}
 			onclick={() => run('saving…', onsave)}
 		>
 			<Save size={18} />
@@ -88,8 +98,8 @@
 			<input bind:value={item.meta.title} placeholder="title" />
 		</label>
 		<label>
-			<span>slug {item.kind === 'pages' ? '(iaco.io/slug/)' : '(iaco.io/posts/slug/)'}</span>
-			<input bind:value={item.slug} disabled={!item.isNew} placeholder="my-post" />
+			<span>file name {links ? `→ ${links}` : ''}</span>
+			<input bind:value={item.name} disabled={!item.isNew} placeholder={item.kind === 'posts' ? '001-my-intro' : '01-hello-world'} />
 		</label>
 		<label>
 			<span>date</span>
@@ -106,6 +116,14 @@
 				{#each images as name}<option value={name}>{name}</option>{/each}
 			</select>
 		</label>
+		<label>
+			<span>aliases</span>
+			<input bind:value={aliasText} oninput={setAlias} placeholder="/ig, /instagram" />
+		</label>
+		<label>
+			<span>redirect to</span>
+			<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
+		</label>
 		<label class="toggle">
 			<input type="checkbox" bind:checked={item.meta.draft} />
 			<span>draft (hidden from the blog and rss)</span>
@@ -115,7 +133,7 @@
 	<div class="images">
 		<label class="pill">
 			<ImagePlus size={18} /> upload image
-			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!validSlug || !!busy} />
+			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 		</label>
 		{#each images as name}
 			<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>

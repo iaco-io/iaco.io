@@ -5,13 +5,13 @@
 	import Menu from '#lib/Menu.svelte';
 	import { page } from '$app/state';
 
-	/** @type {{ children: import('svelte').Snippet, data: { pages: { slug: string, title: string }[] } }} */
+	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string }[] } }} */
 	let { children, data } = $props();
 
 	const links = $derived([
 		{ href: '/', label: 'home' },
 		{ href: '/#latest', label: 'latest' },
-		...data.pages.map((p) => ({ href: `/${p.slug}/`, label: p.title }))
+		...data.pages.map((p) => ({ href: p.url, label: p.title }))
 	]);
 
 	let open = $state(false);

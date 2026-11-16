@@ -12,7 +12,7 @@ const absolute = (/** @type {string} */ url) => new URL(url, site).href;
 export function GET() {
 	const items = posts
 		.map((post) => {
-			const link = `${site}/posts/${post.slug}/`;
+			const link = absolute(post.url);
 			const image = post.image && absolute(post.image);
 			const html = `${image ? `<img src="${image}" alt="" />` : ''}<p>${escape(post.description)}</p>`;
 			return `

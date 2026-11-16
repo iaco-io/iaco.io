@@ -24,7 +24,7 @@
 	{#if data.posts.length}
 		<section id="latest" class="topics">
 			{#each data.posts as post}
-				<a class="card glass post" href="/posts/{post.slug}/">
+				<a class="card glass post" href={post.url}>
 					{#if post.image}<img src={post.image} alt="" />{/if}
 					<h2>{post.title}</h2>
 					<p>{post.description}</p>
