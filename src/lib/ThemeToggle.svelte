@@ -7,7 +7,7 @@
 		{ value: 'system', label: 'system', icon: Monitor },
 		{ value: 'dark', label: 'dark', icon: Moon }
 	];
-	const bar = { light: '#faf6ee', dark: '#1a2739' };
+	const bar = { light: '#f3f7fb', dark: '#1a2739' };
 
 	let theme = $state('system');
 
