@@ -35,7 +35,7 @@
 	<header>
 		<a class="logo" href="/">iaco.io</a>
 	</header>
-	<DayClock />
+	<DayClock icon="cloud" />
 {/if}
 
 {@render children()}

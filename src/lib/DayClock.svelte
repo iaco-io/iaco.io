@@ -1,10 +1,14 @@
 <script>
-	// a little old grandfather clock, top right. the pendulum swings each 0.864 s (a hundred-thousandth of a day).
+	// the date and time of day, with a little animation beside them: on the blog a raining cloud, in the cms an old
+	// grandfather clock. both move in steps of 0.864 s (a hundred-thousandth of a day), in step with the time of day.
 	// next to it: the date as year and day of the year (2026-32•0), and the time as how much of the day has passed (45.67%)
 	import { onMount } from 'svelte';
 
-	/** inline: sits where it's placed (e.g. in the cms menu) instead of the page's top right */
-	let { inline = false } = $props();
+	/**
+	 * inline: sits where it's placed (e.g. in the cms menu) instead of the page's top right
+	 * icon: 'clock' (grandfather clock) or 'cloud' (raining cloud)
+	 */
+	let { inline = false, icon = 'clock' } = $props();
 
 	let now = $state(/** @type {Date | null} */ (null));
 	onMount(() => {
@@ -33,12 +37,18 @@
 	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
 	// one full swing there and back is 1.728 s, kept in step with the time of day
 	let swing = $state(0);
+	// the cloud: ten steps of 0.864 s — a drop on the left, middle, right, three times, then one thunder.
+	// `step` is which of the ten, `p` how far into it (0 to 1)
+	let step = $state(0);
+	let p = $state(0);
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		let frame = 0;
 		const tick = () => {
 			const t = Date.now() - new Date().setHours(0, 0, 0, 0);
 			swing = 9 * Math.cos((2 * Math.PI * (t % 1728)) / 1728);
+			step = Math.floor(t / 864) % 10;
+			p = (t % 864) / 864;
 			frame = requestAnimationFrame(tick);
 		};
 		tick();
@@ -50,28 +60,45 @@
 	<div class="dayclock" class:inline title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
-		<!-- an old grandfather clock: a hood with a swan-neck pediment and finials, the face, a narrow case
-		     with the pendulum, and a base -->
-		<svg viewBox="0 0 20 36" width="17" height="31" aria-hidden="true">
-			<circle cx="10" cy="1.3" r=".65" />
-			<path d="M10 2v1.2" />
-			<circle cx="4.3" cy="5.4" r=".55" />
-			<circle cx="15.7" cy="5.4" r=".55" />
-			<path d="M4.6 7.2C5.4 5.3 7.2 4.7 8.4 3.8c.4-.3.9-.1.8.4" />
-			<path d="M15.4 7.2c-.8-1.9-2.6-2.5-3.8-3.4-.4-.3-.9-.1-.8.4" />
-			<path d="M4.3 7.2h11.4M4.8 7.2V14h10.4V7.2" />
-			<path d="M5.7 7.2V14M14.3 7.2V14" />
-			<circle cx="10" cy="10.6" r="2.7" />
-			<path class="hand" d="M10 10.6V9.2" style:transform="rotate({hours}deg)" />
-			<path class="hand" d="M10 10.6V8.5" style:transform="rotate({minutes}deg)" />
-			<path d="M6.1 14v16.2h7.8V14" />
-			<g class="pendulum" style:transform="rotate({swing}deg)">
-				<path d="M10 14.3v10.2" />
-				<circle cx="10" cy="25.7" r="1.2" />
-			</g>
-			<path d="M5 30.2h10v2.2H5Z" />
-			<path d="M5.9 32.4v1.4M14.1 32.4v1.4" />
-		</svg>
+		{#if icon === 'cloud'}
+			<!-- a small cloud: one drop falls from the left, middle or right part, and every tenth step it thunders -->
+			<svg viewBox="0 0 28 30" width="27" height="29" aria-hidden="true">
+				<path class:flash={step === 9 && p < 0.5} d="M8.5 16.5h11.5a4.2 4.2 0 0 0 .4-8.4 6 6 0 0 0-11.6-1.2 4.8 4.8 0 0 0-.3 9.6Z" />
+				{#if step === 9}
+					<path class="bolt" style:opacity={p < 0.12 || (p > 0.2 && p < 0.32) ? 1 : Math.max(0, 1 - (p - 0.32) * 2.2)} d="M15 17.5l-3 5h3.4l-2.4 5" />
+				{:else}
+					<path
+						class="drop"
+						style:opacity={1 - p * p}
+						style:transform="translateY({p * 9}px)"
+						d="M{[9.5, 14, 18.5][step % 3]} 18.5v2.2"
+					/>
+				{/if}
+			</svg>
+		{:else}
+			<!-- an old grandfather clock: a hood with a swan-neck pediment and finials, the face, a narrow case
+			     with the pendulum, and a base -->
+			<svg viewBox="0 0 20 36" width="17" height="31" aria-hidden="true">
+				<circle cx="10" cy="1.3" r=".65" />
+				<path d="M10 2v1.2" />
+				<circle cx="4.3" cy="5.4" r=".55" />
+				<circle cx="15.7" cy="5.4" r=".55" />
+				<path d="M4.6 7.2C5.4 5.3 7.2 4.7 8.4 3.8c.4-.3.9-.1.8.4" />
+				<path d="M15.4 7.2c-.8-1.9-2.6-2.5-3.8-3.4-.4-.3-.9-.1-.8.4" />
+				<path d="M4.3 7.2h11.4M4.8 7.2V14h10.4V7.2" />
+				<path d="M5.7 7.2V14M14.3 7.2V14" />
+				<circle cx="10" cy="10.6" r="2.7" />
+				<path class="hand" d="M10 10.6V9.2" style:transform="rotate({hours}deg)" />
+				<path class="hand" d="M10 10.6V8.5" style:transform="rotate({minutes}deg)" />
+				<path d="M6.1 14v16.2h7.8V14" />
+				<g class="pendulum" style:transform="rotate({swing}deg)">
+					<path d="M10 14.3v10.2" />
+					<circle cx="10" cy="25.7" r="1.2" />
+				</g>
+				<path d="M5 30.2h10v2.2H5Z" />
+				<path d="M5.9 32.4v1.4M14.1 32.4v1.4" />
+			</svg>
+		{/if}
 	</div>
 {/if}
 
@@ -117,6 +144,14 @@
 		stroke-width: 0.9;
 		stroke-linecap: round;
 		stroke-linejoin: round;
+	}
+
+	.flash {
+		fill: color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+
+	.bolt {
+		stroke-width: 1.1;
 	}
 
 	.hand {
