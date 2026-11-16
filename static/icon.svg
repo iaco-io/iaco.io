@@ -1,59 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 	<defs>
-		<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-			<stop offset="0" stop-color="#ecdfc2" />
-			<stop offset="1" stop-color="#f7efdd" />
-		</linearGradient>
-		<linearGradient id="deep" x1="0" y1="0" x2="1" y2="1">
-			<stop offset="0" stop-color="#1d4e89" />
-			<stop offset="1" stop-color="#0b2240" />
-		</linearGradient>
-		<clipPath id="wave">
-			<path
-				id="body"
-				d="M0 512 V300 C30 230 90 140 190 104 C270 76 350 92 392 148 C418 184 410 230 378 240 C352 248 334 226 344 204 C318 206 296 240 300 280 C306 350 340 410 400 448 C440 474 480 486 512 488 V512 Z"
-			/>
-		</clipPath>
+		<clipPath id="c"><path id="body" d="M0 512 V360 C40 260 120 168 228 140 C312 118 384 150 396 210 C404 252 374 282 340 276 C312 271 304 240 326 228 C296 226 276 256 282 296 C292 356 350 400 436 418 C470 425 496 424 512 420 V512 Z"/></clipPath>
 	</defs>
-
-	<rect width="512" height="512" fill="url(#sky)" />
-
-	<!-- mountain in the hollow of the wave -->
-	<path d="M352 440 L428 360 L504 440 Z" fill="#5f8fb8" />
-	<path d="M408 381 L428 360 L448 381 L440 377 L434 384 L428 376 L421 384 L415 377 Z" fill="#f7efdd" />
-
-	<!-- great wave -->
-	<use href="#body" fill="url(#deep)" />
-
-	<!-- striations on the wave face -->
-	<g clip-path="url(#wave)" fill="none" stroke-linecap="round">
-		<g stroke="#3f74ad" stroke-width="14">
-			<path d="M60 512 C70 380 140 230 250 170 C290 150 330 150 356 166" />
-			<path d="M140 512 C140 400 180 290 260 230" />
-		</g>
-		<g stroke="#8fb3d4" stroke-width="6" opacity="0.85">
-			<path d="M100 512 C105 390 165 260 260 196 C300 172 340 172 364 190" />
-			<path d="M180 512 C178 420 210 330 268 270" />
-			<path d="M240 512 C236 440 258 370 292 330" />
-		</g>
+	<rect width="512" height="512" fill="#0f2a47"/>
+	<circle cx="256" cy="232" r="172" fill="#f4ecdc"/>
+	<circle cx="256" cy="232" r="186" fill="none" stroke="#f4ecdc" stroke-width="2" opacity="0.35"/>
+	<path d="M306 366 L352 318 L398 366 Z" fill="#1d4e89"/>
+	<path d="M339 332 L352 318 L365 332 L359 329 L352 336 L345 329 Z" fill="#f4ecdc"/>
+	<use href="#body" fill="#1d4e89"/>
+	<g clip-path="url(#c)" fill="none" stroke="#3f74ad" stroke-width="5" stroke-linecap="round">
+		<path d="M30 512 C40 380 120 240 240 196 C290 178 330 186 352 204"/>
+		<path d="M90 512 C96 400 160 290 250 246"/>
+		<path d="M150 512 C152 420 200 340 262 300"/>
+		<path d="M210 512 C210 448 236 390 276 360"/>
 	</g>
-
-	<!-- foam crest with claw tips -->
-	<path
-		d="M190 104 C270 76 350 92 392 148 C418 184 410 230 378 240 C396 222 398 196 386 176 C376 196 362 202 352 196 C364 186 368 168 360 154 C348 170 334 172 324 164 C336 154 338 138 330 126 C316 142 300 142 290 134 C300 124 300 110 292 100 C276 116 258 116 246 108 C232 120 214 122 200 116 C160 140 110 200 70 270 C100 190 140 124 190 104 Z"
-		fill="#f7efdd"
-	/>
-	<g fill="#f7efdd">
-		<circle cx="372" cy="214" r="7" />
-		<circle cx="356" cy="226" r="5" />
-		<circle cx="346" cy="212" r="4" />
-		<circle cx="398" cy="238" r="5" />
-		<circle cx="414" cy="218" r="4" />
-		<circle cx="424" cy="252" r="3.5" />
-		<circle cx="406" cy="268" r="3" />
+	<path d="M60 300 C100 220 160 160 228 140 C312 118 384 150 396 210 C404 252 374 282 340 276 C356 270 370 256 372 238 C362 250 348 252 340 246 C352 238 358 222 354 208 C344 222 330 224 320 216 C330 206 332 190 326 178 C312 192 296 192 286 184 C292 172 290 160 282 152 C268 166 250 168 238 160 C220 172 196 178 180 172 C140 200 96 250 60 300 Z" fill="#f4ecdc" stroke="#0f2a47" stroke-width="5" stroke-linejoin="round"/>
+	<g fill="#f4ecdc">
+		<circle cx="322" cy="252" r="6"/><circle cx="310" cy="266" r="4"/><circle cx="330" cy="268" r="3.5"/><circle cx="300" cy="250" r="3"/>
 	</g>
-
-	<!-- small wave in front -->
-	<path d="M360 512 C392 476 440 458 484 466 C498 469 508 476 512 482 V512 Z" fill="#3f74ad" />
-	<path d="M440 462 C470 458 496 466 512 482 V490 C500 480 484 478 474 486 C480 478 478 470 470 468 C462 476 452 478 444 474 C450 470 448 464 440 462 Z" fill="#f7efdd" />
+	<path d="M250 512 C276 470 312 440 352 438 C384 437 406 452 418 474 C404 464 388 464 380 472 C388 478 390 490 384 498 C374 486 360 484 350 490 C358 496 360 506 356 512 Z" fill="#3f74ad"/>
+	<path d="M352 438 C384 437 406 452 418 474 C404 464 388 464 380 472 C388 478 390 490 384 498 C374 486 360 484 350 490 C346 470 340 452 352 438 Z" fill="#f4ecdc" stroke="#0f2a47" stroke-width="4" stroke-linejoin="round"/>
 </svg>
