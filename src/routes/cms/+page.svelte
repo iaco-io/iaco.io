@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { CaseLower, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -13,7 +13,8 @@
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
-	import { setAlphabet } from '#lib/tp.js';
+	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
+	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import savedAlphabet from '../../alphabet.json';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
 	import { encrypt, decrypt } from '#lib/crypto.js';
@@ -194,6 +195,8 @@
 	const ALPHABET = 'src/alphabet.json';
 	let alphabet = $state(savedAlphabet);
 	let alphabetOpen = $state(false);
+	// re-read when the setup changes
+	const alphabetName = $derived((alphabet, inAlphabet('abelus')));
 
 	async function saveAlphabet(/** @type {typeof savedAlphabet} */ setup) {
 		if (!api) return;
@@ -684,9 +687,10 @@
 				</li>
 			{/each}
 			<li>
+				<!-- iaco's alphabet is called abelus, written in itself -->
 				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>
-					<CaseLower size={24} strokeWidth={2.25} />
-					alphabet
+					<BeeIcon size={24} strokeWidth={2.25} />
+					{alphabetName}
 				</button>
 			</li>
 		</ul>
