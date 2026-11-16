@@ -7,13 +7,13 @@ const CACHE = `cache-${version}`;
 const MEDIA = 'media';
 const toPath = ({ path }) => new URL(path, self.registration.scope).pathname;
 const IMMUTABLE = immutable.map(toPath);
-// static media (like the rain sound) is left to the browser: big, and fetched in ranges
-const isMedia = (/** @type {string} */ path) => path.startsWith('/media/');
-// (built from src/media into hashed files; they are never in the install list)
+// sound and video (like the rain) are left to the browser: big, and fetched in ranges
+const isMedia = (/** @type {string} */ path) => /\.(mp3|m4a|wav|ogg|aac|flac|mp4|mov|webm|m4v)$/i.test(path);
+// images built from src/media into hashed files
 const isPostMedia = (/** @type {string} */ path) =>
-	path.startsWith('/_app/immutable/assets/') && /\.(avif|gif|jpe?g|png|svg|webp|mp3|m4a|wav|ogg|aac|flac|mp4|mov|webm|m4v)$/i.test(path);
+	path.startsWith('/_app/immutable/assets/') && /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(path);
 // only the app itself is saved on install: code, styles, icons and pages
-const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter((p) => !isMedia(p));
+const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter((p) => !isMedia(p) && !isPostMedia(p));
 
 // take over as soon as a new version is installed, so updates show on next load
 self.addEventListener('install', (event) => {

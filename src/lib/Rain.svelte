@@ -1,14 +1,20 @@
 <script>
-	// rain from the old site (static/media/rain.mp3), looped. it's a plain <audio>, so it keeps
-	// playing in the background and with the screen locked, and shows on the lock screen
+	// rain from the old site, looped. it's a plain <audio>, so it keeps playing in the background
+	// and with the screen locked, and shows on the lock screen.
+	// the file is src/media/rain.* (editable in the cms); if it's renamed away, the button hides
 	import { onMount } from 'svelte';
+
+	const src = Object.values(
+		import.meta.glob('/src/media/rain.{mp3,m4a,aac,ogg,wav}', { query: '?url', import: 'default', eager: true })
+	)[0];
 
 	let playing = $state(false);
 	/** @type {HTMLAudioElement} */
 	let audio;
 
 	onMount(() => {
-		audio = new Audio('/media/rain.mp3');
+		if (!src) return;
+		audio = new Audio(/** @type {string} */ (src));
 		audio.loop = true;
 		audio.preload = 'none';
 		audio.onplay = () => (playing = true);
@@ -22,12 +28,13 @@
 			navigator.mediaSession.setActionHandler('play', () => audio.play());
 			navigator.mediaSession.setActionHandler('pause', () => audio.pause());
 		}
-		return () => audio.pause();
+		return () => audio?.pause();
 	});
 
-	const toggle = () => (audio.paused ? audio.play() : audio.pause());
+	const toggle = () => (audio?.paused ? audio.play() : audio?.pause());
 </script>
 
+{#if src}
 <button class="rain" class:playing onclick={toggle} aria-pressed={playing} aria-label="rain">
 	<span class="icons">
 		<!-- three waves; while it plays, the top one turns into falling rain and the others flow -->
@@ -51,6 +58,7 @@
 		</svg>
 	</span>
 </button>
+{/if}
 
 <style>
 	.rain {
