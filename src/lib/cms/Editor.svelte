@@ -282,7 +282,16 @@
 			<span class="label">main image</span>
 			<div class="picker">
 				{#if item.meta.image}
-					<button class="thumb cover" title="rename, replace or delete" onclick={() => hold(item.meta.image)}>
+					<button
+						class="thumb cover"
+						title="hold to rename, replace or delete"
+						onpointerdown={() => press(item.meta.image)}
+						onpointerup={release}
+						onpointerleave={release}
+						onpointercancel={release}
+						oncontextmenu={(e) => e.preventDefault()}
+						onclick={() => (pressed = false)}
+					>
 						<img src={resolve(item.meta.image)} alt={item.meta.image} />
 					</button>
 				{/if}
