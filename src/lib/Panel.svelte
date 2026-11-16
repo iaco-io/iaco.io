@@ -34,7 +34,8 @@
 		position: fixed;
 		top: calc(var(--top) + var(--gap));
 		right: var(--gap);
-		bottom: var(--gap);
+		/* same distance from the bottom as the round buttons, which safari leaves alone */
+		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
