@@ -67,9 +67,10 @@
 		transition: background 0.3s ease;
 	}
 
-	/* a soft tile behind it while the rain plays */
-	.rain.playing {
-		background: color-mix(in srgb, var(--accent) 12%, transparent);
+	/* a soft tile behind it only while it's being pressed */
+	.rain:active {
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+		transition: none;
 	}
 
 	.icons {
