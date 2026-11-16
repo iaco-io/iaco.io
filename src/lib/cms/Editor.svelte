@@ -1,6 +1,7 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown } from '@lucide/svelte';
 	import Device from './Device.svelte';
+	import Gallery from './Gallery.svelte';
 	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
 
@@ -89,6 +90,7 @@
 	}
 
 	let imageNote = $state('');
+	let gallery = $state(false);
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
 	async function upload(e) {
@@ -284,10 +286,10 @@
 						<img src={resolve(item.meta.image)} alt={item.meta.image} />
 					</button>
 				{/if}
-				<select bind:value={item.meta.image}>
-					<option value="">none</option>
-					{#each pictures as name}<option value={name}>{name}</option>{/each}
-				</select>
+				<button class="choose" title="pick the main image" onclick={() => (gallery = true)}>
+					{item.meta.image || 'none'}
+					<ChevronDown size={18} />
+				</button>
 				<label class="pill square" title="upload a new main image">
 					<ImagePlus size={18} />
 					<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
@@ -373,6 +375,10 @@
 	</div>
 {/if}
 
+{#if gallery}
+	<Gallery images={pictures} {resolve} current={item.meta.image} ondone={(name) => ((gallery = false), name !== null && (item.meta.image = name))} />
+{/if}
+
 {#if !item.isNew}
 	<button class="pill danger delete" disabled={!!busy} onclick={remove}><Trash2 size={18} /> delete</button>
 {/if}
@@ -456,8 +462,29 @@
 		height: 100%;
 	}
 
-	.picker select {
+	.choose {
+		display: flex;
 		flex: 1;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0 1rem;
+		border: 1px solid var(--glass-edge);
+		border-radius: 0.9rem;
+		font: inherit;
+		font-size: 16px;
+		color: var(--fg);
+		background: var(--glass);
+		cursor: pointer;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		text-align: left;
+	}
+
+	.choose :global(svg) {
+		flex: none;
+		color: var(--muted);
 	}
 
 	.square {
