@@ -862,6 +862,10 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		margin-top: 0.15rem;
+	}
+
+	.media .title small {
+		margin-top: 0.45rem;
 		font-size: 0.8rem;
 		font-weight: 400;
 		color: var(--muted);
