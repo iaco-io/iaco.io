@@ -1,4 +1,6 @@
 ---
 title: support
 redirect: /
+alias:
+  - 🫶
 ---
