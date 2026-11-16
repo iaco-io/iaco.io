@@ -60,10 +60,16 @@
 		height: 2.4rem;
 		padding: 0 0.9rem;
 		border: 0;
-		border-radius: 999px;
-		background: none;
+		border-radius: 0.9rem;
+		background: transparent;
 		color: var(--fg);
 		cursor: pointer;
+		transition: background 0.3s ease;
+	}
+
+	/* a soft tile behind it while the rain plays */
+	.rain.playing {
+		background: color-mix(in srgb, var(--accent) 12%, transparent);
 	}
 
 	.icons {
