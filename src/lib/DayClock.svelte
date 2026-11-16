@@ -61,6 +61,8 @@
 			for (const n of [n0 - 1, n0]) {
 				const id = n * 8 + lane;
 				const start = n * BEAT + offset + (random(id) - 0.5) * 120;
+				// no new drops start while it thunders; those already falling finish
+				if (((start % 8640) + 8640) % 8640 < 864) continue;
 				const p = (now_ms - start) / FALL;
 				if (p >= 0 && p < 1) list.push({ id, x: x + (random(id + 0.5) - 0.5) * 0.8, p });
 			}
