@@ -7,7 +7,6 @@
 		{ value: 'system', label: 'system', icon: Monitor },
 		{ value: 'dark', label: 'dark', icon: Moon }
 	];
-	const bar = { light: '#f3f7fb', dark: '#1a2739' };
 
 	let theme = $state('system');
 
@@ -32,12 +31,6 @@
 		const root = document.documentElement;
 		if (value === 'system') delete root.dataset.theme;
 		else root.dataset.theme = value;
-
-		// keep the browser / status bar colour in sync
-		for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
-			const scheme = meta.getAttribute('media')?.includes('dark') ? 'dark' : 'light';
-			meta.setAttribute('content', bar[value === 'system' ? scheme : value]);
-		}
 
 		try {
 			if (value === 'system') localStorage.removeItem('theme');
