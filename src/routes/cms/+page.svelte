@@ -426,8 +426,19 @@
 	main.centered {
 		display: grid;
 		place-items: center;
-		min-height: 100svh;
+		height: 100dvh;
 		padding-block: 0;
+		/* nothing to scroll on the login screen */
+		overflow: hidden;
+		touch-action: none;
+	}
+
+	:global(html:has(main.centered)) {
+		min-height: 0;
+	}
+
+	:global(body:has(main.centered)) {
+		min-height: 0;
 	}
 
 	/* leave room for the menu button at the top right */
