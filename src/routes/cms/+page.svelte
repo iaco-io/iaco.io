@@ -116,26 +116,28 @@
 	}
 
 	async function save() {
-		if (!api || !editing) return;
-		editing.meta.alias = editing.meta.alias.map((x) => x.trim().replace(/^\/+|\/+$/g, '')).filter(Boolean);
-		const { kind: k, name, from, isNew } = editing;
+		// keep a reference: the editor may be closed (back) while saving
+		const current = editing;
+		if (!api || !current) return;
+		current.meta.alias = current.meta.alias.map((x) => x.trim().replace(/^\/+|\/+$/g, '')).filter(Boolean);
+		const { kind: k, name, from, isNew } = current;
 		const path = fileOf(k, name);
 		const renamed = !isNew && name !== from;
 		if ((isNew || renamed) && files.includes(path)) return flash(`${name} already exists`);
 		try {
 			// redirects have no body to encrypt
-			const file = serialize(editing.meta, k === 'redirects' ? '' : await encrypt(editing.body));
+			const file = serialize(current.meta, k === 'redirects' ? '' : await encrypt(current.body));
 			const message = `cms: ${isNew ? 'add' : renamed ? `rename ${from} to` : 'update'} ${k}/${name}`;
-			const sha = await api.write(path, utf8ToBase64(file), renamed ? undefined : editing.sha, message);
-			if (renamed && editing.sha) {
-				await api.remove(fileOf(k, from), editing.sha, message);
+			const sha = await api.write(path, utf8ToBase64(file), renamed ? undefined : current.sha, message);
+			if (renamed && current.sha) {
+				await api.remove(fileOf(k, from), current.sha, message);
 				files = files.filter((f) => f !== fileOf(k, from));
 			}
-			editing.sha = sha;
-			editing.from = name;
-			editing.isNew = false;
+			current.sha = sha;
+			current.from = name;
+			current.isNew = false;
 			if (!files.includes(path)) files.push(path);
-			flash(editing.meta.draft ? 'saved as draft' : 'saved. the site updates in a minute or two');
+			flash(current.meta.draft ? 'saved as draft' : 'saved. the site updates in a minute or two');
 			refresh();
 		} catch (err) {
 			flash(/** @type {Error} */ (err).message);
@@ -161,9 +163,10 @@
 	}
 
 	async function remove() {
-		if (!api || !editing?.sha) return;
+		const current = editing;
+		if (!api || !current?.sha) return;
 		try {
-			await api.remove(fileOf(editing.kind, editing.from), editing.sha, `cms: delete ${editing.kind}/${editing.name}`);
+			await api.remove(fileOf(current.kind, current.from), current.sha, `cms: delete ${current.kind}/${current.from}`);
 			editing = null;
 			flash('deleted');
 			refresh();
