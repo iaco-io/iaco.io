@@ -1,6 +1,6 @@
 ---
 title: youtube-join
-redirect: https://www.youtube.com/@iaco?sub_confirmation=1
+redirect: https://youtube.com/@iaco?sub_confirmation=1
 alias:
   - youtube/join
   - yt/join
