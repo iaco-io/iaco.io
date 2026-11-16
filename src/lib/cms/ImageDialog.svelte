@@ -173,7 +173,7 @@
 					<button class="pill danger">{swapping ? 'replace & delete' : 'delete'}</button>
 				{/if}
 			{:else}
-				<button class="pill primary" disabled={!next || (manage && taken)}>{#if manage}<Save size={18} aria-label="save" />{:else}upload{/if}</button>
+				<button class="pill primary" aria-label={manage ? 'save' : null} disabled={!next || (manage && taken)}>{#if manage}<Save size={18} />{:else}upload{/if}</button>
 			{/if}
 		</div>
 	</form>

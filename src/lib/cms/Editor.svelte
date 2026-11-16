@@ -179,8 +179,10 @@
 		...(item.meta.image ? [item.meta.image] : []),
 		...[...item.body.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((m) => m[1])
 	]);
-	const shown = $derived(images.filter((name) => used.includes(name)));
-	const others = $derived(images.filter((name) => !used.includes(name)));
+	// only images here; sounds and other files live in the media tab
+	const pictures = $derived(images.filter((name) => /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name)));
+	const shown = $derived(pictures.filter((name) => used.includes(name)));
+	const others = $derived(pictures.filter((name) => !used.includes(name)));
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
 	function uploadCover(e) {
@@ -278,7 +280,7 @@
 				{/if}
 				<select bind:value={item.meta.image}>
 					<option value="">none</option>
-					{#each images as name}<option value={name}>{name}</option>{/each}
+					{#each pictures as name}<option value={name}>{name}</option>{/each}
 				</select>
 				<label class="pill square" title="upload a new main image">
 					<ImagePlus size={18} />

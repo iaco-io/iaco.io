@@ -83,8 +83,8 @@
 	color: #c0504d;
 }
 
-/* buttons with only an icon are round */
-.cms .pill:has(> svg:only-child) {
+/* buttons with only an icon (and a label for screen readers) are round; ones with text keep their padding */
+.cms .pill[aria-label]:has(> svg:only-child) {
 	width: 2.75rem;
 	padding: 0;
 }
