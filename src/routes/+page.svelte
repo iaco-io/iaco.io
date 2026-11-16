@@ -6,6 +6,8 @@
 		{ icon: Waves, title: 'digital calm', text: 'using technology without being used by it.' },
 		{ icon: Feather, title: 'notes', text: 'short reflections, written slowly.' }
 	];
+
+	let { data } = $props();
 </script>
 
 <svelte:head>
@@ -19,6 +21,17 @@
 		<p class="lead">writing on wellness, habits and a gentler digital life.</p>
 	</section>
 
+	{#if data.posts.length}
+		<section id="latest" class="topics">
+			{#each data.posts as post}
+				<a class="card glass post" href="/posts/{post.slug}/">
+					{#if post.image}<img src={post.image} alt="" />{/if}
+					<h2>{post.title}</h2>
+					<p>{post.description}</p>
+				</a>
+			{/each}
+		</section>
+	{:else}
 	<section id="latest" class="topics">
 		{#each topics as { icon: Icon, title, text }}
 			<article class="card glass">
@@ -33,6 +46,7 @@
 		<h2>first posts are on their way.</h2>
 		<p>install this site as an app to read offline.</p>
 	</section>
+	{/if}
 </main>
 
 <style>
@@ -85,6 +99,24 @@
 		padding: 1.75rem;
 		border-radius: 1.5rem;
 		color: var(--accent);
+	}
+
+	.post {
+		display: block;
+		transition: transform 0.2s ease;
+	}
+
+	.post:hover {
+		transform: translateY(-2px);
+	}
+
+	.post img {
+		display: block;
+		width: calc(100% + 3.5rem);
+		margin: -1.75rem -1.75rem 0;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		border-radius: 1.5rem 1.5rem 0 0;
 	}
 
 	.card h2 {

@@ -1,4 +1,4 @@
-import { posts } from '#lib/posts.js';
+import { posts } from '#lib/content.js';
 
 export const prerender = true;
 
@@ -20,7 +20,7 @@ export function GET() {
 			<title>${escape(post.title)}</title>
 			<link>${link}</link>
 			<guid>${link}</guid>
-			${post.date ? `<pubDate>${post.date.toUTCString()}</pubDate>` : ''}
+			${post.date ? `<pubDate>${new Date(post.date).toUTCString()}</pubDate>` : ''}
 			<description><![CDATA[${html}]]></description>
 			${image ? `<media:content url="${image}" medium="image" />` : ''}
 		</item>`;

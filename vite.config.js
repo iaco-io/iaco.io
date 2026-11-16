@@ -11,7 +11,9 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter({ fallback: '404.html' })
+			adapter: adapter({ fallback: '404.html' }),
+			// posts and pages may not exist yet
+			prerender: { handleUnseenRoutes: 'ignore' }
 		})
 	]
 });

@@ -3,17 +3,20 @@
 	import { onMount } from 'svelte';
 	import { Menu as MenuIcon, ArrowDown, ArrowUp } from '@lucide/svelte';
 	import Menu from '#lib/Menu.svelte';
+	import { page } from '$app/state';
 
-	/** @type {{ children: import('svelte').Snippet }} */
-	let { children } = $props();
+	/** @type {{ children: import('svelte').Snippet, data: { pages: { slug: string, title: string }[] } }} */
+	let { children, data } = $props();
 
-	const links = [
+	const links = $derived([
 		{ href: '/', label: 'home' },
 		{ href: '/#latest', label: 'latest' },
-		{ href: '/#about', label: 'about' }
-	];
+		...data.pages.map((p) => ({ href: `/${p.slug}/`, label: p.title }))
+	]);
 
 	let open = $state(false);
+	// the cms has its own interface
+	const cms = $derived(page.url.pathname.startsWith('/cms'));
 	let atTop = $state(true);
 
 	const onscroll = () => (atTop = window.scrollY < window.innerHeight / 3);
@@ -23,7 +26,7 @@
 	/** @param {TouchEvent} e */
 	const ontouchstart = (e) => {
 		const { clientX: x, clientY: y } = e.touches[0];
-		start = open || x > window.innerWidth - 32 ? { x, y } : null;
+		start = !cms && (open || x > window.innerWidth - 32) ? { x, y } : null;
 	};
 	/** @param {TouchEvent} e */
 	const ontouchend = (e) => {
@@ -49,22 +52,26 @@
 
 <div class="statusbar glass" aria-hidden="true"></div>
 
-<header>
-	<a class="logo" href="/">iaco</a>
-</header>
+{#if !cms}
+	<header>
+		<a class="logo" href="/">iaco</a>
+	</header>
+{/if}
 
 {@render children()}
 
-<button class="round glass menu" onclick={() => (open = true)} aria-label="Open menu">
-	<span>menu</span>
-	<MenuIcon size={20} />
-</button>
+{#if !cms}
+	<button class="round glass menu" onclick={() => (open = true)} aria-label="Open menu">
+		<span>menu</span>
+		<MenuIcon size={20} />
+	</button>
 
-<button class="round glass jump" onclick={jump} aria-label={atTop ? 'Scroll to bottom' : 'Scroll to top'}>
-	{#if atTop}<ArrowDown size={20} />{:else}<ArrowUp size={20} />{/if}
-</button>
+	<button class="round glass jump" onclick={jump} aria-label={atTop ? 'Scroll to bottom' : 'Scroll to top'}>
+		{#if atTop}<ArrowDown size={20} />{:else}<ArrowUp size={20} />{/if}
+	</button>
 
-<Menu bind:open {links} />
+	<Menu bind:open {links} />
+{/if}
 
 <style>
 	.statusbar {

@@ -1,0 +1,72 @@
+/* shared form styles for /cms, on top of the blog theme */
+.cms input,
+.cms textarea,
+.cms select {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--glass-edge);
+	border-radius: 0.9rem;
+	font: inherit;
+	color: var(--fg);
+	background: var(--glass);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	outline: none;
+	/* 16px stops ios from zooming into fields */
+	font-size: 16px;
+}
+
+.cms textarea {
+	resize: vertical;
+	line-height: 1.6;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 15px;
+}
+
+.cms input:focus,
+.cms textarea:focus {
+	border-color: var(--soft);
+}
+
+.cms .pill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	height: 2.75rem;
+	padding: 0 1.1rem;
+	border: 1px solid var(--glass-edge);
+	border-radius: 999px;
+	font: inherit;
+	font-size: 0.95rem;
+	font-weight: 500;
+	color: var(--fg);
+	background: var(--glass);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	box-shadow: 0 4px 16px var(--shadow);
+	cursor: pointer;
+	white-space: nowrap;
+	transition:
+		transform 0.15s ease,
+		opacity 0.15s ease;
+}
+
+.cms .pill:active {
+	transform: scale(0.96);
+}
+
+.cms .pill:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.cms .pill.primary {
+	color: var(--bg);
+	background: var(--fg);
+	border-color: transparent;
+}
+
+.cms .pill.danger {
+	color: #c0504d;
+}
