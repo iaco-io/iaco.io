@@ -26,10 +26,13 @@
 		-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Inter, system-ui,
 		sans-serif;
 	color: var(--fg);
-	/* on the root, the background covers the whole screen, also under the clock and safari's toolbar */
+	/* safari paints the space past the page (under the clock, behind its toolbar) in plain --bg only,
+	   so the glows fade into --bg at the very top and bottom instead of being cut there */
 	background:
-		radial-gradient(120% 60% at 100% 0%, var(--glow-1), transparent 60%),
-		radial-gradient(90% 50% at 0% 100%, var(--glow-2), transparent 60%),
+		linear-gradient(var(--bg), transparent) top / 100% 18vh no-repeat,
+		linear-gradient(transparent, var(--bg)) bottom / 100% 18vh no-repeat,
+		radial-gradient(120% 60% at 100% 0%, var(--glow-1), transparent 60%) no-repeat,
+		radial-gradient(90% 50% at 0% 100%, var(--glow-2), transparent 60%) no-repeat,
 		var(--bg);
 	-webkit-font-smoothing: antialiased;
 	-webkit-tap-highlight-color: transparent;
