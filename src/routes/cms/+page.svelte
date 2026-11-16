@@ -202,7 +202,6 @@
 					return { kind: /** @type {Kind} */ (k), name, sha, meta: toMeta(meta), body };
 				})
 			);
-			entries.sort((a, b) => b.name.localeCompare(a.name, 'en', { numeric: true }));
 			try {
 				store().setItem('cms-cache', JSON.stringify({ files, entries }));
 			} catch {}
@@ -351,7 +350,10 @@
 </script>
 
 {#snippet listOf(/** @type {Kind} */ k)}
-	{@const items = entries.filter((e) => e.kind === k)}
+	<!-- posts: newest (highest file name) first; pages: a to z -->
+	{@const items = entries
+		.filter((e) => e.kind === k)
+		.sort((a, b) => (k === 'pages' ? 1 : -1) * a.name.localeCompare(b.name, 'en', { numeric: true }))}
 	{@const fresh = newPartials.filter(([, p]) => p.kind === k)}
 	{#if loading && !entries.length}
 		<p class="empty">loading…</p>
