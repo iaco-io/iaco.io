@@ -75,7 +75,7 @@
 		transition: background 0.3s ease;
 	}
 
-	/* a soft tile behind it only while it's being pressed */
+	/* a soft pill behind it only while it's being pressed */
 	.rain:active {
 		background: color-mix(in srgb, var(--accent) 10%, transparent);
 		transition: none;
