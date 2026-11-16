@@ -369,6 +369,11 @@
 
 	<Panel bind:open={menu} label="cms">
 		<ul class="entries">
+			<li class="separated">
+				<button class="entry" onclick={() => ((menu = false), logout())}>
+					<Lock size={24} strokeWidth={2.25} /> lock
+				</button>
+			</li>
 			{#each KINDS as { kind: k, icon: Icon }}
 				<li>
 					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
@@ -377,11 +382,6 @@
 					</button>
 				</li>
 			{/each}
-			<li>
-				<button class="entry" onclick={() => ((menu = false), logout())}>
-					<Lock size={24} strokeWidth={2.25} /> lock
-				</button>
-			</li>
 		</ul>
 		{#snippet bottom()}
 			<ThemeToggle />
@@ -413,6 +413,12 @@
 		font-size: 1rem;
 		font-weight: 600;
 		color: var(--soft);
+	}
+
+	.separated {
+		margin-bottom: 0.75rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid var(--glass-edge);
 	}
 
 	/* the opposite of the glass buttons: solid cream on blue, ink on cream */
