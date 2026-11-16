@@ -13,6 +13,7 @@
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import { strip } from '#lib/cms/strip.js';
+	import DayClock from '#lib/DayClock.svelte';
 	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
@@ -677,6 +678,8 @@
 	</Fabs>
 
 	<Panel bind:open={menu} label="cms">
+		<!-- the blog's little clock, top left of the menu, level with the close button -->
+		<div class="menu-clock"><DayClock inline /></div>
 		<button class="entry" onclick={() => ((menu = false), logout())}>
 			<Lock size={24} strokeWidth={1.75} /> lock
 		</button>
@@ -838,6 +841,12 @@
 	}
 
 	/* the opposite of the glass buttons: solid cream on blue, ink on cream */
+	.menu-clock {
+		position: absolute;
+		top: calc(var(--bleed) + var(--top) + var(--gap));
+		left: 1.5rem;
+	}
+
 	.create {
 		color: var(--bg);
 		background: var(--fg);

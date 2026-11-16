@@ -3,6 +3,9 @@
 	// next to it: the date as year and day of the year (2026-32•0), and the time as how much of the day has passed (45.67%)
 	import { onMount } from 'svelte';
 
+	/** inline: sits where it's placed (e.g. in the cms menu) instead of the page's top right */
+	let { inline = false } = $props();
+
 	let now = $state(/** @type {Date | null} */ (null));
 	onMount(() => {
 		now = new Date();
@@ -44,7 +47,7 @@
 </script>
 
 {#if now}
-	<div class="dayclock" title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
+	<div class="dayclock" class:inline title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
 		<!-- an old grandfather clock: a hood with a swan-neck pediment and finials, the face, a narrow case
@@ -126,9 +129,13 @@
 		transform-origin: 10px 14.3px;
 	}
 
+	.inline {
+		position: static;
+	}
+
 	/* on big screens the menu button sits at the top right */
 	@media (min-width: 768px) {
-		.dayclock {
+		.dayclock:not(.inline) {
 			right: calc(var(--gap) + 7.5rem);
 		}
 	}
