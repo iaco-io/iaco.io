@@ -648,18 +648,24 @@
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
 	}
 
+	/* the image fills the card's full height on the left; the card's own rounded corners clip it */
 	.row.media {
-		padding: 0.85rem 1.25rem 0.85rem 0.85rem;
+		align-items: stretch;
+		min-height: 5rem;
+		overflow: hidden;
+		padding: 0 1.25rem 0 0;
+	}
+
+	.row.media > :not(.preview) {
+		align-self: center;
+		margin-block: 0.85rem;
 	}
 
 	.preview {
 		display: grid;
 		flex: none;
 		place-items: center;
-		width: 3.5rem;
-		height: 3.5rem;
-		overflow: hidden;
-		border-radius: 0.75rem;
+		width: 5rem;
 		background: var(--panel);
 	}
 
