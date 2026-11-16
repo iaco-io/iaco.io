@@ -30,17 +30,18 @@
 
 <button class="rain" class:playing onclick={toggle} aria-pressed={playing} aria-label="rain">
 	<span class="icons">
-		<!-- rain falling on waves: drops fall and the waves flow while it plays -->
+		<!-- three waves; while it plays, the top one turns into falling rain and the others flow -->
 		<svg class="wave" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
 			<defs><clipPath id="rain-clip"><rect x="1" y="0" width="22" height="24" /></clipPath></defs>
 			<g class="drops">
-				<path class="d1" d="M6 2v3" />
-				<path class="d2" d="M12 4v3" />
-				<path class="d3" d="M18 2v3" />
+				<path class="d1" d="M6 3v3" />
+				<path class="d2" d="M12 5v3" />
+				<path class="d3" d="M18 3v3" />
 			</g>
 			<g clip-path="url(#rain-clip)">
-				<path class="w1" d="M-24 14 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
-				<path class="w2" d="M-24 19.5 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+				<path class="w0" d="M-24 6 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+				<path class="w1" d="M-24 12 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
+				<path class="w2" d="M-24 18 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0 q3 -2.4 6 0 t6 0" />
 			</g>
 		</svg>
 		<!-- two notes that take turns to rise -->
@@ -89,6 +90,21 @@
 	.playing .wave .w2 {
 		animation-duration: 3.2s;
 		animation-direction: reverse;
+	}
+
+	/* the top wave gives way to the rain */
+	.wave .w0,
+	.drops {
+		transition: opacity 0.4s ease;
+	}
+
+	.drops,
+	.playing .wave .w0 {
+		opacity: 0;
+	}
+
+	.playing .drops {
+		opacity: 1;
 	}
 
 	/* drops fall and fade, one after another */
