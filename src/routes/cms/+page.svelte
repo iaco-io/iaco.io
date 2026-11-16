@@ -397,10 +397,10 @@
 	/** @param {Record<string, any>} props @returns {Promise<any>} */
 	const ask = (props) => new Promise((done) => (dialog = { props, done: (r) => ((dialog = null), done(r)) }));
 
-	/** where a post or page can be opened: its url, its number, then its aliases */
+	/** where a post or page can be opened: its number, its url, then its aliases */
 	function addresses(/** @type {Entry} */ entry) {
 		const { url, id } = urls(entry.kind, entry.name);
-		return [url, id && `/${id}`, ...entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`)]
+		return [id && `/${id}`, url, ...entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`)]
 			.filter(Boolean)
 			.map((x) => x.replace(/(.)\/$/, '$1'));
 	}
