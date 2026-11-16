@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, Eye, Pencil, ImagePlus, Save, Trash2, Plus, X } from '@lucide/svelte';
+	import { ArrowLeft, Eye, Pencil, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
 	import Article from '../Article.svelte';
 	import { urls, serialize } from '../markdown.js';
 
@@ -84,6 +84,35 @@
 		});
 	}
 
+	/** uploads a file and makes it the main image */
+	async function setCover(/** @type {File} */ file) {
+		await run('uploading…', async () => (item.meta.image = await onupload(file)));
+	}
+
+	let coverNote = $state('');
+
+	/** @param {Event & { currentTarget: HTMLInputElement }} e */
+	function uploadCover(e) {
+		const file = e.currentTarget.files?.[0];
+		e.currentTarget.value = '';
+		if (file) setCover(file);
+	}
+
+	async function pasteCover() {
+		coverNote = '';
+		try {
+			for (const entry of await navigator.clipboard.read()) {
+				const type = entry.types.find((t) => t.startsWith('image/'));
+				if (!type) continue;
+				const blob = await entry.getType(type);
+				return await setCover(new File([blob], `image-${Date.now()}.${type.split('/')[1]}`, { type }));
+			}
+			coverNote = 'no image in the clipboard';
+		} catch {
+			coverNote = "couldn't read the clipboard";
+		}
+	}
+
 	async function remove() {
 		if (!confirm(`delete "${item.meta.title || item.name}"? this can't be undone here.`)) return;
 		await run('deleting…', ondelete);
@@ -132,13 +161,23 @@
 				<span>description</span>
 				<input bind:value={item.meta.description} placeholder="a short summary for lists and rss" />
 			</label>
-			<label>
-				<span>main image</span>
-				<select bind:value={item.meta.image}>
-					<option value="">none</option>
-					{#each images as name}<option value={name}>{name}</option>{/each}
-				</select>
-			</label>
+			<div>
+				<span class="label">main image</span>
+				<div class="picker">
+					<select bind:value={item.meta.image}>
+						<option value="">none</option>
+						{#each images as name}<option value={name}>{name}</option>{/each}
+					</select>
+					<label class="pill square" title="upload a new main image">
+						<Upload size={18} />
+						<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
+					</label>
+					<button class="pill square" title="paste main image from clipboard" disabled={!!busy} onclick={pasteCover}>
+						<ClipboardPaste size={18} />
+					</button>
+				</div>
+				{#if coverNote}<small class="note">{coverNote}</small>{/if}
+			</div>
 		{/if}
 		<label class="wide">
 			<span>redirect to</span>
@@ -229,6 +268,25 @@
 		margin-bottom: 0.4rem;
 		font-size: 0.85rem;
 		font-weight: 600;
+		color: var(--muted);
+	}
+
+	.picker {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.square {
+		flex: none;
+		width: 2.9rem;
+		height: auto;
+		padding: 0;
+		box-shadow: none;
+	}
+
+	.note {
+		display: block;
+		margin-top: 0.4rem;
 		color: var(--muted);
 	}
 
