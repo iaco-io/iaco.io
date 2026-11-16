@@ -47,44 +47,56 @@
 	let shift = $state(0);
 	const progress = $derived(drag ? 1 - shift / drag.width : open ? 1 : 0);
 
+	// a touch only becomes a drag once it clearly moves sideways, so taps (like on the round buttons) stay taps
+	/** @type {NonNullable<typeof drag> | null} */
+	let start = null;
+
 	/** @param {TouchEvent} e */
 	function touchstart(e) {
 		const { clientX: x, clientY: y } = e.touches[0];
 		// closed: only from the right edge; open: anywhere
-		if (!open && (!edge || x < window.innerWidth - 44)) return;
-		const width = panel?.offsetWidth ?? 320;
-		drag = { x, y, from: open, width, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0 };
-		shift = open ? 0 : width;
-		if (!open) place();
+		if (!open && (!edge || x < window.innerWidth - 44)) return void (start = null);
+		start = { x, y, from: open, width: panel?.offsetWidth ?? 320, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0 };
 	}
 
 	/** @param {TouchEvent} e */
 	function touchmove(e) {
-		if (!drag) return;
+		const d = drag ?? start;
+		if (!d) return;
 		const { clientX: x, clientY: y } = e.touches[0];
-		const dx = x - drag.x;
-		const dy = y - drag.y;
+		const dx = x - d.x;
+		const dy = y - d.y;
 		// decide early whether this is a sideways drag or a scroll; lean towards sideways
-		if (drag.horizontal === null && Math.hypot(dx, dy) > 5) drag.horizontal = Math.abs(dx) > Math.abs(dy) * 0.6;
+		if (d.horizontal === null && Math.hypot(dx, dy) > 5) d.horizontal = Math.abs(dx) > Math.abs(dy) * 0.6;
 		// finger speed in px/ms (negative = moving left), for flicks
-		const dt = e.timeStamp - drag.lastT;
-		if (dt > 0) drag.speed = drag.speed * 0.5 + ((x - drag.lastX) / dt) * 0.5;
-		drag.lastX = x;
-		drag.lastT = e.timeStamp;
-		if (drag.horizontal === false && !open) return void (drag = null);
+		const dt = e.timeStamp - d.lastT;
+		if (dt > 0) d.speed = d.speed * 0.5 + ((x - d.lastX) / dt) * 0.5;
+		d.lastX = x;
+		d.lastT = e.timeStamp;
+		if (open) e.preventDefault();
+		if (!d.horizontal) {
+			if (d.horizontal === false) start = null;
+			return;
+		}
 		e.preventDefault();
-		if (drag.horizontal) shift = Math.min(drag.width, Math.max(0, (drag.from ? 0 : drag.width) + dx));
+		if (!drag) {
+			if (!open) place();
+			drag = d;
+			start = null;
+		}
+		shift = Math.min(d.width, Math.max(0, (d.from ? 0 : d.width) + dx));
 	}
 
 	function touchend() {
+		start = null;
 		if (!drag) return;
-		const moved = drag.horizontal;
 		const ratio = 1 - shift / drag.width;
 		const speed = drag.speed;
 		drag = null;
 		// a quick flick decides on its own; otherwise it settles on the nearer side
-		if (moved) open = speed < -0.3 ? true : speed > 0.3 ? false : ratio > 0.4;
-		else if (!open) height = 0;
+		const next = speed < -0.3 ? true : speed > 0.3 ? false : ratio > 0.4;
+		if (next === open && !open) height = 0;
+		open = next;
 	}
 
 	$effect(() => {
