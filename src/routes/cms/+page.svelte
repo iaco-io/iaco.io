@@ -360,6 +360,7 @@
 		font-size: 0.9rem;
 		font-weight: 500;
 		box-shadow: 0 6px 24px var(--shadow);
-		white-space: nowrap;
+		max-width: calc(100vw - 2rem);
+		text-align: center;
 	}
 </style>

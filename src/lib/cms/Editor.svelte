@@ -276,6 +276,10 @@
 		gap: 0.5rem;
 	}
 
+	.picker select {
+		flex: 1;
+	}
+
 	.square {
 		flex: none;
 		width: 2.9rem;
@@ -424,6 +428,7 @@
 	}
 
 	.thumb img {
+		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
