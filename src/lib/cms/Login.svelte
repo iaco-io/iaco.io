@@ -1,5 +1,5 @@
 <script>
-	import { KeyRound } from '@lucide/svelte';
+	import { KeyRound, Feather } from '@lucide/svelte';
 
 	/** @type {{ onlogin: (token: string) => Promise<void> }} */
 	let { onlogin } = $props();
@@ -32,18 +32,18 @@
 
 <form class="card glass" onsubmit={submit} autocomplete="on">
 	<h1>iaco.io <small>v {__VERSION__}</small></h1>
-	<p>log in with a github token that can write to the blog repo.</p>
+	<span class="feather"><Feather size={24} /></span>
 
 	<!-- lets password managers save the token under a username -->
 	<input class="hidden" type="text" name="username" autocomplete="username" value="iaco-io" readonly tabindex="-1" />
 
 	<label>
-		<span>github token</span>
 		<input
 			type="password"
 			name="password"
 			autocomplete="current-password"
-			placeholder="github_pat_…"
+			placeholder="token"
+			aria-label="github token"
 			bind:value={token}
 			oninput={autofill}
 			onchange={autofill}
@@ -60,7 +60,16 @@
 </form>
 
 <style>
+	.feather {
+		position: absolute;
+		top: 2rem;
+		right: 2rem;
+		display: flex;
+		color: var(--soft);
+	}
+
 	form {
+		position: relative;
 		width: min(24rem, 100%);
 		margin: 0 auto;
 		padding: 2rem;
@@ -69,7 +78,7 @@
 	}
 
 	h1 {
-		margin: 0;
+		margin: 0 0 1.25rem;
 		display: flex;
 		align-items: center;
 		gap: 0.6rem;
@@ -84,20 +93,6 @@
 		font-size: 0.8rem;
 		font-weight: 500;
 		letter-spacing: 0;
-		color: var(--muted);
-	}
-
-	p {
-		margin: 0.5rem 0 1.5rem;
-		color: var(--muted);
-		line-height: 1.45;
-	}
-
-	label span {
-		display: block;
-		margin-bottom: 0.4rem;
-		font-size: 0.85rem;
-		font-weight: 600;
 		color: var(--muted);
 	}
 

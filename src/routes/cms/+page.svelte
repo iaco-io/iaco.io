@@ -329,7 +329,7 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="cms">
+<main class="cms" class:centered={!api}>
 	{#if !api}
 		<Login onlogin={login} />
 	{:else if editing}
@@ -420,6 +420,14 @@
 		max-width: 52rem;
 		margin: 0 auto;
 		padding: calc(var(--top) + 3rem) 1.25rem 6rem;
+	}
+
+	/* the login card sits in the middle of the screen */
+	main.centered {
+		display: grid;
+		place-items: center;
+		min-height: 100svh;
+		padding-block: 0;
 	}
 
 	/* leave room for the menu button at the top right */
