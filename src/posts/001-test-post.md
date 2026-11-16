@@ -1,11 +1,11 @@
 ---
-title: testing my blog with a test post
+title: testing my blog with a test post what happens if the title is very very bery long
 description: just a short description describing what I want to say in this post for everyone to read
 image: 8d92eb46-439e-4f83-b709-057e31b3164f.jpeg
 date: 2026-11-16
 ---
 enc:v1:
-B4Jx38fVkX7mKbVCliSIUS9harqTTCSTQ0W43Y4r1eRamKYQNnXx6RpO9kLXVJr097Mkmdpgc70P
-zC6DNiwvi7771VAg1ATILHepD7g8L8vkpB2Pc0B+e8IWdSe2dnyM7jAs2bzKkz/+H+jDMGsrSXOF
-Lvmj26w2u00RgZfMRSUVa/QWlayH4Xhdy9tbzCu5EJxgXUIu/sm5CTbiwUbBEGS86jsITZzdCtKw
-tb0N/I3cv2rgeOjvzHCQX40N55OXFw==
+Yn+daqUxMoQGApbtYvlOJhX2hPuh8D+pOvIDrkBabB0v8LxAnnrJR2paN6k/UeM92KmOvQONtHqB
+wlnoveZPf0KEbZHkfd6XbgkploG3xqk13DAQb2FNzeHQ5qnlnaV9R1THlUgrOhzvJZTqWmztEfzr
+avNpwcRkNwQtZu/CQNeC5BAfrf8KS12p/gp+y3H2WJP6nKw7M1MzPjA1OSqlXqgbbcFVGz0+WpX0
+8XS4bDSckOn4+8PHmygSWdQcIwY5zg==
