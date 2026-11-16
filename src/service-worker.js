@@ -15,6 +15,45 @@ const isPostMedia = (/** @type {string} */ path) =>
 // only the app itself is saved on install: code, styles, icons and pages
 const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter((p) => !isMedia(p) && !isPostMedia(p));
 
+// saved images not opened for 10 days are dropped. the last time each was opened is kept in the media cache itself
+const KEEP = 10 * 24 * 60 * 60 * 1000;
+const SEEN = '/__media-seen';
+/** @type {Record<string, number> | null} */
+let seen = null;
+let pruned = 0;
+
+async function seenTimes() {
+	if (!seen) seen = (await (await caches.open(MEDIA)).match(SEEN).then((r) => r?.json()).catch(() => null)) ?? {};
+	return /** @type {Record<string, number>} */ (seen);
+}
+
+async function saveSeen() {
+	await (await caches.open(MEDIA)).put(SEEN, new Response(JSON.stringify(await seenTimes())));
+}
+
+/** @param {string} path */
+async function opened(path) {
+	(await seenTimes())[path] = Date.now();
+	await saveSeen();
+}
+
+async function prune() {
+	pruned = Date.now();
+	const media = await caches.open(MEDIA);
+	const times = await seenTimes();
+	for (const request of await media.keys()) {
+		const path = new URL(request.url).pathname;
+		if (path === SEEN) continue;
+		// saved before this was tracked: count from now
+		if (!times[path]) times[path] = pruned;
+		else if (pruned - times[path] > KEEP) {
+			await media.delete(request);
+			delete times[path];
+		}
+	}
+	await saveSeen();
+}
+
 // take over as soon as a new version is installed, so updates show on next load
 self.addEventListener('install', (event) => {
 	self.skipWaiting();
@@ -26,6 +65,7 @@ self.addEventListener('activate', (event) => {
 		caches
 			.keys()
 			.then((keys) => Promise.all(keys.filter((key) => key !== CACHE && key !== MEDIA).map((key) => caches.delete(key))))
+			.then(prune)
 			.then(() => self.clients.claim())
 	);
 });
@@ -35,6 +75,8 @@ self.addEventListener('fetch', (event) => {
 	if (event.request.method !== 'GET') return;
 	const url = new URL(event.request.url);
 	if (url.origin !== location.origin || isMedia(url.pathname)) return;
+	// remember when images are opened, and tidy up old ones about once an hour
+	if (isPostMedia(url.pathname)) event.waitUntil(opened(url.pathname).then(() => (Date.now() - pruned > 3600_000 ? prune() : undefined)));
 
 	event.respondWith(
 		(async () => {
