@@ -4,6 +4,7 @@
 	import Panel from './Panel.svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import Social from './Social.svelte';
+	import Rain from './Rain.svelte';
 
 	/** @type {{ open: boolean, links: { href: string, label: string, icon?: import('svelte').Component<any> }[] }} */
 	let { open = $bindable(), links } = $props();
@@ -39,6 +40,7 @@
 		</li>
 	</ul>
 	<div class="social"><Social /></div>
+	<div class="rain"><Rain /></div>
 	{#snippet bottom()}
 		<ThemeToggle />
 		<Refresh />
@@ -52,7 +54,13 @@
 <style>
 	.social {
 		margin-top: auto;
-		margin-bottom: 2.5rem;
+		margin-bottom: 1.75rem;
+	}
+
+	.rain {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.75rem;
 	}
 
 	.toast {
