@@ -1,6 +1,6 @@
 <script>
 	// a little tower clock, top right. the pendulum swings each 0.864 s (a hundred-thousandth of a day).
-	// next to it: the date as year and day of the year (2026-320), and the time as how much of the day has passed (45.67%)
+	// next to it: the date as year and day of the year (2026-32•0), and the time as how much of the day has passed (45.67%)
 	import { onMount } from 'svelte';
 
 	let now = $state(/** @type {Date | null} */ (null));
@@ -21,6 +21,8 @@
 				) + 1
 			: 0
 	);
+	// the day of the year as DD•D, with a very small dot
+	const day = $derived(String(ordinal).padStart(3, '0'));
 	const percent = $derived((Math.floor((sinceMidnight / DAY) * 10_000) / 100).toFixed(2).split('.'));
 	// the hands show the usual time, the pendulum keeps in step with the day
 	const hours = $derived(now ? ((now.getHours() % 12) + now.getMinutes() / 60) * 30 : 0);
@@ -30,7 +32,7 @@
 
 {#if now}
 	<div class="dayclock" title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
-		<span class="date">{now.getFullYear()}-{String(ordinal).padStart(3, '0')}</span>
+		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
 		<svg viewBox="0 0 28 32" width="26" height="30" aria-hidden="true">
 			<path d="M14 1.5v2.5" />
@@ -64,6 +66,12 @@
 	.date {
 		font-size: 0.85rem;
 		color: var(--muted);
+	}
+
+	.dot {
+		margin: 0 0.04em;
+		font-size: 0.4em;
+		vertical-align: middle;
 	}
 
 	.time {
