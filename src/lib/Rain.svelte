@@ -66,9 +66,9 @@
 		align-items: center;
 		gap: 0.45rem;
 		height: 2.4rem;
-		padding: 0 0.9rem;
+		padding: 0 1.4rem;
 		border: 0;
-		border-radius: 0.9rem;
+		border-radius: 999px;
 		background: transparent;
 		color: var(--fg);
 		cursor: pointer;
