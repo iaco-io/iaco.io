@@ -440,9 +440,13 @@
 		color: var(--soft);
 	}
 
-	/* sections sit in the middle of the menu, between lock and the theme toggle */
+	/* sections sit in the middle of the screen */
 	:global(.panel) ul.sections {
-		margin-block: auto;
+		position: absolute;
+		top: 50%;
+		right: 2rem;
+		left: 2rem;
+		transform: translateY(-50%);
 	}
 
 	/* the opposite of the glass buttons: solid cream on blue, ink on cream */
