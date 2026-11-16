@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<title>iaco — blog</title>
+	<title>iaco.io</title>
 </svelte:head>
 
 <main>

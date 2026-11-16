@@ -22,11 +22,7 @@
 	</g>
 	<path d="M250 512 C276 470 312 440 352 438 C384 437 406 452 418 474 C404 464 388 464 380 472 C388 478 390 490 384 498 C374 486 360 484 350 490 C358 496 360 506 356 512 Z" fill="#2f63a0" stroke="#0b1f38" stroke-width="4" stroke-linejoin="round"/>
 	<path d="M352 438 C384 437 406 452 418 474 C404 464 388 464 380 472 C388 478 390 490 384 498 C374 486 360 484 350 490 C346 470 340 452 352 438 Z" fill="#f4ecdc" stroke="#0b1f38" stroke-width="4" stroke-linejoin="round"/>
-	<!-- cms: a cream badge with a feather -->
-	<circle cx="392" cy="392" r="104" fill="#f4ecdc" stroke="#0b1f38" stroke-width="10" />
-	<g transform="translate(318 318) scale(6.2)" fill="none" stroke="#0f2a47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-		<path d="M14.086 18.412A2 2 0 0112.67 19H5v-7.672a2 2 0 01.586-1.414L11.75 3.75a6 6 0 118.49 8.49z" />
-		<path d="M16 8 2 22" />
-		<path d="M17.488 15H9" />
-	</g>
+	<!-- cms: a cream pill with the word, bottom middle -->
+	<rect x="146" y="398" width="220" height="88" rx="44" fill="#f4ecdc" stroke="#0b1f38" stroke-width="8"/>
+	<text x="256" y="460" text-anchor="middle" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="2" fill="#0f2a47">cms</text>
 </svg>
