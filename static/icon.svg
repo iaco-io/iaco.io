@@ -1,48 +1,59 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 	<defs>
 		<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-			<stop offset="0" stop-color="#f4ecdc" />
-			<stop offset="1" stop-color="#e6dac2" />
+			<stop offset="0" stop-color="#ecdfc2" />
+			<stop offset="1" stop-color="#f7efdd" />
 		</linearGradient>
-		<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+		<linearGradient id="deep" x1="0" y1="0" x2="1" y2="1">
 			<stop offset="0" stop-color="#1d4e89" />
-			<stop offset="1" stop-color="#0f2a47" />
+			<stop offset="1" stop-color="#0b2240" />
 		</linearGradient>
+		<clipPath id="wave">
+			<path
+				id="body"
+				d="M0 512 V300 C30 230 90 140 190 104 C270 76 350 92 392 148 C418 184 410 230 378 240 C352 248 334 226 344 204 C318 206 296 240 300 280 C306 350 340 410 400 448 C440 474 480 486 512 488 V512 Z"
+			/>
+		</clipPath>
 	</defs>
+
 	<rect width="512" height="512" fill="url(#sky)" />
-	<!-- distant mountain -->
-	<path d="M300 330 L352 262 L404 330 Z" fill="#5f8fb8" opacity="0.55" />
-	<path d="M338 280 L352 262 L366 280 L358 276 L352 282 L346 276 Z" fill="#faf6ee" />
-	<!-- great curling wave -->
-	<path
-		d="M0 512 V330 C40 250 110 150 220 128 C300 112 360 150 370 205 C376 240 352 262 322 256 C298 251 290 226 304 212 C276 214 262 240 270 268 C282 312 336 330 380 340 C430 352 470 360 512 360 V512 Z"
-		fill="url(#sea)"
-	/>
-	<!-- foam on the crest -->
-	<path
-		d="M220 128 C300 112 360 150 370 205 C376 240 352 262 322 256 C342 246 352 226 344 202 C334 168 292 146 240 150 C180 156 120 210 70 282 C110 200 160 140 220 128 Z"
-		fill="#faf6ee"
-	/>
-	<g fill="#faf6ee">
-		<circle cx="326" cy="232" r="9" />
-		<circle cx="306" cy="242" r="7" />
-		<circle cx="292" cy="226" r="5" />
+
+	<!-- mountain in the hollow of the wave -->
+	<path d="M352 440 L428 360 L504 440 Z" fill="#5f8fb8" />
+	<path d="M408 381 L428 360 L448 381 L440 377 L434 384 L428 376 L421 384 L415 377 Z" fill="#f7efdd" />
+
+	<!-- great wave -->
+	<use href="#body" fill="url(#deep)" />
+
+	<!-- striations on the wave face -->
+	<g clip-path="url(#wave)" fill="none" stroke-linecap="round">
+		<g stroke="#3f74ad" stroke-width="14">
+			<path d="M60 512 C70 380 140 230 250 170 C290 150 330 150 356 166" />
+			<path d="M140 512 C140 400 180 290 260 230" />
+		</g>
+		<g stroke="#8fb3d4" stroke-width="6" opacity="0.85">
+			<path d="M100 512 C105 390 165 260 260 196 C300 172 340 172 364 190" />
+			<path d="M180 512 C178 420 210 330 268 270" />
+			<path d="M240 512 C236 440 258 370 292 330" />
+		</g>
 	</g>
-	<!-- inner swell lines -->
+
+	<!-- foam crest with claw tips -->
 	<path
-		d="M40 420 C120 360 200 360 280 400 C340 430 420 430 512 400"
-		fill="none"
-		stroke="#5f8fb8"
-		stroke-width="10"
-		stroke-linecap="round"
-		opacity="0.7"
+		d="M190 104 C270 76 350 92 392 148 C418 184 410 230 378 240 C396 222 398 196 386 176 C376 196 362 202 352 196 C364 186 368 168 360 154 C348 170 334 172 324 164 C336 154 338 138 330 126 C316 142 300 142 290 134 C300 124 300 110 292 100 C276 116 258 116 246 108 C232 120 214 122 200 116 C160 140 110 200 70 270 C100 190 140 124 190 104 Z"
+		fill="#f7efdd"
 	/>
-	<path
-		d="M0 470 C90 430 170 430 250 460 C320 486 410 486 512 456"
-		fill="none"
-		stroke="#c9d8e4"
-		stroke-width="8"
-		stroke-linecap="round"
-		opacity="0.5"
-	/>
+	<g fill="#f7efdd">
+		<circle cx="372" cy="214" r="7" />
+		<circle cx="356" cy="226" r="5" />
+		<circle cx="346" cy="212" r="4" />
+		<circle cx="398" cy="238" r="5" />
+		<circle cx="414" cy="218" r="4" />
+		<circle cx="424" cy="252" r="3.5" />
+		<circle cx="406" cy="268" r="3" />
+	</g>
+
+	<!-- small wave in front -->
+	<path d="M360 512 C392 476 440 458 484 466 C498 469 508 476 512 482 V512 Z" fill="#3f74ad" />
+	<path d="M440 462 C470 458 496 466 512 482 V490 C500 480 484 478 474 486 C480 478 478 470 470 468 C462 476 452 478 444 474 C450 470 448 464 440 462 Z" fill="#f7efdd" />
 </svg>
