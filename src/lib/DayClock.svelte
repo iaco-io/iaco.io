@@ -48,7 +48,7 @@
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
 		<!-- an old grandfather clock: a hood with a swan-neck pediment and finials, the face, a narrow case
-		     with a window for the pendulum, and a base -->
+		     with the pendulum, and a base -->
 		<svg viewBox="0 0 20 36" width="17" height="31" aria-hidden="true">
 			<circle cx="10" cy="1.3" r=".65" />
 			<path d="M10 2v1.2" />
@@ -62,7 +62,6 @@
 			<path class="hand" d="M10 10.6V9.2" style:transform="rotate({hours}deg)" />
 			<path class="hand" d="M10 10.6V8.5" style:transform="rotate({minutes}deg)" />
 			<path d="M6.1 14v16.2h7.8V14" />
-			<rect x="7.7" y="15.6" width="4.6" height="12.6" rx="2.3" />
 			<g class="pendulum" style:transform="rotate({swing}deg)">
 				<path d="M10 14.3v10.2" />
 				<circle cx="10" cy="25.7" r="1.2" />
