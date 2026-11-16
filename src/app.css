@@ -59,8 +59,6 @@ html {
 	   no fixed layers anywhere: safari paints solid bars when something fixed touches the screen edges */
 	min-height: 100lvh;
 	scroll-behavior: smooth;
-	/* no rubber-band bounce, so the glows don't slide at the ends of the page */
-	overscroll-behavior-y: none;
 	/* no double-tap zoom */
 	touch-action: manipulation;
 	/* scroll without visible scrollbars */
