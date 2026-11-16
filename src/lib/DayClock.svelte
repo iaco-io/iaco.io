@@ -38,11 +38,14 @@
 	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
 	// one full swing there and back is 1.728 s, kept in step with the time of day
 	let swing = $state(0);
-	// the cloud rains at random: time is cut into 0.108 s slots, and in most slots a drop starts at a random moment
-	// and place under the cloud, falling for 0.864 s. the randomness comes from the time itself, so every screen
-	// shows the same rain. every 8.64 s (0.01% of a day) it also thunders, over the rain
+	// the cloud rains like real rain: drops fall at a steady speed (rain soon stops speeding up), quickly, in five
+	// lanes under the cloud. each lane drips at a steady beat with a little jitter, and the lanes are out of step,
+	// so it looks random without bunching up or leaving gaps. it's worked out from the time, so every screen shows
+	// the same rain. every 8.64 s (0.01% of a day) it also thunders, over the rain
 	let now_ms = $state(0);
-	const SLOT = 108;
+	const LANES = [9.6, 11.8, 14, 16.2, 18.4];
+	const BEAT = 432; // ms between drops in a lane
+	const FALL = 380; // ms a drop takes to fall
 	const random = (/** @type {number} */ n) => {
 		const x = Math.sin(n * 12.9898) * 43758.5453;
 		return x - Math.floor(x);
@@ -52,24 +55,18 @@
 	const thunder = $derived(cycle < 864 ? cycle / 864 : -1);
 	const drops = $derived.by(() => {
 		const list = [];
-		for (let n = Math.floor((now_ms - 864) / SLOT); n <= Math.floor(now_ms / SLOT); n++) {
-			if (random(n) > 0.75) continue;
-			const p = (now_ms - (n + random(n + 0.5)) * SLOT) / 864;
-			if (p >= 0 && p < 1) list.push({ k: n, p });
-		}
+		LANES.forEach((x, lane) => {
+			const offset = random(lane + 1) * BEAT;
+			const n0 = Math.floor((now_ms - offset) / BEAT);
+			for (const n of [n0 - 1, n0]) {
+				const id = n * 8 + lane;
+				const start = n * BEAT + offset + (random(id) - 0.5) * 120;
+				const p = (now_ms - start) / FALL;
+				if (p >= 0 && p < 1) list.push({ id, x: x + (random(id + 0.5) - 0.5) * 0.8, p });
+			}
+		});
 		return list;
 	});
-	/** where a drop is at p (0 to 1): it appears in the first 15%, falls with gravity, stretches, then splashes */
-	function drop(/** @type {number} */ k, /** @type {number} */ p) {
-		const fallT = Math.max(0, (p - 0.15) / 0.67);
-		return {
-			x: 9 + random(k + 0.25) * 10,
-			grow: Math.min(1, p / 0.15),
-			fall: 5.6 * fallT * fallT,
-			stretch: 1 + 0.5 * fallT,
-			splash: p < 0.82 ? -1 : (p - 0.82) / 0.18
-		};
-	}
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		let frame = 0;
@@ -95,23 +92,14 @@
 				{#if thunder >= 0}
 					<path class="bolt" style:opacity={thunder < 0.12 || (thunder > 0.2 && thunder < 0.32) ? 1 : Math.max(0, 1 - (thunder - 0.32) * 2.2)} d="M15 17.3l-2 3.1h2.4l-1.6 3.2" />
 				{/if}
-				<!-- little lines of rain that appear under the cloud, fall faster and faster, stretch, and splash -->
-				{#each drops as { k, p } (k)}
-					{@const d = drop(k, p)}
-					{#if d.splash < 0}
-						<path
-							class="drop"
-							style:opacity={d.grow}
-							style:transform="translate({d.x}px, {17.4 + d.fall}px) scale(1, {d.stretch})"
-							d="M0 0v1.4"
-						/>
-					{:else}
-						<path
-							class="splash"
-							style:opacity={1 - d.splash}
-							d="M{d.x - 0.7 - d.splash * 1.2} {24.4 - d.splash * 0.4}l-.5-.5M{d.x + 0.7 + d.splash * 1.2} {24.4 - d.splash * 0.4}l.5-.5"
-						/>
-					{/if}
+				<!-- little lines of rain falling steadily from under the cloud, fading in and out -->
+				{#each drops as { id, x, p } (id)}
+					<path
+						class="drop"
+						style:opacity={p < 0.12 ? p / 0.12 : p > 0.75 ? (1 - p) / 0.25 : 1}
+						style:transform="translate({x}px, {17.2 + p * 6.8}px)"
+						d="M0 0v1.6"
+					/>
 				{/each}
 			</svg>
 		{:else}
@@ -191,10 +179,6 @@
 
 	.drop {
 		stroke-width: 0.9;
-	}
-
-	.splash {
-		stroke-width: 0.8;
 	}
 
 	.bolt {
