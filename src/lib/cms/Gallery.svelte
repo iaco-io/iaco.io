@@ -1,16 +1,18 @@
 <script>
-	// picks the main image from a grid of square thumbnails, as many columns as fit
-	import { ImageOff, Undo2 } from '@lucide/svelte';
+	// picks a media file from a grid of square thumbnails, as many columns as fit (icons for sound, video, files)
+	import { ImageOff, Undo2, Music, Film, File as FileIcon } from '@lucide/svelte';
 
 	/**
 	 * @type {{
 	 *   images: string[],
 	 *   resolve: (name: string) => string,
 	 *   current: string,
+	 *   label?: string,
+	 *   none?: boolean,
 	 *   ondone: (name: string | null) => void
 	 * }}
 	 */
-	let { images, resolve, current, ondone } = $props();
+	let { images, resolve, current, label = 'main image', none = true, ondone } = $props();
 
 	/** @type {HTMLDialogElement | undefined} */
 	let dialog = $state();
@@ -26,16 +28,23 @@
 
 <dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))} onclick={outside}>
 	<div class="head">
-		<span class="label">main image</span>
+		<span class="label">{label}</span>
 		<button class="pill" aria-label="cancel" title="cancel" onclick={() => ondone(null)}><Undo2 size={18} /></button>
 	</div>
 	<div class="grid">
-		<button class="tile none" class:active={!current} title="no main image" onclick={() => ondone('')}>
-			<ImageOff size={22} />
-		</button>
+		{#if none}
+			<button class="tile none" class:active={!current} title="none" onclick={() => ondone('')}>
+				<ImageOff size={22} />
+			</button>
+		{/if}
 		{#each images as name (name)}
 			<button class="tile" class:active={current === name} title={name} onclick={() => ondone(name)}>
-				<img src={resolve(name)} alt={name} loading="lazy" />
+				{#if /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name)}
+					<img src={resolve(name)} alt={name} loading="lazy" />
+				{:else}
+					{#if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={22} />{:else if /\.(mp4|mov|webm|m4v)$/i.test(name)}<Film size={22} />{:else}<FileIcon size={22} />{/if}
+					<small>{name.replace(/^.*\//, '')}</small>
+				{/if}
 			</button>
 		{/each}
 	</div>
@@ -91,6 +100,14 @@
 		color: var(--muted);
 		background: var(--panel);
 		cursor: pointer;
+	}
+
+	.tile small {
+		max-width: 90%;
+		overflow: hidden;
+		font-size: 0.7rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.tile img {

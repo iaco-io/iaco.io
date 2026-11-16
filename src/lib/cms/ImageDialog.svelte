@@ -3,7 +3,8 @@
 	// the extension can't be changed; "/" makes folders, like beautiful/cow-and-chicken.
 	// replacing points every post and page that uses it to another file (picked or uploaded now);
 	// the old file can be kept or deleted. deleting a file that is still used asks for a replacement too.
-	import { Trash2, Upload, ArrowLeft, Save, Undo2, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
+	import Gallery from './Gallery.svelte';
+	import { Trash2, ImagePlus, ChevronDown, ArrowLeft, Save, Undo2, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
 	import { pasteFile } from './clipboard.js';
 
 	/**
@@ -41,6 +42,7 @@
 	let removing = $state(false);
 	let keep = $state(false);
 	let replacement = $state('');
+	let gallery = $state(false);
 	/** @type {{ file: File, src: string, ext: string } | null} */
 	let fresh = $state(null);
 	let freshBase = $state('');
@@ -99,6 +101,17 @@
 	}
 </script>
 
+{#if gallery}
+	<Gallery
+		images={options}
+		{resolve}
+		current={replacement}
+		label="replace with"
+		none={!keep}
+		ondone={(n) => ((gallery = false), n !== null && (replacement = n))}
+	/>
+{/if}
+
 {#snippet used(/** @type {string} */ after)}
 	<div class="uses">
 		<small>used in{after ? ` ${after}` : ''}:</small>
@@ -140,18 +153,18 @@
 					{#if freshName && images.includes(freshName)}<small>that name is taken</small>{/if}
 				{:else}
 					<div class="picker">
-						<select bind:value={replacement}>
-							<option value="">{keep ? 'pick one…' : 'nothing'}</option>
-							{#each options as other}<option value={other}>{other}</option>{/each}
-						</select>
+						{#if replacement && image}<img class="mini" src={resolve(replacement)} alt="" />{/if}
+						<button type="button" class="choose" onclick={() => (gallery = true)}>
+							{replacement || (keep ? 'pick one…' : 'nothing')}
+							<ChevronDown size={18} />
+						</button>
 						<label class="pill square" title="upload a replacement">
-							<Upload size={18} />
+							<ImagePlus size={18} />
 							<input type="file" accept={image ? 'image/*' : ''} onchange={pick} hidden />
 						</label>
 						<button type="button" class="pill square" title="paste a replacement" onclick={paste}><ClipboardPaste size={18} /></button>
 					</div>
 					{#if pasteNote}<small>{pasteNote}</small>{/if}
-					{#if replacement && image}<img class="small" src={resolve(replacement)} alt="" />{/if}
 				{/if}
 				{#if swapping}
 					<button type="button" class="switch" role="switch" aria-checked={keep} onclick={() => (keep = !keep)}>
@@ -325,8 +338,44 @@
 		gap: 0.5rem;
 	}
 
-	.picker select {
+	.picker {
+		height: 2.875rem;
+	}
+
+	.picker > * {
+		height: 100%;
+	}
+
+	.mini {
+		flex: none;
+		width: 2.875rem;
+		object-fit: cover;
+		border-radius: 0.75rem;
+	}
+
+	.choose {
+		display: flex;
 		flex: 1;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0 1rem;
+		border: 1px solid var(--glass-edge);
+		border-radius: 0.9rem;
+		font: inherit;
+		font-size: 16px;
+		color: var(--fg);
+		background: var(--glass);
+		cursor: pointer;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		text-align: left;
+	}
+
+	.choose :global(svg) {
+		flex: none;
+		color: var(--muted);
 	}
 
 	.square {
