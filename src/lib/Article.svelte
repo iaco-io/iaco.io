@@ -40,14 +40,15 @@
 		margin: 0;
 		font-family: var(--title);
 		font-style: italic;
-		font-size: clamp(2.2rem, 6vw, 3.6rem);
+		font-weight: 600;
+		font-size: clamp(2.4rem, 6vw, 3.6rem);
 		line-height: 1.06;
 		letter-spacing: -0.01em;
 	}
 
 	.lead {
 		margin: 1rem 0 0;
-		font-family: var(--serif);
+		font-family: var(--title);
 		font-style: italic;
 		font-size: 1.35rem;
 		line-height: 1.45;
