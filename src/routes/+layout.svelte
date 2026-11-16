@@ -28,7 +28,7 @@
 </script>
 
 
-<div class="statusbar glass" aria-hidden="true"></div>
+<div class="statusbar" aria-hidden="true"></div>
 
 {#if !cms}
 	<header>
@@ -45,13 +45,19 @@
 
 <style>
 	/* only in the installed app: in safari a fixed bar at the edge makes it paint a solid toolbar */
+	/* installed app: content scrolls up under the clock, softly blurred there.
+	   the blur covers only the clock area; pages start 16px lower (see --top) so nothing sits under it at rest */
 	.statusbar {
 		display: none;
 		position: fixed;
 		inset: 0 0 auto;
 		z-index: 10;
-		height: var(--top);
-		border: 0;
+		height: env(safe-area-inset-top);
+		background: color-mix(in srgb, var(--bg) 30%, transparent);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+		-webkit-mask-image: linear-gradient(black 70%, transparent);
+		mask-image: linear-gradient(black 70%, transparent);
 	}
 
 	@media (display-mode: standalone) {
