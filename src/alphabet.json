@@ -1,7 +1,7 @@
 {
 	"a": {
-		"to": "ɑ",
-		"on": true
+		"to": "a",
+		"on": false
 	},
 	"b": {
 		"to": "b",
