@@ -1,7 +1,11 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount } from 'svelte';
-	import { Plus, Lock, FileText, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
+	import { Lock, FileText, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
+	import Fabs from '#lib/Fabs.svelte';
+	import Panel from '#lib/Panel.svelte';
+	import ThemeToggle from '#lib/ThemeToggle.svelte';
+	import CreateIcon from '#lib/cms/CreateIcon.svelte';
 	import { keyOf, contentOf, listPartials, storePartial, dropPartial } from '#lib/cms/partials.js';
 	import Login from '#lib/cms/Login.svelte';
 	import Editor from '#lib/cms/Editor.svelte';
@@ -46,6 +50,20 @@
 	let files = $state(/** @type {string[]} */ ([]));
 	let loading = $state(false);
 	let message = $state('');
+	let menu = $state(false);
+
+	const KINDS = /** @type {const} */ ([
+		{ kind: 'posts', icon: FileText },
+		{ kind: 'pages', icon: FileIcon },
+		{ kind: 'redirects', icon: ExternalLink }
+	]);
+
+	/** @param {Kind} k */
+	function show(k) {
+		kind = k;
+		editing = null;
+		menu = false;
+	}
 
 	/** `from` is the saved file name, so a changed name renames the file */
 	/** @type {{ id?: string, kind: Kind, name: string, from: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
@@ -177,6 +195,8 @@
 			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', alias: [], redirect: '' },
 			body: ''
 		};
+		// an untouched new item isn't worth keeping
+		baseline = contentOf(editing);
 	}
 
 	async function save() {
@@ -289,17 +309,8 @@
 	{:else}
 		<header>
 			<h1>iaco.io <small>v {__VERSION__}</small></h1>
-			<div class="actions">
-				<button class="pill primary" onclick={create}><Plus size={18} /> new {kind.slice(0, -1)}</button>
-				<button class="pill" onclick={logout} aria-label="log out"><Lock size={18} /></button>
-			</div>
+			<h2>{kind}</h2>
 		</header>
-
-		<div class="tabs glass" role="tablist">
-			{#each /** @type {Kind[]} */ (['posts', 'pages', 'redirects']) as k}
-				<button role="tab" aria-selected={kind === k} class:active={kind === k} onclick={() => (kind = k)}>{k}</button>
-			{/each}
-		</div>
 
 		{#if loading && !entries.length}
 			<p class="empty">loading…</p>
@@ -344,6 +355,39 @@
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
 </main>
 
+{#if api}
+	<Fabs onmenu={() => (menu = true)}>
+		{#snippet extra()}
+			{#if !editing}
+				<button class="round create" onclick={create} aria-label="new {kind.slice(0, -1)}">
+					<CreateIcon {kind} />
+				</button>
+			{/if}
+		{/snippet}
+	</Fabs>
+
+	<Panel bind:open={menu} label="cms">
+		<ul class="entries">
+			{#each KINDS as { kind: k, icon: Icon }}
+				<li>
+					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
+						<Icon size={24} strokeWidth={2.25} />
+						{k}
+					</button>
+				</li>
+			{/each}
+			<li>
+				<button class="entry" onclick={() => ((menu = false), logout())}>
+					<Lock size={24} strokeWidth={2.25} /> lock
+				</button>
+			</li>
+		</ul>
+		{#snippet bottom()}
+			<ThemeToggle />
+		{/snippet}
+	</Panel>
+{/if}
+
 <style>
 	main {
 		max-width: 52rem;
@@ -351,12 +395,29 @@
 		padding: calc(var(--top) + 3rem) 1.25rem 6rem;
 	}
 
+	/* leave room for the menu button at the top right */
+	@media (min-width: 768px) {
+		main {
+			padding-top: calc(var(--top) + 5rem);
+		}
+	}
+
 	header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
 		margin-bottom: 1.5rem;
+	}
+
+	h2 {
+		margin: 0.4rem 0 0;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--soft);
+	}
+
+	/* the opposite of the glass buttons: solid cream on blue, ink on cream */
+	.create {
+		color: var(--bg);
+		background: var(--fg);
+		border: 0;
 	}
 
 	h1 {
@@ -376,36 +437,6 @@
 		font-weight: 500;
 		letter-spacing: 0;
 		color: var(--muted);
-	}
-
-	.actions {
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.tabs {
-		display: inline-flex;
-		gap: 0.25rem;
-		padding: 0.25rem;
-		margin-bottom: 1.25rem;
-		border-radius: 999px;
-	}
-
-	.tabs button {
-		padding: 0.55rem 1.2rem;
-		border: 0;
-		border-radius: 999px;
-		font: inherit;
-		font-weight: 500;
-		color: var(--muted);
-		background: none;
-		cursor: pointer;
-	}
-
-	.tabs button.active {
-		color: var(--fg);
-		background: var(--bg);
-		box-shadow: 0 2px 8px var(--shadow);
 	}
 
 	ul {

@@ -1,8 +1,8 @@
 <script>
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { Menu as MenuIcon, ArrowDown, ArrowUp } from '@lucide/svelte';
 	import Menu from '#lib/Menu.svelte';
+	import Fabs from '#lib/Fabs.svelte';
 	import { page } from '$app/state';
 
 	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string }[] } }} */
@@ -17,9 +17,6 @@
 	let open = $state(false);
 	// the cms has its own interface
 	const cms = $derived(page.url.pathname.startsWith('/cms'));
-	let atTop = $state(true);
-
-	const onscroll = () => (atTop = window.scrollY < window.innerHeight / 3);
 
 	// swipe left from the right edge opens the menu, swipe right closes it
 	let start = null;
@@ -43,12 +40,9 @@
 		document.addEventListener('gesturestart', block);
 		return () => document.removeEventListener('gesturestart', block);
 	});
-
-	const jump = () =>
-		window.scrollTo({ top: atTop ? document.documentElement.scrollHeight : 0 });
 </script>
 
-<svelte:window {onscroll} {ontouchstart} {ontouchend} />
+<svelte:window {ontouchstart} {ontouchend} />
 
 <div class="statusbar glass" aria-hidden="true"></div>
 
@@ -61,15 +55,7 @@
 {@render children()}
 
 {#if !cms}
-	<button class="round glass menu" onclick={() => (open = true)} aria-label="Open menu">
-		<span>menu</span>
-		<MenuIcon size={20} />
-	</button>
-
-	<button class="round glass jump" onclick={jump} aria-label={atTop ? 'Scroll to bottom' : 'Scroll to top'}>
-		{#if atTop}<ArrowDown size={20} />{:else}<ArrowUp size={20} />{/if}
-	</button>
-
+	<Fabs onmenu={() => (open = true)} />
 	<Menu bind:open {links} />
 {/if}
 
@@ -97,43 +83,5 @@
 		font-weight: 700;
 		letter-spacing: -0.03em;
 		color: var(--fg);
-	}
-
-	/* small screens: both buttons stacked bottom right */
-	.menu,
-	.jump {
-		position: fixed;
-		right: var(--gap);
-		z-index: 15;
-	}
-
-	.jump {
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
-	}
-
-	.menu {
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 3.75rem);
-	}
-
-	.menu span {
-		display: none;
-	}
-
-	/* big screens: menu moves to the top right with a label */
-	@media (min-width: 768px) {
-		.menu {
-			top: calc(var(--top) + var(--gap));
-			bottom: auto;
-			width: auto;
-			gap: 0.6rem;
-			padding: 0 0.6rem 0 1.25rem;
-			font: inherit;
-			font-size: 0.95rem;
-			font-weight: 500;
-		}
-
-		.menu span {
-			display: inline;
-		}
 	}
 </style>

@@ -12,6 +12,8 @@
 	--panel: light-dark(rgb(244 236 220 / 0.55), rgb(15 37 68 / 0.62));
 	--scrim: light-dark(rgb(15 42 71 / 0.15), rgb(0 0 0 / 0.35));
 	--shadow: light-dark(rgb(15 42 71 / 0.12), rgb(0 0 0 / 0.35));
+	/* for the selected option inside a toggle */
+	--shadow-soft: light-dark(rgb(15 42 71 / 0.07), rgb(0 0 0 / 0.16));
 	--blur: blur(20px) saturate(180%);
 
 	/* iOS standalone: status bar overlays content; add 16px so it blurs cleanly */

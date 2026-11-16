@@ -456,7 +456,7 @@
 		height: 1.2rem;
 		border-radius: 999px;
 		background: var(--bg);
-		box-shadow: 0 1px 4px var(--shadow);
+		box-shadow: 0 1px 3px var(--shadow-soft);
 		transition: transform 0.2s ease;
 	}
 
@@ -532,6 +532,13 @@
 
 	.delete {
 		margin-top: 1.5rem;
+	}
+
+	/* on big screens the menu button sits at the top right, so the bar stays below it */
+	@media (min-width: 768px) {
+		.bar {
+			top: calc(var(--top) + 5rem);
+		}
 	}
 
 	@media (max-width: 600px) {
