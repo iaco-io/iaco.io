@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount } from 'svelte';
-	import { Plus, LogOut, FileText, File as FileIcon, ExternalLink } from '@lucide/svelte';
+	import { Plus, Lock, FileText, File as FileIcon, ExternalLink } from '@lucide/svelte';
 	import Login from '#lib/cms/Login.svelte';
 	import Editor from '#lib/cms/Editor.svelte';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
@@ -203,7 +203,7 @@
 			<h1>cms</h1>
 			<div class="actions">
 				<button class="pill primary" onclick={create}><Plus size={18} /> new {kind.slice(0, -1)}</button>
-				<button class="pill" onclick={logout} aria-label="log out"><LogOut size={18} /></button>
+				<button class="pill" onclick={logout} aria-label="log out"><Lock size={18} /></button>
 			</div>
 		</header>
 
