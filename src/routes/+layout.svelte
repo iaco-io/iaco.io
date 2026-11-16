@@ -32,7 +32,7 @@
 
 {#if !cms}
 	<header>
-		<a class="logo" href="/">iaco</a>
+		<a class="logo" href="/">iaco.io</a>
 	</header>
 {/if}
 
