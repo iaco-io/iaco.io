@@ -56,11 +56,11 @@
 		display: flex;
 		justify-content: center;
 		margin-top: auto;
-		margin-bottom: 0.5rem;
+		margin-bottom: 1rem;
 	}
 
 	.social {
-		margin-bottom: 0.75rem;
+		margin-bottom: 1.25rem;
 	}
 
 	.toast {
