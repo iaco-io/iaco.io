@@ -445,9 +445,15 @@
 		transform: translateY(-50%);
 	}
 
+	/* same height as the other fields; the thumbnail and buttons follow it */
 	.picker {
 		display: flex;
 		gap: 0.5rem;
+		height: 2.875rem;
+	}
+
+	.picker > * {
+		height: 100%;
 	}
 
 	.picker select {
