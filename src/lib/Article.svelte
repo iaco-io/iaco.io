@@ -38,6 +38,7 @@
 	h1 {
 		margin: 0;
 		font-family: var(--serif);
+		font-style: italic;
 		font-size: clamp(2.2rem, 6vw, 3.6rem);
 		line-height: 1.06;
 		letter-spacing: -0.04em;

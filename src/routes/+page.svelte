@@ -123,6 +123,7 @@
 	.card h2 {
 		margin: 1rem 0 0.35rem;
 		font-family: var(--serif);
+		font-style: italic;
 		font-size: 1.25rem;
 		letter-spacing: -0.02em;
 		color: var(--fg);
