@@ -1,7 +1,7 @@
-// build-time only: reads src/posts/*.md and src/pages/*.md, images from src/media/
+// build-time only: reads src/{posts,pages,redirects}/*.md, images from src/media/
 import { parse, urls, normalize } from './markdown.js';
 
-const files = import.meta.glob(['/src/posts/*.md', '/src/pages/*.md', '!**/README.md'], {
+const files = import.meta.glob(['/src/posts/*.md', '/src/pages/*.md', '/src/redirects/*.md', '!**/README.md'], {
 	query: '?raw',
 	import: 'default',
 	eager: true
@@ -14,7 +14,7 @@ export const media = Object.fromEntries(
 	)
 );
 
-/** @param {'posts' | 'pages'} kind */
+/** @param {'posts' | 'pages' | 'redirects'} kind */
 function load(kind) {
 	return Object.entries(files)
 		.filter(([path]) => path.startsWith(`/src/${kind}/`))
@@ -44,12 +44,14 @@ function load(kind) {
 
 export const posts = load('posts');
 export const pages = load('pages');
+// short links like /youtube/, they only redirect
+export const redirects = load('redirects').filter((item) => item.redirect);
 
 const reserved = ['/cms/', '/rss.xml/', '/post/', '/_app/'];
 
 /** every url on the site, pointing at its post or page */
 export const routes = new Map();
-for (const item of [...pages, ...posts]) {
+for (const item of [...pages, ...posts, ...redirects]) {
 	for (const path of item.paths) {
 		if (reserved.some((r) => path === r || (r !== '/post/' && path.startsWith(r)))) {
 			throw new Error(`${item.kind}/${item.slug}: ${path} is reserved`);

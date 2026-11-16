@@ -42,7 +42,7 @@ export function serialize(meta, body) {
 }
 
 /** file name to urls: `001-my-intro` is /post/my-intro/ and /001/, `test` is just /post/test/ */
-export function urls(/** @type {'posts' | 'pages'} */ kind, /** @type {string} */ name) {
+export function urls(/** @type {'posts' | 'pages' | 'redirects'} */ kind, /** @type {string} */ name) {
 	const [, id, rest] = name.match(/^(\d+)-(.+)$/) ?? [];
 	const slug = rest ?? name;
 	return { slug, id: id ?? '', url: kind === 'posts' ? `/post/${slug}/` : `/${slug}/` };

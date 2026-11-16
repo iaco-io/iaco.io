@@ -1,14 +1,14 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount } from 'svelte';
-	import { Plus, LogOut, FileText, File as FileIcon } from '@lucide/svelte';
+	import { Plus, LogOut, FileText, File as FileIcon, ExternalLink } from '@lucide/svelte';
 	import Login from '#lib/cms/Login.svelte';
 	import Editor from '#lib/cms/Editor.svelte';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
 	import { encrypt, decrypt } from '#lib/crypto.js';
 	import { parse, serialize } from '#lib/markdown.js';
 
-	/** @typedef {'posts' | 'pages'} Kind */
+	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
 	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta */
 	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
@@ -80,7 +80,7 @@
 		try {
 			const tree = await api.list();
 			files = tree.map((f) => f.path);
-			const paths = files.filter((p) => /^src\/(posts|pages)\/[^/]+\.md$/.test(p) && !p.endsWith('/README.md'));
+			const paths = files.filter((p) => /^src\/(posts|pages|redirects)\/[^/]+\.md$/.test(p) && !p.endsWith('/README.md'));
 			entries = await Promise.all(
 				paths.map(async (path) => {
 					const [, k, name] = /** @type {RegExpMatchArray} */ (path.match(/^src\/(\w+)\/([^/]+)\.md$/));
@@ -108,7 +108,7 @@
 			kind,
 			name: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: today, draft: true, alias: [], redirect: '' },
+			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', alias: [], redirect: '' },
 			body: ''
 		};
 	}
@@ -119,7 +119,8 @@
 		const path = fileOf(k, name);
 		if (isNew && files.includes(path)) return flash(`${name} already exists`);
 		try {
-			const file = serialize(editing.meta, await encrypt(editing.body));
+			// redirects have no body to encrypt
+			const file = serialize(editing.meta, k === 'redirects' ? '' : await encrypt(editing.body));
 			editing.sha = await api.write(path, utf8ToBase64(file), editing.sha, `cms: ${isNew ? 'add' : 'update'} ${k}/${name}`);
 			editing.isNew = false;
 			if (!files.includes(path)) files.push(path);
@@ -190,13 +191,13 @@
 		<header>
 			<h1>cms</h1>
 			<div class="actions">
-				<button class="pill primary" onclick={create}><Plus size={18} /> new {kind === 'posts' ? 'post' : 'page'}</button>
+				<button class="pill primary" onclick={create}><Plus size={18} /> new {kind.slice(0, -1)}</button>
 				<button class="pill" onclick={logout} aria-label="log out"><LogOut size={18} /></button>
 			</div>
 		</header>
 
 		<div class="tabs glass" role="tablist">
-			{#each /** @type {Kind[]} */ (['posts', 'pages']) as k}
+			{#each /** @type {Kind[]} */ (['posts', 'pages', 'redirects']) as k}
 				<button role="tab" aria-selected={kind === k} class:active={kind === k} onclick={() => (kind = k)}>{k}</button>
 			{/each}
 		</div>
@@ -210,10 +211,10 @@
 				{#each list as entry (entry.kind + entry.name)}
 					<li>
 						<button class="row glass" onclick={() => open(entry)}>
-							{#if entry.kind === 'posts'}<FileText size={20} />{:else}<FileIcon size={20} />{/if}
+							{#if entry.kind === 'posts'}<FileText size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
 							<span class="title">{entry.meta.title || entry.name}</span>
 							{#if entry.meta.draft}<span class="badge">draft</span>{/if}
-							<span class="date">{entry.meta.date}</span>
+							<span class="date">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.meta.date}</span>
 						</button>
 					</li>
 				{/each}

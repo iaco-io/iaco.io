@@ -6,7 +6,7 @@
 	/**
 	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta
 	 * @type {{
-	 *   item: { kind: 'posts' | 'pages', name: string, isNew: boolean, meta: Meta, body: string },
+	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
 	 *   resolve: (name: string) => string,
 	 *   onsave: () => Promise<void>,
@@ -22,6 +22,8 @@
 	/** @type {HTMLTextAreaElement | undefined} */
 	let textarea = $state();
 
+	// redirects only need a name and a destination
+	const short = $derived(item.kind === 'redirects');
 	const validName = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.name));
 	const links = $derived.by(() => {
 		if (!validName) return '';
@@ -73,12 +75,14 @@
 <div class="bar">
 	<button class="pill" onclick={onback}><ArrowLeft size={18} /> back</button>
 	<div class="actions">
-		<button class="pill" onclick={() => (preview = !preview)}>
-			{#if preview}<Pencil size={18} /> edit{:else}<Eye size={18} /> preview{/if}
-		</button>
+		{#if !short}
+				<button class="pill" onclick={() => (preview = !preview)}>
+					{#if preview}<Pencil size={18} /> edit{:else}<Eye size={18} /> preview{/if}
+				</button>
+		{/if}
 		<button
 			class="pill primary"
-			disabled={!!busy || !validName || !item.meta.title.trim()}
+			disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
 			onclick={() => run('saving…', onsave)}
 		>
 			<Save size={18} />
@@ -99,23 +103,25 @@
 		</label>
 		<label>
 			<span>file name {links ? `→ ${links}` : ''}</span>
-			<input bind:value={item.name} disabled={!item.isNew} placeholder={item.kind === 'posts' ? '001-my-intro' : '01-hello-world'} />
+			<input bind:value={item.name} disabled={!item.isNew} placeholder={item.kind === 'posts' ? '001-my-intro' : short ? 'youtube' : '01-hello-world'} />
 		</label>
-		<label>
-			<span>date</span>
-			<input type="date" bind:value={item.meta.date} />
-		</label>
-		<label class="wide">
-			<span>description</span>
-			<input bind:value={item.meta.description} placeholder="a short summary for lists and rss" />
-		</label>
-		<label>
-			<span>main image</span>
-			<select bind:value={item.meta.image}>
-				<option value="">none</option>
-				{#each images as name}<option value={name}>{name}</option>{/each}
-			</select>
-		</label>
+		{#if !short}
+			<label>
+				<span>date</span>
+				<input type="date" bind:value={item.meta.date} />
+			</label>
+			<label class="wide">
+				<span>description</span>
+				<input bind:value={item.meta.description} placeholder="a short summary for lists and rss" />
+			</label>
+			<label>
+				<span>main image</span>
+				<select bind:value={item.meta.image}>
+					<option value="">none</option>
+					{#each images as name}<option value={name}>{name}</option>{/each}
+				</select>
+			</label>
+		{/if}
 		<label>
 			<span>aliases</span>
 			<input bind:value={aliasText} oninput={setAlias} placeholder="/ig, /instagram" />
@@ -126,23 +132,25 @@
 		</label>
 		<label class="toggle">
 			<input type="checkbox" bind:checked={item.meta.draft} />
-			<span>draft (hidden from the blog and rss)</span>
+			<span>draft {short ? "(link not published)" : "(hidden from the blog and rss)"}</span>
 		</label>
 	</div>
 
-	<div class="images">
-		<label class="pill">
-			<ImagePlus size={18} /> upload image
-			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
-		</label>
-		{#each images as name}
-			<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>
-				<img src={resolve(name)} alt={name} />
-			</button>
-		{/each}
-	</div>
+	{#if !short}
+		<div class="images">
+			<label class="pill">
+				<ImagePlus size={18} /> upload image
+				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
+			</label>
+			{#each images as name}
+				<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>
+					<img src={resolve(name)} alt={name} />
+				</button>
+			{/each}
+		</div>
 
-	<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
+		<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
+	{/if}
 
 	{#if !item.isNew}
 		<button class="pill danger delete" disabled={!!busy} onclick={remove}><Trash2 size={18} /> delete</button>
