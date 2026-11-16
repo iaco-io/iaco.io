@@ -5,7 +5,9 @@ import { version } from '$app/env';
 const CACHE = `cache-${version}`;
 const toPath = ({ path }) => new URL(path, self.registration.scope).pathname;
 const IMMUTABLE = immutable.map(toPath);
-const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)];
+// media (like the rain sound) is left to the browser: big, and fetched in ranges
+const isMedia = (/** @type {string} */ path) => path.startsWith('/media/');
+const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter((p) => !isMedia(p));
 
 // take over as soon as a new version is installed, so updates show on next load
 self.addEventListener('install', (event) => {
@@ -26,7 +28,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
 	if (event.request.method !== 'GET') return;
 	const url = new URL(event.request.url);
-	if (url.origin !== location.origin) return;
+	if (url.origin !== location.origin || isMedia(url.pathname)) return;
 
 	event.respondWith(
 		(async () => {
