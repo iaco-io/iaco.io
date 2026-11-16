@@ -8,9 +8,10 @@
 	let error = $state('');
 	let busy = $state(false);
 
-	/** @param {SubmitEvent} e */
+	/** @param {SubmitEvent} [e] */
 	async function submit(e) {
-		e.preventDefault();
+		e?.preventDefault();
+		if (busy) return;
 		busy = true;
 		error = '';
 		try {
@@ -19,6 +20,13 @@
 			error = /** @type {Error} */ (err).message;
 		}
 		busy = false;
+	}
+	// a password manager (or a paste) fills the whole token at once: log in straight away
+	let previous = 0;
+	function autofill() {
+		const jump = token.length - previous;
+		previous = token.length;
+		if (jump > 20 && /^(github_pat_|ghp_)\w{20,}$/.test(token.trim())) submit();
 	}
 </script>
 
@@ -37,6 +45,8 @@
 			autocomplete="current-password"
 			placeholder="github_pat_…"
 			bind:value={token}
+			oninput={autofill}
+			onchange={autofill}
 			required
 		/>
 	</label>
