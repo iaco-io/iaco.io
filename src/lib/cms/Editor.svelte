@@ -456,7 +456,7 @@
 		height: 1.2rem;
 		border-radius: 999px;
 		background: var(--bg);
-		box-shadow: 0 2px 6px var(--shadow-soft);
+		box-shadow: 0 0 8px var(--shadow-soft);
 		transition: transform 0.2s ease;
 	}
 

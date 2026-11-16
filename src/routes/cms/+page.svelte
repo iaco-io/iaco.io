@@ -494,6 +494,8 @@
 		color: var(--fg);
 		text-align: left;
 		cursor: pointer;
+		/* close to the page background, so the list stays calm */
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
 	}
 
 	.title {
