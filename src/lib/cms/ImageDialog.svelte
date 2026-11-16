@@ -94,11 +94,10 @@
 
 {#snippet used(/** @type {string} */ after)}
 	<div class="uses">
-		<small>used in:</small>
+		<small>used in{after ? ` ${after}` : ''}:</small>
 		<ul>
 			{#each uses as title}<li>{title}</li>{/each}
 		</ul>
-		{#if after}<small>{after}</small>{/if}
 	</div>
 {/snippet}
 
@@ -119,7 +118,7 @@
 			</span>
 			<small>{taken ? (manage ? 'that name is taken' : 'replaces the image with that name') : 'use / for folders, like beautiful/cow-and-chicken'}</small>
 			{#if manage && uses.length}
-				{@render used('renaming updates them all.')}
+				{@render used('(renaming updates them all)')}
 			{/if}
 		{:else}
 			<span class="label">{keep ? 'replace' : 'delete'} {name}</span>
