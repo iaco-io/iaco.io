@@ -37,25 +37,35 @@
 	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
 	// one full swing there and back is 1.728 s, kept in step with the time of day
 	let swing = $state(0);
-	// the cloud: ten steps of 0.864 s — a drop on the left, middle, right, three times, then one thunder.
-	// `step` is which of the ten, `p` how far into it (0 to 1)
-	let step = $state(0);
-	let p = $state(0);
-	// the drop: forms for the first 15%, then falls with gravity (distance grows with the square of time)
-	const grow = $derived(Math.min(1, p / 0.15));
-	const fallT = $derived(Math.max(0, (p - 0.15) / 0.67));
-	const fall = $derived(9.6 * fallT * fallT);
-	const stretch = $derived(1 + 0.5 * fallT);
-	// each drop lands a little off the centre, different for every drop but the same on every screen
-	const drift = $derived(((Math.sin(step * 12.9898 + Math.floor(Date.now() / 8640) * 78.233) * 43758.5453) % 1) * 0.8);
+	// the cloud repeats every 8.64 s (0.01% of a day): for 9 × 0.864 s a new drop starts every 0.432 s — left, middle,
+	// right, over and over — each falling for 0.864 s, so two are always in the air, half a fall apart.
+	// the last 0.864 s is one thunder
+	let cycle = $state(0); // ms into the 8.64 s
+	let round = $state(0); // which 8.64 s, so each drop's little drift differs
+	const thunder = $derived(cycle >= 7776 ? (cycle - 7776) / 864 : -1);
+	const drops = $derived(
+		Array.from({ length: 18 }, (_, k) => ({ k, p: (cycle - k * 432) / 864 })).filter((d) => d.p >= 0 && d.p < 1)
+	);
+	/** where a drop is at p (0 to 1): it swells for the first 15%, falls with gravity, stretches, then splashes */
+	function drop(/** @type {number} */ k, /** @type {number} */ p) {
+		const drift = ((Math.sin(k * 12.9898 + round * 78.233) * 43758.5453) % 1) * 0.8;
+		const fallT = Math.max(0, (p - 0.15) / 0.67);
+		return {
+			x: [9.5, 14, 18.5][k % 3] + drift,
+			grow: Math.min(1, p / 0.15),
+			fall: 9.6 * fallT * fallT,
+			stretch: 1 + 0.5 * fallT,
+			splash: p < 0.82 ? -1 : (p - 0.82) / 0.18
+		};
+	}
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		let frame = 0;
 		const tick = () => {
 			const t = Date.now() - new Date().setHours(0, 0, 0, 0);
 			swing = 9 * Math.cos((2 * Math.PI * (t % 1728)) / 1728);
-			step = Math.floor(t / 864) % 10;
-			p = (t % 864) / 864;
+			cycle = t % 8640;
+			round = Math.floor(t / 8640);
 			frame = requestAnimationFrame(tick);
 		};
 		tick();
@@ -68,30 +78,29 @@
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
 		{#if icon === 'cloud'}
-			<!-- a small cloud: one drop falls from the left, middle or right part, and every tenth step it thunders -->
+			<!-- a small cloud: drops fall from its left, middle and right, two at a time, then it thunders -->
 			<svg viewBox="0 0 28 30" width="27" height="29" aria-hidden="true">
-				<path class:flash={step === 9 && p < 0.5} d="M8.5 16.5h11.5a4.2 4.2 0 0 0 .4-8.4 6 6 0 0 0-11.6-1.2 4.8 4.8 0 0 0-.3 9.6Z" />
-				{#if step === 9}
-					<path class="bolt" style:opacity={p < 0.12 || (p > 0.2 && p < 0.32) ? 1 : Math.max(0, 1 - (p - 0.32) * 2.2)} d="M15 17.5l-3 5h3.4l-2.4 5" />
-				{:else}
-					<!-- a teardrop that swells under the cloud, lets go, falls faster and faster (gravity),
-					     stretches with speed, and ends in a tiny splash -->
-					{@const x = [9.5, 14, 18.5][step % 3] + drift}
-					{#if p < 0.82}
+				<path class:flash={thunder >= 0 && thunder < 0.5} d="M8.5 16.5h11.5a4.2 4.2 0 0 0 .4-8.4 6 6 0 0 0-11.6-1.2 4.8 4.8 0 0 0-.3 9.6Z" />
+				{#if thunder >= 0}
+					<path class="bolt" style:opacity={thunder < 0.12 || (thunder > 0.2 && thunder < 0.32) ? 1 : Math.max(0, 1 - (thunder - 0.32) * 2.2)} d="M15 17.5l-3 5h3.4l-2.4 5" />
+				{/if}
+				<!-- teardrops that swell under the cloud, let go, fall faster and faster, stretch, and splash -->
+				{#each drops as { k, p } (k)}
+					{@const d = drop(k, p)}
+					{#if d.splash < 0}
 						<path
 							class="drop"
-							style:transform="translate({x}px, {17.2 + fall}px) scale({grow}, {grow * stretch})"
+							style:transform="translate({d.x}px, {17.2 + d.fall}px) scale({d.grow}, {d.grow * d.stretch})"
 							d="M0-1.6C.5-.6 1-.1 1 .5a1 1 0 0 1-2 0c0-.6.5-1.1 1-2.1Z"
 						/>
 					{:else}
-						{@const s = (p - 0.82) / 0.18}
 						<path
 							class="splash"
-							style:opacity={1 - s}
-							d="M{x - 1 - s * 1.6} {27.4 - s * 0.6}l-.7-.7M{x + 1 + s * 1.6} {27.4 - s * 0.6}l.7-.7M{x} {26.9 - s * 1.2}v-.6"
+							style:opacity={1 - d.splash}
+							d="M{d.x - 1 - d.splash * 1.6} {27.4 - d.splash * 0.6}l-.7-.7M{d.x + 1 + d.splash * 1.6} {27.4 - d.splash * 0.6}l.7-.7M{d.x} {26.9 - d.splash * 1.2}v-.6"
 						/>
 					{/if}
-				{/if}
+				{/each}
 			</svg>
 		{:else}
 			<!-- an old grandfather clock: a hood with a swan-neck pediment and finials, the face, a narrow case
