@@ -265,11 +265,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.6rem;
-		font-size: 2.4rem;
+		font-size: 1.7rem;
 		letter-spacing: -0.04em;
 	}
 
 	h1 small {
+		position: relative;
+		top: 0.15em;
 		font-size: 0.8rem;
 		font-weight: 500;
 		letter-spacing: 0;
