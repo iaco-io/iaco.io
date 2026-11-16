@@ -27,28 +27,48 @@
 	// the hands show the usual time, the pendulum keeps in step with the day
 	const hours = $derived(now ? ((now.getHours() % 12) + now.getMinutes() / 60) * 30 : 0);
 	const minutes = $derived(now ? now.getMinutes() * 6 : 0);
-	const delay = $derived(-((sinceMidnight % 1728) / 1000));
+	// a real pendulum: the angle follows a cosine of the time, so it slows at the ends and is fastest in the middle.
+	// one full swing there and back is 1.728 s, kept in step with the time of day
+	let swing = $state(0);
+	onMount(() => {
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		let frame = 0;
+		const tick = () => {
+			const t = Date.now() - new Date().setHours(0, 0, 0, 0);
+			swing = 9 * Math.cos((2 * Math.PI * (t % 1728)) / 1728);
+			frame = requestAnimationFrame(tick);
+		};
+		tick();
+		return () => cancelAnimationFrame(frame);
+	});
 </script>
 
 {#if now}
 	<div class="dayclock" title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
-		<!-- an old grandfather clock: arched hood with the face, a narrow case with a window for the pendulum, a base -->
+		<!-- an old grandfather clock: a hood with a swan-neck pediment and finials, the face, a narrow case
+		     with a window for the pendulum, and a base -->
 		<svg viewBox="0 0 20 36" width="17" height="31" aria-hidden="true">
-			<circle cx="10" cy="1.6" r=".8" />
-			<path d="M4.5 12.5V6.2C4.5 3.9 7 2.6 10 2.6s5.5 1.3 5.5 3.6v6.3Z" />
-			<circle cx="10" cy="7.6" r="3" />
-			<path class="hand" d="M10 7.6V6" style:transform="rotate({hours}deg)" />
-			<path class="hand" d="M10 7.6V5.1" style:transform="rotate({minutes}deg)" />
-			<path d="M6 12.5v17.5h8V12.5" />
-			<rect x="7.6" y="14.6" width="4.8" height="12.6" rx="2.4" />
-			<g class="pendulum" style:animation-delay="{delay}s">
-				<path d="M10 13.4v9.4" />
-				<circle cx="10" cy="24" r="1.3" />
+			<circle cx="10" cy="1.3" r=".65" />
+			<path d="M10 2v1.2" />
+			<circle cx="4.3" cy="5.4" r=".55" />
+			<circle cx="15.7" cy="5.4" r=".55" />
+			<path d="M4.6 7.2C5.4 5.3 7.2 4.7 8.4 3.8c.4-.3.9-.1.8.4" />
+			<path d="M15.4 7.2c-.8-1.9-2.6-2.5-3.8-3.4-.4-.3-.9-.1-.8.4" />
+			<path d="M4.3 7.2h11.4M4.8 7.2V14h10.4V7.2" />
+			<path d="M5.7 7.2V14M14.3 7.2V14" />
+			<circle cx="10" cy="10.6" r="2.7" />
+			<path class="hand" d="M10 10.6V9.2" style:transform="rotate({hours}deg)" />
+			<path class="hand" d="M10 10.6V8.5" style:transform="rotate({minutes}deg)" />
+			<path d="M6.1 14v16.2h7.8V14" />
+			<rect x="7.7" y="15.6" width="4.6" height="12.6" rx="2.3" />
+			<g class="pendulum" style:transform="rotate({swing}deg)">
+				<path d="M10 14.3v10.2" />
+				<circle cx="10" cy="25.7" r="1.2" />
 			</g>
-			<path d="M4.8 30h10.4v2.2H4.8Z" />
-			<path d="M5.8 32.2v1.5M14.2 32.2v1.5" />
+			<path d="M5 30.2h10v2.2H5Z" />
+			<path d="M5.9 32.4v1.4M14.1 32.4v1.4" />
 		</svg>
 	</div>
 {/if}
@@ -92,36 +112,19 @@
 	svg {
 		fill: none;
 		stroke: currentColor;
-		stroke-width: 1.2;
+		stroke-width: 0.9;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
 	.hand {
 		transform-box: view-box;
-		transform-origin: 10px 7.6px;
+		transform-origin: 10px 10.6px;
 	}
 
 	.pendulum {
 		transform-box: view-box;
-		transform-origin: 10px 13.4px;
-		animation: swing 1.728s ease-in-out infinite;
-	}
-
-	@keyframes swing {
-		0%,
-		100% {
-			transform: rotate(-9deg);
-		}
-		50% {
-			transform: rotate(9deg);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.pendulum {
-			animation: none;
-		}
+		transform-origin: 10px 14.3px;
 	}
 
 	/* on big screens the menu button sits at the top right */
