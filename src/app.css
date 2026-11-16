@@ -75,8 +75,8 @@ body::before {
 	inset: -20vh 0;
 	z-index: -1;
 	background:
-		radial-gradient(120% 60% at 100% 20%, var(--glow-1), transparent 60%),
-		radial-gradient(90% 50% at 0% 80%, var(--glow-2), transparent 60%),
+		radial-gradient(120% 43% at 100% 14%, var(--glow-1), transparent 60%),
+		radial-gradient(90% 36% at 0% 86%, var(--glow-2), transparent 60%),
 		var(--bg);
 	pointer-events: none;
 }
