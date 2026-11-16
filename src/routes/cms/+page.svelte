@@ -604,8 +604,17 @@
 {#if api}
 	<Fabs onmenu={() => (menu = true)}>
 		{#snippet extra()}
-			{#if !editing && kind === 'media'}
-				<button class="round glass" onclick={pasteMedia} aria-label="paste media"><ClipboardPaste size={22} /></button>
+			{#if !editing && progress > 2}
+				<!-- fades in while sliding to the media tab -->
+				<button
+					class="round create paste"
+					style:opacity={Math.min(1, progress - 2)}
+					style:pointer-events={progress > 2.5 ? null : 'none'}
+					onclick={pasteMedia}
+					aria-label="paste media"
+				>
+					<ClipboardPaste size={22} />
+				</button>
 			{/if}
 			{#if !editing}
 				<button class="round create" onclick={create} aria-label={kind === 'media' ? 'upload media' : `new ${kind.slice(0, -1)}`}>

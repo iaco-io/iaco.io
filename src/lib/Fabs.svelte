@@ -66,8 +66,12 @@
 		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 3.75rem);
 	}
 
+	/* extra buttons stack upwards above the menu button */
 	.extra {
 		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 7.5rem);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
 	}
 
 	.menu span {
