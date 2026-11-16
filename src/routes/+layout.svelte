@@ -1,6 +1,7 @@
 <script>
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import { Waves } from '@lucide/svelte';
 	import Menu from '#lib/Menu.svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import { page } from '$app/state';
@@ -9,7 +10,7 @@
 	let { children, data } = $props();
 
 	const links = $derived([
-		{ href: '/', label: 'home' },
+		{ href: '/', label: 'iaco.io', icon: Waves },
 		{ href: '/#latest', label: 'latest' },
 		...data.pages.map((p) => ({ href: p.url, label: p.title }))
 	]);

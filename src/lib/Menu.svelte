@@ -5,7 +5,7 @@
 	import ThemeToggle from './ThemeToggle.svelte';
 	import Social from './Social.svelte';
 
-	/** @type {{ open: boolean, links: { href: string, label: string }[] }} */
+	/** @type {{ open: boolean, links: { href: string, label: string, icon?: import('svelte').Component<any> }[] }} */
 	let { open = $bindable(), links } = $props();
 
 	const close = () => (open = false);
@@ -26,8 +26,13 @@
 
 <Panel bind:open label="Main">
 	<ul class="entries">
-		{#each links as link}
-			<li><a class="entry" href={link.href} onclick={close}>{link.label}</a></li>
+		{#each links as { href, label, icon: Icon }}
+			<li>
+				<a class="entry" {href} onclick={close}>
+					{#if Icon}<Icon size={24} strokeWidth={2.25} />{/if}
+					{label}
+				</a>
+			</li>
 		{/each}
 		<li>
 			<button class="entry" onclick={copyRss}><Rss size={24} strokeWidth={2.25} /> rss</button>
