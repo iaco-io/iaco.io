@@ -9,7 +9,7 @@
 	let { setup, onsave, onclose } = $props();
 
 	const LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
-	const SAMPLE = 'abcdefghiyjklmnopqrstuwvxyz';
+	const SAMPLE = 'abcdefghiyjklmnopqrstuwvxz';
 
 	// a copy to edit; nothing changes until saved
 	let draft = $state(
