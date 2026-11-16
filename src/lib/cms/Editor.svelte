@@ -17,13 +17,14 @@
 	 *   onupload: (file: File, name: string) => Promise<string>,
 	 *   ask: (props: Record<string, any>) => Promise<any>,
 	 *   manage: (name: string) => Promise<string>,
+	 *   alphabet: Record<string, { to: string, on: boolean }>,
 	 *   ondelete: () => Promise<void>,
 	 *   onback: () => void,
 	 *   partial: boolean,
 	 *   ondiscard: () => void
 	 * }}
 	 */
-	let { item = $bindable(), images, resolve, ask, manage, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
+	let { item = $bindable(), images, resolve, ask, manage, alphabet, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
 
 	let busy = $state('');
 	/** @type {HTMLTextAreaElement | undefined} */
@@ -234,6 +235,7 @@
 				type: 'preview',
 				item: { title: item.meta.title, description: item.meta.description, image: item.meta.image },
 				body: item.body,
+				alphabet,
 				images: Object.fromEntries(images.map((name) => [name, resolve(name)]))
 			})
 		)

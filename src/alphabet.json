@@ -1,0 +1,106 @@
+{
+	"a": {
+		"to": "ɑ",
+		"on": true
+	},
+	"b": {
+		"to": "b",
+		"on": false
+	},
+	"c": {
+		"to": "c",
+		"on": false
+	},
+	"d": {
+		"to": "d",
+		"on": false
+	},
+	"e": {
+		"to": "e",
+		"on": false
+	},
+	"f": {
+		"to": "ƒ",
+		"on": true
+	},
+	"g": {
+		"to": "g",
+		"on": false
+	},
+	"h": {
+		"to": "h",
+		"on": false
+	},
+	"i": {
+		"to": "i",
+		"on": false
+	},
+	"j": {
+		"to": "ȷ",
+		"on": true
+	},
+	"k": {
+		"to": "k",
+		"on": false
+	},
+	"l": {
+		"to": "ɭ",
+		"on": true
+	},
+	"m": {
+		"to": "m",
+		"on": false
+	},
+	"n": {
+		"to": "ƞ",
+		"on": true
+	},
+	"o": {
+		"to": "o",
+		"on": false
+	},
+	"p": {
+		"to": "p",
+		"on": false
+	},
+	"q": {
+		"to": "q",
+		"on": false
+	},
+	"r": {
+		"to": "ɾ",
+		"on": true
+	},
+	"s": {
+		"to": "ʃ",
+		"on": true
+	},
+	"t": {
+		"to": "ʈ",
+		"on": true
+	},
+	"u": {
+		"to": "u",
+		"on": false
+	},
+	"v": {
+		"to": "v",
+		"on": false
+	},
+	"w": {
+		"to": "ụ",
+		"on": true
+	},
+	"x": {
+		"to": "x",
+		"on": false
+	},
+	"y": {
+		"to": "ị",
+		"on": true
+	},
+	"z": {
+		"to": "z",
+		"on": false
+	}
+}

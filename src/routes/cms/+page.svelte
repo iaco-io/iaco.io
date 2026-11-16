@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { CaseLower, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -12,6 +12,9 @@
 	import Editor from '#lib/cms/Editor.svelte';
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
+	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
+	import { setAlphabet } from '#lib/tp.js';
+	import savedAlphabet from '../../alphabet.json';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
 	import { encrypt, decrypt } from '#lib/crypto.js';
 	import { parse, serialize, urls } from '#lib/markdown.js';
@@ -187,12 +190,40 @@
 		entries = [];
 	}
 
+	// iaco's alphabet (<al>), kept in src/alphabet.json; the newest one is read from github
+	const ALPHABET = 'src/alphabet.json';
+	let alphabet = $state(savedAlphabet);
+	let alphabetOpen = $state(false);
+
+	async function saveAlphabet(/** @type {typeof savedAlphabet} */ setup) {
+		if (!api) return;
+		try {
+			const sha = (await api.list()).find((f) => f.path === ALPHABET)?.sha;
+			await api.write(ALPHABET, utf8ToBase64(JSON.stringify(setup, null, '\t') + '\n'), sha, 'cms: update alphabet');
+			alphabet = setup;
+			setAlphabet(setup);
+			alphabetOpen = false;
+			flash('alphabet saved. the site updates in a minute or two');
+		} catch (err) {
+			flash(/** @type {Error} */ (err).message);
+		}
+	}
+
 	async function refresh() {
 		if (!api) return;
 		loading = true;
 		try {
 			const tree = await api.list();
 			files = tree.map((f) => f.path);
+			if (files.includes(ALPHABET)) {
+				api
+					.read(ALPHABET)
+					.then(({ text }) => {
+						alphabet = JSON.parse(text);
+						setAlphabet(alphabet);
+					})
+					.catch(() => {});
+			}
 			const known = new Map(entries.map((e) => [e.sha, e]));
 			const items = tree.filter((f) => /^src\/(posts|pages|redirects)\/[^/]+\.md$/.test(f.path) && !f.path.endsWith('/README.md'));
 			entries = await Promise.all(
@@ -579,7 +610,7 @@
 	{#if !api}
 		<Login onlogin={login} />
 	{:else if editing}
-		<Editor bind:item={editing} {images} {resolve} {ask} {manage} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
+		<Editor bind:item={editing} {images} {resolve} {ask} {manage} {alphabet} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
 	{:else}
 		<header>
 			<div class="top">
@@ -605,6 +636,10 @@
 	{/if}
 
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
+
+	{#if alphabetOpen}
+		<AlphabetDialog setup={alphabet} onsave={saveAlphabet} onclose={() => (alphabetOpen = false)} />
+	{/if}
 
 	{#if dialog}
 		<ImageDialog {...dialog.props} {images} {resolve} ondone={dialog.done} />
@@ -648,6 +683,12 @@
 					</button>
 				</li>
 			{/each}
+			<li>
+				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>
+					<CaseLower size={24} strokeWidth={2.25} />
+					alphabet
+				</button>
+			</li>
 		</ul>
 		{#snippet bottom()}
 			<ThemeToggle />

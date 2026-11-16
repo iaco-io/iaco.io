@@ -1,4 +1,5 @@
 <script>
+	import { setAlphabet } from '#lib/tp.js';
 	// live preview for the cms: renders an unsaved post with the real blog layout.
 	// the cms sends the content through postMessage.
 	import Article from '#lib/Article.svelte';
@@ -8,7 +9,11 @@
 
 	$effect(() => {
 		/** @param {MessageEvent} e */
-		const receive = (e) => e.origin === location.origin && e.data?.type === 'preview' && (data = e.data);
+		const receive = (e) => {
+			if (e.origin !== location.origin || e.data?.type !== 'preview') return;
+			if (e.data.alphabet) setAlphabet(e.data.alphabet);
+			data = e.data;
+		};
 		addEventListener('message', receive);
 		parent.postMessage({ type: 'preview-ready' }, location.origin);
 		return () => removeEventListener('message', receive);

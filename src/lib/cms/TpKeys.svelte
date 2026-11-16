@@ -6,7 +6,9 @@
 	/** @type {{ oninsert: (word: string) => void, onclose: () => void }} */
 	let { oninsert, onclose } = $props();
 
-	const WORDS = 'a akesi ala alasa ale ali anpa ante anu apeja awen e en epiku esun ijo ike ilo insa jaki jan jasima jelo jo kala kalama kama kasi ken kepeken kijetesantakalu kili kin kipisi kiwen ko kokosila kon ku kule kulupu kute la lanpan lape laso lawa leko len lete li lili linja linluwi lipu loje lon luka lukin lupa ma majuna mama mani meli meso mi mije misikeke moku moli monsi monsuta mu mun musi mute n namako nanpa nasa nasin nena ni nimi noka o oko olin ona open pakala pake pali palisa pan pana pi pilin pimeja pini pipi poka poki pona powe pu sama seli selo seme sewi sijelo sike sin sina sinpin sitelen soko sona soweli su suli suno supa suwi tan taso tawa telo tenpo toki tomo tonsi tu unpa uta utala walo wan waso wawa weka wile'.split(' ');
+	// the words of lipu pu first, then the extra words this font knows
+	const PU = 'a akesi ala alasa ale ali anpa ante anu awen e en esun ijo ike ilo insa jaki jan jelo jo kala kalama kama kasi ken kepeken kili kiwen ko kon kule kulupu kute la lape laso lawa len lete li lili linja lipu loje lon luka lukin lupa ma mama mani meli mi mije moku moli monsi mu mun musi mute nanpa nasa nasin nena ni nimi noka o olin ona open pakala pali palisa pan pana pi pilin pimeja pini pipi poka poki pona pu sama seli selo seme sewi sijelo sike sin sina sinpin sitelen sona soweli suli suno supa suwi tan taso tawa telo tenpo toki tomo tu unpa uta utala walo wan waso wawa weka wile'.split(' ');
+	const EXTRA = 'alu alulawala amanka apeja awase bruh enko epiku epikule ete ewe iki ipi isipin itomi jaku jalan jami jasima je jew jewnikijetesantakalu jonke kalikun kamalawala kan kapa kapesi kapilala ke kese ki kijetesantakalu kijetesantakawaso kiki kin kipisi kokosila kosan ku kulepiku kulu kuntu lanpan leko likujo linluwi lipamanka lokon lox lu majuna majuto makojo melome meso mijomi misa misikeke monsuta muje mulapisu muli n namako nata natu neja nimisin nja oke okepuma oki oko omekapo omen oni opasan pa pake pasila pata peto pipo po polinpin pomotolo powe puwa samu san sikomo slape soko soto soweloje sowoli su sutopatikuna taki te teje ten tenpolawa tm to tonsi tuli umesu unikijetesantakalawa unikijetesantakalu unu usawi wa waken waleja wawajete we wekama yupekosi'.split(' ');
 
 	// stay above the on-screen keyboard
 	let bottom = $state(0);
@@ -38,14 +40,18 @@
 	});
 </script>
 
+{#snippet key(/** @type {string} */ word)}
+	<button title={word} onpointerdown={keep} onclick={() => oninsert(word)}>
+		<tp>{word}</tp>
+		<small>{word}</small>
+	</button>
+{/snippet}
+
 <div class="keys glass" bind:this={panel} style:bottom="{bottom}px" role="dialog" aria-label="sitelen pona">
 	<div class="grid">
-		{#each WORDS as word (word)}
-			<button title={word} onpointerdown={keep} onclick={() => oninsert(word)}>
-				<tp>{word}</tp>
-				<small>{word}</small>
-			</button>
-		{/each}
+		{#each PU as word (word)}{@render key(word)}{/each}
+		<hr />
+		{#each EXTRA as word (word)}{@render key(word)}{/each}
 	</div>
 </div>
 
@@ -70,6 +76,15 @@
 		max-height: 6.9rem;
 		overflow-y: auto;
 		overscroll-behavior: contain;
+	}
+
+	/* between the words of pu and the extra ones */
+	.grid hr {
+		grid-column: 1 / -1;
+		width: 100%;
+		margin: 0.3rem 0;
+		border: 0;
+		border-top: 1px solid var(--glass-edge);
 	}
 
 	.grid button {
