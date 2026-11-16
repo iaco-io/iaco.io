@@ -82,6 +82,7 @@
 		await run('uploading…', async () => {
 			for (const file of files) {
 				const name = await onupload(file);
+				added.push(name);
 				insert(`\n![](${name})\n`);
 				if (!item.meta.image) item.meta.image = name;
 			}
@@ -90,10 +91,24 @@
 
 	/** uploads a file and makes it the main image */
 	async function setCover(/** @type {File} */ file) {
-		await run('uploading…', async () => (item.meta.image = await onupload(file)));
+		await run('uploading…', async () => {
+			item.meta.image = await onupload(file);
+			added.push(item.meta.image);
+		});
 	}
 
 	let coverNote = $state('');
+
+	// thumbnails: images used in this post or uploaded now; the rest of media behind "more"
+	let added = $state(/** @type {string[]} */ ([]));
+	let showAll = $state(false);
+	const used = $derived([
+		...added,
+		...(item.meta.image ? [item.meta.image] : []),
+		...[...item.body.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((m) => m[1])
+	]);
+	const shown = $derived(images.filter((name) => used.includes(name)));
+	const others = $derived(images.filter((name) => !used.includes(name)));
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
 	function uploadCover(e) {
@@ -224,11 +239,16 @@
 				<ImagePlus size={18} /> upload image
 				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 			</label>
-			{#each images as name}
+			{#each [...shown, ...(showAll ? others : [])] as name (name)}
 				<button class="thumb" title="insert {name}" onclick={() => insert(`![](${name})`)}>
 					<img src={resolve(name)} alt={name} />
 				</button>
 			{/each}
+			{#if others.length}
+				<button class="pill more" onclick={() => (showAll = !showAll)}>
+					{showAll ? 'less' : `more (${others.length})`}
+				</button>
+			{/if}
 		</div>
 
 		<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
@@ -273,6 +293,12 @@
 		font-size: 0.85rem;
 		font-weight: 600;
 		color: var(--muted);
+	}
+
+	.more {
+		height: 2.75rem;
+		box-shadow: none;
+		font-size: 0.85rem;
 	}
 
 	.picker {
