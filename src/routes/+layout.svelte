@@ -79,6 +79,8 @@
 	}
 
 	.logo {
+		/* a touch higher, so its letters line up with the middle of the clock's numbers */
+		transform: translateY(-2px);
 		font-size: 1.25rem;
 		font-weight: 700;
 		letter-spacing: -0.03em;
