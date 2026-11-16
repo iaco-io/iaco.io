@@ -25,7 +25,7 @@
 	}
 </script>
 
-<Panel bind:open label="Main">
+<Panel bind:open label="Main" edge>
 	<ul class="entries">
 		{#each links as { href, label, icon: Icon }}
 			<li>
