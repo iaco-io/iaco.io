@@ -1,6 +1,6 @@
 <script>
 	// a small popup for naming a media file on upload, and for renaming, replacing or deleting one.
-	// the extension can't be changed; "/" makes folders, like animals/panda.
+	// the extension can't be changed; "/" makes folders, like beautiful/cow-and-chicken.
 	// replacing points every post and page that uses it to another file (picked or uploaded now);
 	// the old file can be kept or deleted. deleting a file that is still used asks for a replacement too.
 	import { Trash2, Upload, ArrowLeft, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
@@ -117,7 +117,7 @@
 				<input bind:value={base} autofocus autocapitalize="off" autocorrect="off" spellcheck="false" />
 				<em>{ext}</em>
 			</span>
-			<small>{taken ? (manage ? 'that name is taken' : 'replaces the image with that name') : 'use / for folders, like animals/panda'}</small>
+			<small>{taken ? (manage ? 'that name is taken' : 'replaces the image with that name') : 'use / for folders, like beautiful/cow-and-chicken'}</small>
 			{#if manage && uses.length}
 				{@render used('renaming updates them all.')}
 			{/if}

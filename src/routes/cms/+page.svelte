@@ -294,7 +294,7 @@
 		}
 	}
 
-	/** uploads `file` to src/media/`name` (the name may hold folders, like animals/panda.jpg) */
+	/** uploads `file` to src/media/`name` (the name may hold folders, like beautiful/cow-and-chicken.jpg) */
 	async function upload(/** @type {File} */ file, /** @type {string} */ name) {
 		if (!api) throw new Error('not logged in');
 		const path = MEDIA + name;

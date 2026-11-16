@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, Upload, ClipboardPaste } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste } from '@lucide/svelte';
 	import Device from './Device.svelte';
 	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
@@ -270,12 +270,15 @@
 		<div>
 			<span class="label">main image</span>
 			<div class="picker">
+				{#if item.meta.image}
+					<img class="thumb cover" src={resolve(item.meta.image)} alt="" />
+				{/if}
 				<select bind:value={item.meta.image}>
 					<option value="">none</option>
 					{#each images as name}<option value={name}>{name}</option>{/each}
 				</select>
 				<label class="pill square" title="upload a new main image">
-					<Upload size={18} />
+					<ImagePlus size={18} />
 					<input type="file" accept="image/*" onchange={uploadCover} hidden disabled={!!busy} />
 				</label>
 				<button class="pill square" title="paste main image from clipboard" disabled={!!busy} onclick={pasteCover}>
@@ -322,11 +325,11 @@
 
 {#if !short}
 	<div class="images">
-		<label class="pill">
-			<ImagePlus size={18} /> upload image
+		<label class="pill square" title="upload images">
+			<ImagePlus size={18} />
 			<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 		</label>
-		<button class="pill" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /> paste</button>
+		<button class="pill square" title="paste an image" aria-label="paste an image" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /></button>
 		{#each [...shown, ...(showAll ? others : [])] as name (name)}
 			<button
 				class="thumb"
@@ -635,6 +638,17 @@
 		width: 100%;
 		height: 100%;
 		cursor: pointer;
+	}
+
+	.images .square {
+		height: 2.75rem;
+	}
+
+	.thumb.cover {
+		flex: none;
+		width: 2.9rem;
+		height: auto;
+		object-fit: cover;
 	}
 
 	.thumb img {
