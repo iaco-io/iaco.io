@@ -169,7 +169,10 @@
 		</label>
 		<label>
 			<span>file name {links ? `→ ${links}` : ''}</span>
-			<input bind:value={item.name} placeholder={item.kind === 'posts' ? '001-my-intro' : short ? 'youtube' : '01-hello-world'} />
+			<span class="suffix">
+				<input bind:value={item.name} placeholder="file-name" />
+				<em>.md</em>
+			</span>
 		</label>
 		{#if !short}
 			<label>
@@ -286,7 +289,7 @@
 		grid-column: 1 / -1;
 	}
 
-	label span,
+	label > span:first-child,
 	.label {
 		display: block;
 		margin-bottom: 0.4rem;
@@ -299,6 +302,26 @@
 		height: 2.75rem;
 		box-shadow: none;
 		font-size: 0.85rem;
+	}
+
+	.suffix {
+		position: relative;
+		display: block;
+		margin: 0;
+	}
+
+	.suffix input {
+		padding-right: 3rem;
+	}
+
+	.suffix em {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		font-style: normal;
+		color: var(--muted);
+		pointer-events: none;
+		transform: translateY(-50%);
 	}
 
 	.picker {
