@@ -34,9 +34,7 @@
 		position: fixed;
 		top: calc(var(--top) + var(--gap));
 		right: var(--gap);
-		/* ends well above the bottom: safari paints its toolbar over large fixed things near the bottom edge */
-		height: min(36rem, 72svh);
-		overflow-y: auto;
+		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
@@ -55,6 +53,8 @@
 	.panel.open {
 		transform: none;
 		visibility: visible;
+		/* safari 26 skips slightly see-through fixed elements when it decides how to paint its toolbar */
+		opacity: 0.99;
 		transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
