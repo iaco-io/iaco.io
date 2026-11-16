@@ -2,6 +2,8 @@
 	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown } from '@lucide/svelte';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
+	import TpKeys from './TpKeys.svelte';
+	import { tick } from 'svelte';
 	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
 
@@ -146,6 +148,27 @@
 		};
 	});
 	let gallery = $state(false);
+
+	// the sitelen pona keyboard: a word goes into the open <tp> at the cursor, or into a new one
+	let keys = $state(false);
+	async function tp(/** @type {string} */ word) {
+		const body = item.body;
+		const start = textarea?.selectionStart ?? body.length;
+		const end = textarea?.selectionEnd ?? start;
+		const before = body.slice(0, start);
+		const inside = before.lastIndexOf('<tp>') > before.lastIndexOf('</tp>');
+		let text, caret;
+		if (inside) {
+			text = (/[\s>]$/.test(before) || !before ? '' : ' ') + word;
+			caret = start + text.length;
+		} else {
+			text = `<tp>${word}</tp>`;
+			caret = start + text.length - '</tp>'.length;
+		}
+		item.body = before + text + body.slice(end);
+		await tick();
+		textarea?.setSelectionRange(caret, caret);
+	}
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
 	async function upload(e) {
@@ -410,7 +433,8 @@
 
 	{#if !short}
 		<div class="images">
-			<label class="pill square" title="upload images">
+			<button class="pill square sp" class:on={keys} onpointerdown={(e) => e.preventDefault()} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onclick={() => (keys = !keys)}><tp>toki</tp></button>
+		<label class="pill square" title="upload images">
 				<ImagePlus size={18} />
 				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 			</label>
@@ -461,6 +485,10 @@
 >
 	<Save size={22} class={busy ? 'pulse' : ''} />
 </button>
+
+{#if keys}
+	<TpKeys oninsert={tp} onclose={() => (keys = false)} />
+{/if}
 
 {#if gallery}
 	<Gallery images={pictures} {resolve} current={item.meta.image} ondone={(name) => ((gallery = false), name !== null && (item.meta.image = name))} />
@@ -835,6 +863,16 @@
 
 	.images .square {
 		height: 2.75rem;
+	}
+
+	.sp tp {
+		font-size: 1.35rem;
+		line-height: 1;
+	}
+
+	.sp.on {
+		color: var(--bg);
+		background: var(--fg);
 	}
 
 	/* the save icon breathes while saving or uploading */

@@ -1,3 +1,4 @@
+import { withAlphabet } from './tp.js';
 import { Marked } from 'marked';
 
 // properties at the top of each .md file, in this order
@@ -74,5 +75,5 @@ export function render(source, resolve = (path) => path) {
 			}
 		}
 	});
-	return /** @type {string} */ (marked.parse(source, { async: false }));
+	return /** @type {string} */ (marked.parse(withAlphabet(source), { async: false }));
 }

@@ -1,4 +1,5 @@
 <script>
+	import Tp from '#lib/Tp.svelte';
 	import { Waves, Feather, Sprout } from '@lucide/svelte';
 
 	const topics = [
@@ -26,8 +27,8 @@
 			{#each data.posts as post}
 				<a class="card glass post" href={post.url}>
 					{#if post.image}<img src={post.image} alt="" />{/if}
-					<h2>{post.title}</h2>
-					<p>{post.description}</p>
+					<h2><Tp text={post.title} /></h2>
+					<p><Tp text={post.description} /></p>
 				</a>
 			{/each}
 		</section>

@@ -1,4 +1,5 @@
 <script>
+	import { plain } from './tp.js';
 	// a decrypted post or page, used by /posts/<slug>/ and /<slug>/
 	import { decrypt } from './crypto.js';
 	import Article from './Article.svelte';
@@ -23,8 +24,8 @@
 </script>
 
 <svelte:head>
-	<title>{item.title} — iaco</title>
-	<meta name="description" content={item.description} />
+	<title>{plain(item.title)} — iaco</title>
+	<meta name="description" content={plain(item.description)} />
 </svelte:head>
 
 <main>

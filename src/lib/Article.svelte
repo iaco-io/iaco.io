@@ -1,4 +1,5 @@
 <script>
+	import Tp from './Tp.svelte';
 	import { render } from './markdown.js';
 
 	/**
@@ -15,8 +16,8 @@
 
 <article>
 	<header>
-		<h1>{item.title}</h1>
-		{#if item.description}<p class="lead">{item.description}</p>{/if}
+		<h1><Tp text={item.title} /></h1>
+		{#if item.description}<p class="lead"><Tp text={item.description} /></p>{/if}
 	</header>
 	{#if item.image}<img class="cover" src={resolve(item.image)} alt="" />{/if}
 	<div class="prose">

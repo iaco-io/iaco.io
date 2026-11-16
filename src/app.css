@@ -50,6 +50,76 @@
 	font-display: swap;
 }
 
+/* the letters of iaco's own alphabet (<al>) that Plex and Newsreader don't have, borrowed from
+   Source Sans 3 and Noto Serif (also OFL): only those few letters, a few KB */
+@font-face {
+	font-family: 'IBM Plex Sans';
+	src: url('/fonts/alphabet-sans-0.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	unicode-range: U+0192, U+019E, U+0237, U+0251, U+026D, U+027E, U+0283, U+0288;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'IBM Plex Sans';
+	src: url('/fonts/alphabet-sans-1.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	unicode-range: U+1ECB, U+1EE5;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Newsreader';
+	src: url('/fonts/alphabet-serif-0.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	unicode-range: U+0192, U+019E, U+0237, U+0251, U+026D, U+027E, U+0283, U+0288;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Newsreader';
+	src: url('/fonts/alphabet-serif-1.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	unicode-range: U+1ECB, U+1EE5;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Newsreader';
+	src: url('/fonts/alphabet-serif-italic-0.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: italic;
+	unicode-range: U+0192, U+019E, U+0237, U+0251, U+026D, U+027E, U+0283, U+0288;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Newsreader';
+	src: url('/fonts/alphabet-serif-italic-1.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: italic;
+	unicode-range: U+1ECB, U+1EE5;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'linja sike';
+	src: url('/fonts/linja-sike.woff2') format('woff2');
+	font-display: swap;
+}
+
+/* toki pona in sitelen pona: <tp>toki pona</tp> (never italic or bold, even inside titles) */
+tp {
+	font-family: 'linja sike', var(--serif);
+	font-style: normal;
+	font-weight: normal;
+	letter-spacing: 0;
+}
+
 :root {
 	/* kanagawa. light: cream paper, prussian blue ink. dark: night sea, cream foam */
 	--fg: light-dark(#0f2a47, #f4ecdc);

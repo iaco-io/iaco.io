@@ -1,3 +1,4 @@
+import { plain } from '#lib/tp.js';
 import { posts } from '#lib/content.js';
 
 export const prerender = true;
@@ -15,10 +16,10 @@ export function GET() {
 		.map((post) => {
 			const link = absolute(post.url);
 			const image = post.image && absolute(post.image);
-			const html = `${image ? `<img src="${image}" alt="" />` : ''}<p>${escape(post.description)}</p>`;
+			const html = `${image ? `<img src="${image}" alt="" />` : ''}<p>${escape(plain(post.description))}</p>`;
 			return `
 		<item>
-			<title>${escape(post.title)}</title>
+			<title>${escape(plain(post.title))}</title>
 			<link>${link}</link>
 			<guid>${link}</guid>
 			${post.date ? `<pubDate>${new Date(post.date).toUTCString()}</pubDate>` : ''}
