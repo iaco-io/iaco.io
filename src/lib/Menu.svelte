@@ -56,7 +56,7 @@
 		display: flex;
 		justify-content: center;
 		margin-top: auto;
-		margin-bottom: 2.75rem;
+		margin-bottom: 1.75rem;
 	}
 
 	.social {
