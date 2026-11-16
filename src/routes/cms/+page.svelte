@@ -482,19 +482,19 @@
 	{:else if !images.length}
 		<p class="empty">no media yet.</p>
 	{:else}
-		<ul>
+		<!-- a gallery: each card is the file (square) with its name below -->
+		<ul class="gallery">
 			{#each [...images].sort((a, b) => a.localeCompare(b, 'en', { numeric: true })) as name (name)}
 				<li>
-					<button class="row glass media" onclick={() => manage(name)}>
-						<span class="preview">
+					<button class="card glass" onclick={() => manage(name)}>
+						<span class="square">
 							{#if isImage(name)}
 								<img src={resolve(name)} alt="" loading="lazy" />
-							{:else if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={20} />
-							{:else if /\.(mp4|mov|webm|m4v)$/i.test(name)}<Film size={20} />
-							{:else}<FileIcon size={20} />{/if}
+							{:else if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={28} />
+							{:else if /\.(mp4|mov|webm|m4v)$/i.test(name)}<Film size={28} />
+							{:else}<FileIcon size={28} />{/if}
 						</span>
-						<span class="title">{name.replace(/\.[^./]+$/, '')}</span>
-						<span class="detail">{name.match(/\.([^./]+)$/)?.[1] ?? ''}</span>
+						<span class="caption">{name}</span>
 					</button>
 				</li>
 			{/each}
@@ -874,6 +874,53 @@
 	.unsaved {
 		display: flex;
 		color: #c98a3a;
+	}
+
+	/* two columns on phones, more as the screen widens */
+	.gallery {
+		grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+		align-items: start;
+		gap: 0.6rem;
+	}
+
+	.card {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		padding: 0;
+		overflow: hidden;
+		border-radius: 1.1rem;
+		font: inherit;
+		color: var(--fg);
+		text-align: left;
+		cursor: pointer;
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
+	}
+
+	.square {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 100%;
+		aspect-ratio: 1;
+		overflow: hidden;
+		color: var(--muted);
+		background: var(--panel);
+	}
+
+	.square img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.caption {
+		padding: 0.55rem 0.75rem 0.65rem;
+		font-size: 0.8rem;
+		font-weight: 400;
+		overflow-wrap: anywhere;
 	}
 
 	.badge {
