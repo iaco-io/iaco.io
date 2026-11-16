@@ -1,7 +1,7 @@
 <script>
-	// a small sitelen pona keyboard: tapping a glyph types its word into the text, and stays open.
-	// it floats just above the phone keyboard, and never takes the focus away from the text
-	import { X } from '@lucide/svelte';
+	// a small sitelen pona keyboard (two rows, scrolls): tapping a glyph types its word into the text, and stays open.
+	// it floats just above the phone keyboard and never takes the focus from the text.
+	// tapping anywhere else closes it, except the text itself and its own button
 
 	/** @type {{ oninsert: (word: string) => void, onclose: () => void }} */
 	let { oninsert, onclose } = $props();
@@ -24,13 +24,21 @@
 	});
 
 	const keep = (/** @type {Event} */ e) => e.preventDefault();
+
+	/** @type {HTMLElement | undefined} */
+	let panel = $state();
+	$effect(() => {
+		const outside = (/** @type {PointerEvent} */ e) => {
+			const target = /** @type {Element} */ (e.target);
+			if (panel?.contains(target) || target.closest?.('textarea:not(.grow), .sp')) return;
+			onclose();
+		};
+		addEventListener('pointerdown', outside, true);
+		return () => removeEventListener('pointerdown', outside, true);
+	});
 </script>
 
-<div class="keys glass" style:bottom="{bottom}px" role="dialog" aria-label="sitelen pona">
-	<div class="head">
-		<span>sitelen pona</span>
-		<button class="close" aria-label="close" onpointerdown={keep} onclick={onclose}><X size={18} /></button>
-	</div>
+<div class="keys glass" bind:this={panel} style:bottom="{bottom}px" role="dialog" aria-label="sitelen pona">
 	<div class="grid">
 		{#each WORDS as word (word)}
 			<button title={word} onpointerdown={keep} onclick={() => oninsert(word)}>
@@ -48,37 +56,18 @@
 		z-index: 30;
 		width: min(36rem, calc(100vw - 1rem));
 		margin-bottom: 0.5rem;
-		padding: 0.6rem;
+		padding: 0.4rem;
 		border-radius: 1.25rem;
 		transform: translateX(-50%);
 		background: color-mix(in srgb, var(--bg) 88%, transparent);
-	}
-
-	.head {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 0.3rem 0.4rem;
-		font-size: 0.8rem;
-		font-weight: 600;
-		color: var(--muted);
-	}
-
-	.close {
-		display: flex;
-		padding: 0.35rem;
-		border: 0;
-		border-radius: 999px;
-		color: var(--muted);
-		background: none;
-		cursor: pointer;
 	}
 
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
 		gap: 0.25rem;
-		max-height: min(16rem, 35vh);
+		/* two rows; the rest scrolls */
+		max-height: 6.9rem;
 		overflow-y: auto;
 		overscroll-behavior: contain;
 	}
