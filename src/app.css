@@ -17,7 +17,8 @@
 	--blur: blur(20px) saturate(180%);
 
 	/* iOS standalone: status bar overlays content; add 16px so it blurs cleanly */
-	--top: 0px;
+	/* in the browser, follow whatever space safari leaves under the clock (0 when it covers it itself) */
+	--top: env(safe-area-inset-top, 0px);
 	--gap: 1.25rem;
 
 	color-scheme: light dark;
