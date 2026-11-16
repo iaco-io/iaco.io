@@ -1,6 +1,6 @@
 <script>
 	import '#lib/cms/cms.css';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { Lock, Feather, File as FileIcon, ExternalLink, CloudAlert } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
@@ -76,24 +76,38 @@
 		{ kind: 'redirects', icon: ExternalLink }
 	]);
 
-	/** @type {{ x: number, y: number } | null} */
-	let swipe = null;
-	const swipeStart = (/** @type {TouchEvent} */ e) => (swipe = { x: e.touches[0].clientX, y: e.touches[0].clientY });
-	function swipeEnd(/** @type {TouchEvent} */ e) {
-		if (!swipe) return;
-		const dx = e.changedTouches[0].clientX - swipe.x;
-		const dy = e.changedTouches[0].clientY - swipe.y;
-		swipe = null;
-		if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-		const i = KINDS.findIndex((k) => k.kind === kind) + (dx < 0 ? 1 : -1);
-		if (KINDS[i]) show(KINDS[i].kind);
+	// the three lists sit side by side; swiping scrolls between them and the toggle follows
+	/** @type {HTMLElement | undefined} */
+	let track = $state();
+	let progress = $state(0);
+	const indexOf = (/** @type {Kind} */ k) => KINDS.findIndex((x) => x.kind === k);
+
+	function onTrackScroll() {
+		if (!track) return;
+		progress = track.scrollLeft / track.clientWidth;
+		const k = KINDS[Math.round(progress)]?.kind;
+		if (k && k !== kind) kind = k;
 	}
+
+	/** @param {Kind} k */
+	function go(k) {
+		track?.scrollTo({ left: indexOf(k) * track.clientWidth, behavior: 'smooth' });
+	}
+
+	// when the lists appear (login, back from the editor), start at the current section
+	$effect(() => {
+		if (!track) return;
+		const i = indexOf(untrack(() => kind));
+		track.scrollLeft = i * track.clientWidth;
+		progress = i;
+	});
 
 	/** @param {Kind} k */
 	function show(k) {
 		kind = k;
 		editing = null;
 		menu = false;
+		go(k);
 	}
 
 	/** `from` is the saved file name, so a changed name renames the file */
@@ -118,7 +132,7 @@
 	});
 
 	const newPartials = $derived(
-		Object.entries(partials).filter(([key, p]) => key.startsWith('new:') && p.kind === kind && key !== (editing && keyOf(editing)))
+		Object.entries(partials).filter(([key]) => key.startsWith('new:') && key !== (editing && keyOf(editing)))
 	);
 
 	/** object urls for images uploaded in this session, until github's raw cache catches up */
@@ -136,7 +150,6 @@
 		redirect: m.redirect ?? ''
 	});
 
-	const list = $derived(entries.filter((e) => e.kind === kind));
 	const images = $derived(
 		files.filter((p) => p.startsWith(MEDIA) && !p.endsWith('.md')).map((p) => p.slice(MEDIA.length))
 	);
@@ -337,6 +350,49 @@
 	});
 </script>
 
+{#snippet listOf(/** @type {Kind} */ k)}
+	{@const items = entries.filter((e) => e.kind === k)}
+	{@const fresh = newPartials.filter(([, p]) => p.kind === k)}
+	{#if loading && !entries.length}
+		<p class="empty">loading…</p>
+	{:else if !items.length && !fresh.length}
+		<p class="empty">no {k} yet.</p>
+	{:else}
+		<ul>
+			{#each fresh as [key, p] (key)}
+				<li>
+					<button class="row glass" onclick={() => openPartial(key)}>
+						<span class="unsaved"><CloudAlert size={20} /></span>
+						<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
+					</button>
+				</li>
+			{/each}
+			{#each items as entry (entry.kind + entry.name)}
+				<li>
+					<button class="row glass" onclick={() => open(entry)}>
+						{#if entry.kind === 'posts'}<Feather size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
+						{#if entry.kind === 'redirects'}
+							<span class="title">
+								/{entry.name}
+								{#if entry.meta.alias.length}
+									<small>{entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' · ')}</small>
+								{/if}
+							</span>
+						{:else}
+							<span class="title">{entry.meta.title || entry.name}</span>
+						{/if}
+						{#if partials[`${entry.kind}/${entry.name}`]}
+							<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
+						{/if}
+						{#if entry.meta.draft}<span class="badge">draft</span>{/if}
+						<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
+					</button>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+{/snippet}
+
 <svelte:head>
 	<title>cms — iaco</title>
 	<meta name="robots" content="noindex" />
@@ -351,9 +407,10 @@
 		<header>
 			<div class="top">
 				<h1>iaco.io <small>v {__VERSION__}</small></h1>
-				<div class="kinds glass" role="tablist" aria-label="sections">
+				<div class="kinds glass" role="tablist" aria-label="sections" style:--progress={progress}>
+					<span class="thumb"></span>
 					{#each KINDS as { kind: k, icon: Icon }}
-						<button role="tab" aria-selected={kind === k} aria-label={k} class:active={kind === k} onclick={() => show(k)}>
+						<button role="tab" aria-selected={kind === k} aria-label={k} class:active={kind === k} onclick={() => go(k)}>
 							<Icon size={18} />
 						</button>
 					{/each}
@@ -362,47 +419,11 @@
 			<h2>{kind}</h2>
 		</header>
 
-		<!-- swipe left or right on the list to change section -->
-		<div class="lists" ontouchstart={swipeStart} ontouchend={swipeEnd}>
-
-			{#if loading && !entries.length}
-				<p class="empty">loading…</p>
-			{:else if !list.length && !newPartials.length}
-				<p class="empty">no {kind} yet.</p>
-			{:else}
-				<ul>
-					{#each newPartials as [key, p] (key)}
-						<li>
-							<button class="row glass" onclick={() => openPartial(key)}>
-								<span class="unsaved"><CloudAlert size={20} /></span>
-								<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
-							</button>
-						</li>
-					{/each}
-					{#each list as entry (entry.kind + entry.name)}
-						<li>
-							<button class="row glass" onclick={() => open(entry)}>
-								{#if entry.kind === 'posts'}<Feather size={20} />{:else if entry.kind === 'pages'}<FileIcon size={20} />{:else}<ExternalLink size={20} />{/if}
-								{#if entry.kind === 'redirects'}
-									<span class="title">
-										/{entry.name}
-										{#if entry.meta.alias.length}
-											<small>{entry.meta.alias.map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' · ')}</small>
-										{/if}
-									</span>
-								{:else}
-									<span class="title">{entry.meta.title || entry.name}</span>
-								{/if}
-								{#if partials[`${entry.kind}/${entry.name}`]}
-									<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
-								{/if}
-								{#if entry.meta.draft}<span class="badge">draft</span>{/if}
-								<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
-							</button>
-						</li>
-					{/each}
-				</ul>
-			{/if}
+		<!-- swipe left or right to change section -->
+		<div class="track" bind:this={track} onscroll={onTrackScroll}>
+			{#each KINDS as { kind: k }}
+				<section class="list" aria-label={k}>{@render listOf(k)}</section>
+			{/each}
 		</div>
 	{/if}
 
@@ -486,6 +507,7 @@
 	}
 
 	.kinds {
+		position: relative;
 		display: inline-flex;
 		flex: none;
 		gap: 0.25rem;
@@ -510,15 +532,44 @@
 			color 0.2s ease;
 	}
 
-	.kinds button.active {
-		color: var(--fg);
-		background: var(--bg);
-		box-shadow: 0 0 8px var(--shadow-soft);
+	.kinds button {
+		position: relative;
 	}
 
-	.lists {
+	.kinds button.active {
+		color: var(--fg);
+	}
+
+	/* the highlight slides along with the lists */
+	.thumb {
+		position: absolute;
+		top: 0.25rem;
+		left: 0.25rem;
+		width: 2.4rem;
+		height: 2.4rem;
+		border-radius: 999px;
+		background: var(--bg);
+		box-shadow: 0 0 8px var(--shadow-soft);
+		transform: translateX(calc(var(--progress) * 2.65rem));
+	}
+
+	.track {
+		display: flex;
+		align-items: flex-start;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		/* lists run edge to edge; their content keeps the page margins */
+		margin-inline: -1.25rem;
+	}
+
+	.list {
+		flex: 0 0 100%;
 		min-height: 60svh;
-		touch-action: pan-y;
+		padding-inline: 1.25rem;
+		scroll-snap-align: start;
+		scroll-snap-stop: always;
 	}
 
 	h2 {

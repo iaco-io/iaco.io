@@ -1,9 +1,8 @@
 /* shared form styles for /cms, on top of the blog theme */
 
-/* never scroll sideways: clip anything too wide and only allow vertical panning */
+/* never scroll the page sideways: clip anything too wide (the lists scroll sideways on their own) */
 .cms {
 	overflow-x: clip;
-	touch-action: pan-y;
 }
 
 .cms * {
