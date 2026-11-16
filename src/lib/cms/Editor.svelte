@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon } from '@lucide/svelte';
 	import Device from './Device.svelte';
 	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
@@ -179,10 +179,15 @@
 		...(item.meta.image ? [item.meta.image] : []),
 		...[...item.body.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((m) => m[1])
 	]);
-	// only images here; sounds and other files live in the media tab
-	const pictures = $derived(images.filter((name) => /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name)));
-	const shown = $derived(pictures.filter((name) => used.includes(name)));
-	const others = $derived(pictures.filter((name) => !used.includes(name)));
+	const isImage = (/** @type {string} */ n) => /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(n);
+	const isAudio = (/** @type {string} */ n) => /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(n);
+	const isVideo = (/** @type {string} */ n) => /\.(mp4|mov|webm|m4v)$/i.test(n);
+	// the main image can only be an image; the thumbnails show every file, with an icon for non-images
+	const pictures = $derived(images.filter(isImage));
+	const shown = $derived(images.filter((name) => used.includes(name)));
+	const others = $derived(images.filter((name) => !used.includes(name)));
+	// images go in as images, other files as links
+	const snippet = (/** @type {string} */ name) => (isImage(name) ? `![](${name})` : `[${name.replace(/^.*\/|\.[^.]+$/g, '')}](${name})`);
 
 	/** @param {Event & { currentTarget: HTMLInputElement }} e */
 	function uploadCover(e) {
@@ -344,9 +349,11 @@
 				onpointerleave={release}
 				onpointercancel={release}
 				oncontextmenu={(e) => e.preventDefault()}
-				onclick={() => (pressed ? (pressed = false) : insert(`![](${name})`))}
+				onclick={() => (pressed ? (pressed = false) : insert(snippet(name)))}
 			>
-				<img src={resolve(name)} alt={name} />
+				{#if isImage(name)}
+					<img src={resolve(name)} alt={name} />
+				{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
 			</button>
 		{/each}
 		{#if others.length}
@@ -594,6 +601,9 @@
 	}
 
 	.thumb {
+		display: grid;
+		place-items: center;
+		color: var(--muted);
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		user-select: none;
