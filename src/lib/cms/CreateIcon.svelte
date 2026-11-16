@@ -20,7 +20,7 @@
 		position: relative;
 		display: inline-flex;
 		/* the + pokes out bottom right, so nudge the whole group back towards the middle */
-		translate: -2px -2px;
+		translate: -2px -1px;
 	}
 
 	.plus {
