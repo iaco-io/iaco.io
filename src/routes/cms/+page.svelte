@@ -12,6 +12,7 @@
 	import Editor from '#lib/cms/Editor.svelte';
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
+	import { strip } from '#lib/cms/strip.js';
 	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
@@ -329,8 +330,10 @@
 	}
 
 	/** uploads `file` to src/media/`name` (the name may hold folders, like beautiful/cow-and-chicken.jpg) */
-	async function upload(/** @type {File} */ file, /** @type {string} */ name) {
+	async function upload(/** @type {File} */ original, /** @type {string} */ name) {
 		if (!api) throw new Error('not logged in');
+		// metadata (camera, place, names…) is removed first; dates are kept
+		const file = await strip(original);
 		const path = MEDIA + name;
 		const base64 = await new Promise((resolve, reject) => {
 			const reader = new FileReader();
