@@ -90,6 +90,13 @@
 	/** @type {HTMLDialogElement | undefined} */
 	let dialog = $state();
 	$effect(() => dialog?.showModal());
+
+	/** a tap on the dimmed area around the popup closes it, changing nothing */
+	function outside(/** @type {MouseEvent} */ e) {
+		if (e.target !== dialog || !dialog) return;
+		const r = dialog.getBoundingClientRect();
+		if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) ondone(null);
+	}
 </script>
 
 {#snippet used(/** @type {string} */ after)}
@@ -101,7 +108,7 @@
 	</div>
 {/snippet}
 
-<dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))}>
+<dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))} onclick={outside}>
 	<form onsubmit={(e) => (e.preventDefault(), confirm())}>
 		{#if image || fresh}
 			<img class="big" src={fresh?.src ?? src} alt="" />

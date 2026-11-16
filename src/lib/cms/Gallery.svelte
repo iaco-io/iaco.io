@@ -15,9 +15,16 @@
 	/** @type {HTMLDialogElement | undefined} */
 	let dialog = $state();
 	$effect(() => dialog?.showModal());
+
+	/** a tap on the dimmed area around the popup closes it, changing nothing */
+	function outside(/** @type {MouseEvent} */ e) {
+		if (e.target !== dialog || !dialog) return;
+		const r = dialog.getBoundingClientRect();
+		if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) ondone(null);
+	}
 </script>
 
-<dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))}>
+<dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))} onclick={outside}>
 	<div class="head">
 		<span class="label">main image</span>
 		<button class="pill" aria-label="cancel" title="cancel" onclick={() => ondone(null)}><Undo2 size={18} /></button>
