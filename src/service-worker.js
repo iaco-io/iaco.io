@@ -3,10 +3,16 @@ import { immutable, assets, prerendered } from '$app/manifest';
 import { version } from '$app/env';
 
 const CACHE = `cache-${version}`;
+// images and other media from posts: saved only once viewed, and kept across versions
+const MEDIA = 'media';
 const toPath = ({ path }) => new URL(path, self.registration.scope).pathname;
 const IMMUTABLE = immutable.map(toPath);
-// media (like the rain sound) is left to the browser: big, and fetched in ranges
+// static media (like the rain sound) is left to the browser: big, and fetched in ranges
 const isMedia = (/** @type {string} */ path) => path.startsWith('/media/');
+// (built from src/media into hashed files; they are never in the install list)
+const isPostMedia = (/** @type {string} */ path) =>
+	path.startsWith('/_app/immutable/assets/') && /\.(avif|gif|jpe?g|png|svg|webp|mp3|m4a|wav|ogg|aac|flac|mp4|mov|webm|m4v)$/i.test(path);
+// only the app itself is saved on install: code, styles, icons and pages
 const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter((p) => !isMedia(p));
 
 // take over as soon as a new version is installed, so updates show on next load
@@ -19,7 +25,7 @@ self.addEventListener('activate', (event) => {
 	event.waitUntil(
 		caches
 			.keys()
-			.then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+			.then((keys) => Promise.all(keys.filter((key) => key !== CACHE && key !== MEDIA).map((key) => caches.delete(key))))
 			.then(() => self.clients.claim())
 	);
 });
@@ -32,8 +38,9 @@ self.addEventListener('fetch', (event) => {
 
 	event.respondWith(
 		(async () => {
-			const cache = await caches.open(CACHE);
-			if (IMMUTABLE.includes(url.pathname)) {
+			const cache = await caches.open(isPostMedia(url.pathname) ? MEDIA : CACHE);
+			// hashed names never change content, so a saved copy is always right
+			if (IMMUTABLE.includes(url.pathname) || isPostMedia(url.pathname)) {
 				const cached = await cache.match(url.pathname);
 				if (cached) return cached;
 			}
