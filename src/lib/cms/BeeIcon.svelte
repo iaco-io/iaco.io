@@ -1,5 +1,5 @@
 <script>
-	// a happy little bee (closed eyes, smile) with a heart above, drawn for iaco in lucide's style
+	// a little bee seen from the side, drawn for iaco in lucide's style: striped body, two wings, antennae, tail
 	let { size = 24, strokeWidth = 2 } = $props();
 </script>
 
@@ -15,11 +15,11 @@
 	stroke-linejoin="round"
 	aria-hidden="true"
 >
-	<ellipse cx="12" cy="15.5" rx="6.5" ry="4.8"/>
-	<path d="M10.6 10.8c-.7 1.4-1.1 3-1.1 4.7s.4 3.3 1.1 4.7M14.3 11c.6 1.4.9 2.9.9 4.5s-.3 3.1-.9 4.5"/>
-	<path d="M18.5 15.8l1.8.4"/>
-	<path d="M6.2 15.2c.4-.5 1-.5 1.4 0"/><path d="M6.4 17.4c.5.4 1.1.4 1.6 0"/>
-	<path d="M11.4 10.7c-2-1.3-2.4-3.8-.9-4.5 1.5-.7 2.8 1.2 2.2 4.4"/>
-	<path d="M13.6 10.8c.9-2 3-3 4.1-2.1 1.1.9.1 2.5-2.2 3.4"/>
-	<path d="M4 5.5c.4-.9 1.6-.9 2 0 .4-.9 1.6-.9 2 0 .4 1.1-.9 2.1-2 2.6-1.1-.5-2.4-1.5-2-2.6Z"/>
+	<path d="M5 15.5c0-3.2 2.9-5.5 7-5.5s7 2.3 7 5.5-3.1 4.5-7 4.5-7-1.3-7-4.5Z" />
+	<path d="M10 10.4v9.4M14 10.3v9.6" />
+	<path d="M19 15.5l2.2.4" />
+	<path d="M9.5 10.3C8 7.4 8.6 4.6 10.7 4.3c1.8-.2 2.6 2.4 2.1 5.8" />
+	<path d="M12.6 10.2c.9-2.7 2.8-4.3 4.4-3.7 1.4.6 1 2.8-1.3 4.3" />
+	<circle cx="7.4" cy="14.6" r=".55" fill="currentColor" stroke="none" />
+	<path d="M5.6 12.9 4 10.8M4.4 13.5 2.6 12.3" />
 </svg>
