@@ -78,6 +78,7 @@
 	}
 
 	h1 small {
+		white-space: nowrap;
 		position: relative;
 		top: 0.15em;
 		font-size: 0.8rem;

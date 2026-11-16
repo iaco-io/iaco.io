@@ -270,6 +270,7 @@
 	}
 
 	h1 small {
+		white-space: nowrap;
 		position: relative;
 		top: 0.15em;
 		font-size: 0.8rem;
@@ -337,6 +338,9 @@
 
 	.title small {
 		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		margin-top: 0.15rem;
 		font-size: 0.8rem;
 		font-weight: 400;
@@ -353,6 +357,11 @@
 	}
 
 	.detail {
+		flex: 0 1 auto;
+		max-width: 45%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		font-size: 0.85rem;
 		color: var(--muted);
 	}
