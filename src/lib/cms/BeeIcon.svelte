@@ -1,5 +1,5 @@
 <script>
-	// a bee seen from the side, from coolicons (MIT, https://github.com/krystonschwarze/coolicons), used like a lucide icon
+	// a little bee seen from the side, drawn for iaco in lucide's style: striped body, two wings, antennae, tail
 	let { size = 24, strokeWidth = 2 } = $props();
 </script>
 
@@ -15,7 +15,11 @@
 	stroke-linejoin="round"
 	aria-hidden="true"
 >
-	<path
-		d="M8 12H14C17 12 18.5 14 20 16C18.5 18 17 20 14 20H8C5.8 20 4 18.2 4 16C4 13.8 5.8 12 8 12ZM10 12V20M14 12V20M7 16H7.01M10 12C10 7 12 4 15 4C16.7 4 18 5 18 6C18 8.5 14 9 14 12"
-	/>
+	<path d="M5 15.5c0-3.2 2.9-5.5 7-5.5s7 2.3 7 5.5-3.1 4.5-7 4.5-7-1.3-7-4.5Z" />
+	<path d="M10 10.4v9.4M14 10.3v9.6" />
+	<path d="M19 15.5l2.2.4" />
+	<path d="M9.5 10.3C8 7.4 8.6 4.6 10.7 4.3c1.8-.2 2.6 2.4 2.1 5.8" />
+	<path d="M12.6 10.2c.9-2.7 2.8-4.3 4.4-3.7 1.4.6 1 2.8-1.3 4.3" />
+	<circle cx="7.4" cy="14.6" r=".55" fill="currentColor" stroke="none" />
+	<path d="M5.6 12.9 4 10.8M4.4 13.5 2.6 12.3" />
 </svg>
