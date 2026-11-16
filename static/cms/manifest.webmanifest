@@ -1,0 +1,16 @@
+{
+	"id": "/cms/",
+	"name": "iaco cms",
+	"short_name": "iaco cms",
+	"description": "edit the iaco blog.",
+	"start_url": "/cms/",
+	"scope": "/cms/",
+	"display": "standalone",
+	"background_color": "#f3f7fb",
+	"theme_color": "#f3f7fb",
+	"icons": [
+		{ "src": "/cms/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+		{ "src": "/cms/icon-192.png", "sizes": "192x192", "type": "image/png" },
+		{ "src": "/cms/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+	]
+}

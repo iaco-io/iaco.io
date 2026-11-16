@@ -42,7 +42,7 @@
 	// dragging: `shift` is how far the panel is pushed out to the right (0 = fully open)
 	/** @type {HTMLElement | undefined} */
 	let panel = $state();
-	/** @type {{ x: number, y: number, from: boolean, width: number, horizontal: boolean | null } | null} */
+	/** @type {{ x: number, y: number, from: boolean, width: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number } | null} */
 	let drag = $state(null);
 	let shift = $state(0);
 	const progress = $derived(drag ? 1 - shift / drag.width : open ? 1 : 0);
@@ -51,9 +51,9 @@
 	function touchstart(e) {
 		const { clientX: x, clientY: y } = e.touches[0];
 		// closed: only from the right edge; open: anywhere
-		if (!open && (!edge || x < window.innerWidth - 28)) return;
+		if (!open && (!edge || x < window.innerWidth - 44)) return;
 		const width = panel?.offsetWidth ?? 320;
-		drag = { x, y, from: open, width, horizontal: null };
+		drag = { x, y, from: open, width, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0 };
 		shift = open ? 0 : width;
 		if (!open) place();
 	}
@@ -64,8 +64,13 @@
 		const { clientX: x, clientY: y } = e.touches[0];
 		const dx = x - drag.x;
 		const dy = y - drag.y;
-		// decide once whether this is a sideways drag or a scroll
-		if (drag.horizontal === null && Math.hypot(dx, dy) > 8) drag.horizontal = Math.abs(dx) > Math.abs(dy);
+		// decide early whether this is a sideways drag or a scroll; lean towards sideways
+		if (drag.horizontal === null && Math.hypot(dx, dy) > 5) drag.horizontal = Math.abs(dx) > Math.abs(dy) * 0.6;
+		// finger speed in px/ms (negative = moving left), for flicks
+		const dt = e.timeStamp - drag.lastT;
+		if (dt > 0) drag.speed = drag.speed * 0.5 + ((x - drag.lastX) / dt) * 0.5;
+		drag.lastX = x;
+		drag.lastT = e.timeStamp;
 		if (drag.horizontal === false && !open) return void (drag = null);
 		e.preventDefault();
 		if (drag.horizontal) shift = Math.min(drag.width, Math.max(0, (drag.from ? 0 : drag.width) + dx));
@@ -75,8 +80,10 @@
 		if (!drag) return;
 		const moved = drag.horizontal;
 		const ratio = 1 - shift / drag.width;
+		const speed = drag.speed;
 		drag = null;
-		if (moved) open = ratio > 0.5;
+		// a quick flick decides on its own; otherwise it settles on the nearer side
+		if (moved) open = speed < -0.3 ? true : speed > 0.3 ? false : ratio > 0.4;
 		else if (!open) height = 0;
 	}
 
