@@ -220,7 +220,7 @@
 </script>
 
 <div class="bar">
-	<button class="pill" onclick={onback}><ArrowLeft size={18} /> back</button>
+	<button class="pill" aria-label="back" title="back" onclick={onback}><ArrowLeft size={18} /></button>
 	<div class="actions">
 		{#if partial}
 			<button
@@ -233,11 +233,12 @@
 		{/if}
 		<button
 			class="pill primary"
+			aria-label={busy || 'save'}
+			title={busy || 'save'}
 			disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
 			onclick={() => run('saving…', onsave)}
 		>
-			<Save size={18} />
-			{busy || 'save'}
+			<Save size={18} class={busy ? 'pulse' : ''} />
 		</button>
 	</div>
 </div>
@@ -271,7 +272,9 @@
 			<span class="label">main image</span>
 			<div class="picker">
 				{#if item.meta.image}
-					<img class="thumb cover" src={resolve(item.meta.image)} alt="" />
+					<button class="thumb cover" title="rename, replace or delete" onclick={() => hold(item.meta.image)}>
+						<img src={resolve(item.meta.image)} alt={item.meta.image} />
+					</button>
 				{/if}
 				<select bind:value={item.meta.image}>
 					<option value="">none</option>
@@ -644,11 +647,21 @@
 		height: 2.75rem;
 	}
 
+	/* the save icon breathes while saving or uploading */
+	:global(.pulse) {
+		animation: pulse 1s ease-in-out infinite alternate;
+	}
+
+	@keyframes pulse {
+		to {
+			opacity: 0.3;
+		}
+	}
+
 	.thumb.cover {
 		flex: none;
 		width: 2.9rem;
 		height: auto;
-		object-fit: cover;
 	}
 
 	.thumb img {

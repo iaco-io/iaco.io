@@ -3,7 +3,7 @@
 	// the extension can't be changed; "/" makes folders, like beautiful/cow-and-chicken.
 	// replacing points every post and page that uses it to another file (picked or uploaded now);
 	// the old file can be kept or deleted. deleting a file that is still used asks for a replacement too.
-	import { Trash2, Upload, ArrowLeft, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
+	import { Trash2, Upload, ArrowLeft, Save, Undo2, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
 	import { pasteFile } from './clipboard.js';
 
 	/**
@@ -165,15 +165,15 @@
 				<button type="button" class="pill" aria-label="back" onclick={() => ((removing = false), (fresh = null))}><ArrowLeft size={18} /></button>
 			{/if}
 			<span class="gap"></span>
-			<button type="button" class="pill" onclick={() => ondone(null)}>cancel</button>
+			<button type="button" class="pill" aria-label="cancel" title="cancel" onclick={() => ondone(null)}><Undo2 size={18} /></button>
 			{#if removing}
 				{#if keep}
-					<button class="pill primary" disabled={!swapping}>replace</button>
+					<button class="pill primary" aria-label="replace" title="replace" disabled={!swapping}><Save size={18} /></button>
 				{:else}
 					<button class="pill danger">{swapping ? 'replace & delete' : 'delete'}</button>
 				{/if}
 			{:else}
-				<button class="pill primary" disabled={!next || (manage && taken)}>{manage ? 'save' : 'upload'}</button>
+				<button class="pill primary" disabled={!next || (manage && taken)}>{#if manage}<Save size={18} aria-label="save" />{:else}upload{/if}</button>
 			{/if}
 		</div>
 	</form>

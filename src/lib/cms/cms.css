@@ -82,3 +82,9 @@
 .cms .pill.danger {
 	color: #c0504d;
 }
+
+/* buttons with only an icon are round */
+.cms .pill:has(> svg:only-child) {
+	width: 2.75rem;
+	padding: 0;
+}
