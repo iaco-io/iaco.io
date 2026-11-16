@@ -544,13 +544,16 @@
 								{/if}
 							</span>
 						{:else}
-							<span class="title">{entry.meta.title || entry.name}</span>
+							<span class="title">
+								{entry.meta.title || entry.name}
+								<small>{[entry.name, ...entry.meta.alias].map((x) => `/${x.replace(/^\/+|\/+$/g, '')}`).join(' • ')}</small>
+							</span>
 						{/if}
 						{#if partials[`${entry.kind}/${entry.name}`]}
 							<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
 						{/if}
 						{#if entry.meta.draft}<span class="badge">draft</span>{/if}
-						<span class="detail">{entry.kind === 'redirects' ? entry.meta.redirect.replace(/^https?:\/\//, '') : entry.name}</span>
+						{#if entry.kind === 'redirects'}<span class="detail">{entry.meta.redirect.replace(/^https?:\/\//, '')}</span>{/if}
 					</button>
 				</li>
 			{/each}
