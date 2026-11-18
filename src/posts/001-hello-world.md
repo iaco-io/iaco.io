@@ -1,8 +1,24 @@
 ---
 title: hello world!
-description: (ᵔ🐽ᵔ)ฅ ~ hi! very happy to see you, hope you enjoy it here! my intention is simple: talk about life and things that matter, keeping the space calm and cozy
+description: (ᵔ🐽ᵔ)ฅ ~ hi! very happy to see you, hope you enjoy it here! my intention is simple…
 image: hello-me.jpg
-date: 2026-11-16
+date: 2026-11-18
 ---
 enc:v1:
-j7X/W5w+njzeybtDvba27IScaMlf85lB6g7pnEoUIhAER4OKWZYZVkQqLF0=
+pumW1SRzy11lemPU6sM3mpNbW+vwk7fISK/9mJ6TMg4aJtHKtbpUQLPQFg7Ggy9M8lY3nq2Uhm1r
+E3g96TI39eOrU1oBski5Hts6qw6TDePwJh0dJlTU7lURkp87pqoLc4VQRj1pY4rixIaBZ89/BTVQ
+Lg9KNug/sA6ZokL/1aD0EDM0uV9oRyfXlIJQqPXNwJB8LYEp0R/oEyXr6Xv48nSwM9neZAjB/ol4
+AIEDJnmyEwWB+wZ4YCmIcoi7DA9aep9faylIbqY7B0kdMc73888z3R2ICGVc1DO+H0kPbKV6Zjuf
+bAAtbwZonucZVpwlDLHDrk2FTBHJ2f5VMhHAfF15E1T24vPlhBoA2A1IeNjpfRDclSGZHCX/NsTD
+aFgOrDseNX0V6vBgaMZGNJQ0vNM+egpvdRvrCc02jwTuOlbBR3QDj4h1HRaECXLWFSTidV7p0Fzm
+DixZLuMCMNJianTEhFyW2vDE6NoVyI7ilWvpBcoBaIqV0uND2o7AdgSYCeesg7g4r4QYZxw0NDEk
+gjPWpekSKUgh9oDyjXjez3upHAlx899U/oSbIQBBpnkMpTQzVPM5V62MfpIY1Azhl4w2m11BCuJG
+cf7odlTOBb6Wi8QHg6n0L80msv/EBmPUfeL44RL/IJFOulj0K/msgvsCV+B9DgLGE/3oA413z4Xn
+XS5gR75xHsneugbQkXhEtsUccmLTtafWaGigOaPC4PzcdUIswSNw1tOvcdh2IVzOXIQ3ic+JSLWF
+5PWA+ogxZhBBuIZA7+Og3CvIwDryEqdtBew4qcaTohC4HFKJc4PLFk2Z2J1lctFJEluMza9qB74d
+cmvDDZAhMdONfU6JQxlJT17yb0eQxDA8xQH+XTM0HkQifn+ixEZ8BdqbehPgdQbRQInxYC6G74kU
+uEKRyi1Xp6YTezGqj67WfLM911v7QsCcCqe/HT8igdp5iR+u7KAbSgEdjbjGp7l5Rysutyi0/Maf
+Ft6ykbVM254GSjXoqbjrAKDZ54IcATcTHW0Sfp4vRbWOQ8FcSBlsZexwXXetlSoabBYiFHB/KP0n
+ae7wd6pkHp5dA1+xOQSwfJBwJ2jeqh+7N73N/uusGZFQIGyja8tiOd4HV5uVQx6PzUZkVJ78unza
+TP/4tF8nzn5F0vW4XF5GSXDPubCIvRIwuESU/q+D6TuS5thOzkx657DnEliDKy41FiKX/gRnzYd7
+fult
