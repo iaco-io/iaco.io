@@ -21,12 +21,8 @@
 
 	let open = $state(false);
 
-	// links that leave the site open in a new tab; in the installed app on an iphone (which would show them in a
-	// small built-in browser) they open in safari instead. short links like /youtube/ go straight to their site
-	const iosApp =
-		typeof navigator !== 'undefined' &&
-		/iPhone|iPad|iPod/.test(navigator.userAgent) &&
-		(matchMedia('(display-mode: standalone)').matches || /** @type {any} */ (navigator).standalone);
+	// links that leave the site open in a new tab (in the installed app on an iphone, apple shows them in its small
+	// built-in browser; there's no way to send them to safari). short links like /youtube/ go straight to their site
 	function leave(/** @type {MouseEvent} */ e) {
 		if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 		const a = /** @type {HTMLAnchorElement | null} */ (/** @type {Element} */ (e.target).closest?.('a[href]'));
@@ -34,9 +30,7 @@
 		const href = a.getAttribute('href') ?? '';
 		if (!external(href)) return;
 		e.preventDefault();
-		const to = destination(href);
-		if (iosApp) location.href = to.replace(/^(https?):/i, 'x-safari-$1:');
-		else window.open(to, '_blank', 'noopener,noreferrer');
+		window.open(destination(href), '_blank', 'noopener,noreferrer');
 	}
 	// the cms has its own interface
 	const cms = $derived(page.url.pathname.startsWith('/cms'));
