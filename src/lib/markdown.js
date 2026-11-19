@@ -3,7 +3,7 @@ import { withAlphabet } from './tp.js';
 import { Marked } from 'marked';
 
 // properties at the top of each .md file, in this order
-export const FIELDS = ['title', 'description', 'image', 'date', 'draft', 'redirect', 'alias', 'tags'];
+export const FIELDS = ['title', 'description', 'image', 'date', 'draft', 'redirect', 'alias', 'tags', 'hidden'];
 
 const QUOTES = /^["'‘’“”](.*)["'‘’“”]$/;
 const unquote = (/** @type {string} */ value) => value.trim().replace(QUOTES, '$1').trim();

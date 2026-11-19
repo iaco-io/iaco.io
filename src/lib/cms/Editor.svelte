@@ -10,7 +10,7 @@
 	import { urls, serialize } from '../markdown.js';
 
 	/**
-	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta
+	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, hidden?: boolean, alias: string[], redirect: string }} Meta
 	 * @type {{
 	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, from: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
@@ -472,15 +472,29 @@
 				<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
 			</div>
 		</div>
-		<button
-			class="switch wide"
-			role="switch"
-			aria-checked={item.meta.draft}
-			onclick={() => (item.meta.draft = !item.meta.draft)}
-		>
-			<span class="track"><span class="knob"></span></span>
-			draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
-		</button>
+		<!-- draft and, for pages, off the menu, side by side -->
+		<div class="switches wide">
+			<button
+				class="switch"
+				role="switch"
+				aria-checked={item.meta.draft}
+				onclick={() => (item.meta.draft = !item.meta.draft)}
+			>
+				<span class="track"><span class="knob"></span></span>
+				draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
+			</button>
+			{#if item.kind === 'pages'}
+				<button
+					class="switch"
+					role="switch"
+					aria-checked={!!item.meta.hidden}
+					onclick={() => (item.meta.hidden = !item.meta.hidden)}
+				>
+					<span class="track"><span class="knob"></span></span>
+					off the menu <small>still opens by its address</small>
+				</button>
+			{/if}
+		</div>
 		{#if short}
 			<div class="wide">
 				<span class="label">file · src/redirects/{item.name || '…'}.md</span>
@@ -813,6 +827,12 @@
 		background: none;
 		cursor: pointer;
 		text-align: left;
+	}
+
+	.switches {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem 2rem;
 	}
 
 	.switch small {
