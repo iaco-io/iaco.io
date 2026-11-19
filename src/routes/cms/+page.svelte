@@ -16,6 +16,7 @@
 	import { cleanTag, savedCategories } from '#lib/tags.js';
 	import TagsDialog from '#lib/cms/TagsDialog.svelte';
 	import DayClock from '#lib/DayClock.svelte';
+	import Thumb from '#lib/cms/Thumb.svelte';
 	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
@@ -570,7 +571,7 @@
 					<button class="card glass" onclick={() => manage(name)}>
 						<span class="square">
 							{#if isImage(name)}
-								<img src={resolve(name)} alt="" loading="lazy" />
+								<Thumb src={resolve(name)} {name} />
 							{:else if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={28} />
 							{:else if /\.(mp4|mov|webm|m4v)$/i.test(name)}<Film size={28} />
 							{:else}<FileIcon size={28} />{/if}
