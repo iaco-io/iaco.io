@@ -47,7 +47,8 @@
 	});
 </script>
 
-<svg viewBox="3 2.2 22.2 23.6" width={size} height={size * (23.6 / 22.2)} aria-hidden="true">
+<!-- the box fits the cloud only, so it sits in the middle; the rain falls below it -->
+<svg viewBox="3 2.2 22.2 15" width={size} height={size * (15 / 22.2)} aria-hidden="true">
 	<path class:flash={thunder >= 0 && thunder < 0.5} d="M8.5 16.5h11.5a4.2 4.2 0 0 0 .4-8.4 6 6 0 0 0-11.6-1.2 4.8 4.8 0 0 0-.3 9.6Z" />
 	{#if thunder >= 0}
 		<path
@@ -69,6 +70,7 @@
 <style>
 	svg {
 		flex: none;
+		overflow: visible;
 		fill: none;
 		stroke: currentColor;
 		stroke-width: 1.3;
