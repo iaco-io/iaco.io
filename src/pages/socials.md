@@ -1,0 +1,11 @@
+---
+title: my socials
+description: (ᵔ🐽ᵔ)ฅ
+date: 2026-11-19
+---
+enc:v1:
+LDlORREFONFoApbK0NlTuwbRGPlRH1hgV059R40PMevkXFGnO7AKpzb9uSPScvKFvybY8P7jPpw6
+fFX39qey/O8zXyGsf82AZbaYbOzCt6ow0ZcUXgnukdQQFpZWbBDvMwXOgIq/uBpgWrzuhGnG0H9S
+7Esfaf83pS1LbKda1H8Ryi7qV7rX6bBSRPRLlASZsMl2D5sdFUM+mcGC+MZaCVzLtwOZvlD+D0rQ
+2+QavKl/35YCcgioJTW4EF3lkrgQHE88DrXR6kgQttlCdZ+FBVYcMHJxj+nbT2J05l3ZDkOExlFK
+rRgp53T3r1bSp9ONqgfROYevultWCCwELJph3jhx5ntJrhpkoanUelhn
