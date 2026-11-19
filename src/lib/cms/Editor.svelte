@@ -1,5 +1,6 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Tag, BookBookmark } from '@lucide/svelte';
+	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
 	import TpKeys from './TpKeys.svelte';
@@ -18,13 +19,15 @@
 	 *   ask: (props: Record<string, any>) => Promise<any>,
 	 *   manage: (name: string) => Promise<string>,
 	 *   alphabet: Record<string, { to: string, on: boolean }>,
+	 *   categories: string[],
+	 *   tagsInUse: string[],
 	 *   ondelete: () => Promise<void>,
 	 *   onback: () => void,
 	 *   partial: boolean,
 	 *   ondiscard: () => void
 	 * }}
 	 */
-	let { item = $bindable(), images, resolve, ask, manage, alphabet, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
+	let { item = $bindable(), images, resolve, ask, manage, alphabet, categories, tagsInUse, onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
 
 	let busy = $state('');
 	/** @type {HTMLTextAreaElement | undefined} */
@@ -233,7 +236,7 @@
 		JSON.parse(
 			JSON.stringify({
 				type: 'preview',
-				item: { title: item.meta.title, description: item.meta.description, image: item.meta.image },
+				item: { title: item.meta.title, description: item.meta.description, image: item.meta.image, tags: $state.snapshot(item.meta.tags ?? []) },
 				body: item.body,
 				alphabet,
 				images: Object.fromEntries(images.map((name) => [name, resolve(name)]))
@@ -402,6 +405,29 @@
 			<span>redirect to</span>
 			<input type="url" bind:value={item.meta.redirect} placeholder="https://…" />
 		</label>
+		{#if !short}
+			<!-- tags sort posts and pages into topics; categories (set in the menu's tags) show a bookmark -->
+			<div class="wide">
+				<span class="label">tags</span>
+				<div class="aliases">
+					{#each item.meta.tags, i}
+						<div class="alias tag">
+							<span class="tag-icon">
+								{#if categories.includes(cleanTag(item.meta.tags[i]))}<BookBookmark size={15} />{:else}<Tag size={15} />{/if}
+							</span>
+							<input bind:value={item.meta.tags[i]} placeholder="tag" list="tags-in-use" autocapitalize="off" />
+							<button class="icon" aria-label="remove tag" onclick={() => item.meta.tags.splice(i, 1)}>
+								<X size={16} />
+							</button>
+						</div>
+					{/each}
+					<button class="pill add" onclick={() => item.meta.tags.push('')}><Plus size={16} /> tag</button>
+				</div>
+				<datalist id="tags-in-use">
+					{#each tagsInUse as t}<option value={t}></option>{/each}
+				</datalist>
+			</div>
+		{/if}
 		<div class="wide">
 			<span class="label">aliases</span>
 			<div class="aliases">
@@ -618,6 +644,7 @@
 		top: 50%;
 		right: 1rem;
 		font-style: normal;
+		z-index: 1;
 		color: var(--muted);
 		pointer-events: none;
 		transform: translateY(-50%);
@@ -686,6 +713,21 @@
 
 	.alias input {
 		padding-right: 2.4rem;
+	}
+
+	.tag input {
+		padding-left: 2.2rem;
+	}
+
+	.tag-icon {
+		position: absolute;
+		top: 50%;
+		left: 0.8rem;
+		display: flex;
+		z-index: 1;
+		color: var(--muted);
+		pointer-events: none;
+		transform: translateY(-50%);
 	}
 
 	.icon {

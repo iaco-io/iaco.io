@@ -1,3 +1,4 @@
+import { cleanTag } from './tags.js';
 // build-time only: reads src/{posts,pages,redirects}/*.md, images from src/media/
 import { parse, urls, normalize } from './markdown.js';
 
@@ -35,6 +36,8 @@ function load(kind) {
 				image: meta.image ? (media[meta.image] ?? meta.image) : '',
 				date: meta.date ?? '', // only used by the rss feed
 				redirect: meta.redirect ?? '',
+				// tags sort posts and pages into topics; some tags are categories (src/categories.json)
+				tags: [...new Set([meta.tags ?? []].flat().map(cleanTag).filter(Boolean))],
 				draft: meta.draft === 'true',
 				body
 			};

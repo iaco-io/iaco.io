@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { Tag, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -13,6 +13,8 @@
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import { strip } from '#lib/cms/strip.js';
+	import { cleanTag, savedCategories } from '#lib/tags.js';
+	import TagsDialog from '#lib/cms/TagsDialog.svelte';
 	import DayClock from '#lib/DayClock.svelte';
 	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
@@ -24,7 +26,7 @@
 
 	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
 	/** @typedef {Kind | 'media'} Section */
-	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], redirect: string }} Meta */
+	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, alias: string[], tags: string[], redirect: string }} Meta */
 	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
 	// the token is remembered only in the installed app; in a browser tab it lasts until the tab closes
@@ -157,6 +159,7 @@
 		date: m.date ?? '',
 		draft: m.draft === 'true',
 		alias: [m.alias ?? []].flat(),
+		tags: [m.tags ?? []].flat(),
 		redirect: m.redirect ?? ''
 	});
 
@@ -200,6 +203,31 @@
 	// re-read when the setup changes
 	const alphabetName = $derived((alphabet, inAlphabet('abelus')));
 
+	// tags promoted to categories, kept in src/categories.json; the newest list is read from github
+	const CATEGORIES = 'src/categories.json';
+	let categories = $state(savedCategories);
+	let tagsOpen = $state(false);
+	/** every tag used in posts and pages, with how many use it */
+	const allTags = $derived.by(() => {
+		/** @type {Record<string, number>} */
+		const count = {};
+		for (const e of entries) if (e.kind !== 'redirects') for (const t of e.meta.tags ?? []) count[t] = (count[t] ?? 0) + 1;
+		return Object.entries(count).sort(([a], [b]) => a.localeCompare(b));
+	});
+
+	async function saveCategories(/** @type {string[]} */ list) {
+		if (!api) return;
+		try {
+			const sha = (await api.list()).find((f) => f.path === CATEGORIES)?.sha;
+			await api.write(CATEGORIES, utf8ToBase64(JSON.stringify(list, null, '\t') + '\n'), sha, 'cms: update categories');
+			categories = list;
+			tagsOpen = false;
+			flash('categories saved. the site updates in a minute or two');
+		} catch (err) {
+			flash(/** @type {Error} */ (err).message);
+		}
+	}
+
 	async function saveAlphabet(/** @type {typeof savedAlphabet} */ setup) {
 		if (!api) return;
 		try {
@@ -220,6 +248,12 @@
 		try {
 			const tree = await api.list();
 			files = tree.map((f) => f.path);
+			if (files.includes(CATEGORIES)) {
+				api
+					.read(CATEGORIES)
+					.then(({ text }) => (categories = JSON.parse(text)))
+					.catch(() => {});
+			}
 			if (files.includes(ALPHABET)) {
 				api
 					.read(ALPHABET)
@@ -254,16 +288,16 @@
 	/** @param {Entry} entry */
 	async function open(entry, { ignorePartial = false } = {}) {
 		const body = await decrypt(entry.body).catch(() => entry.body);
-		const saved = { kind: entry.kind, name: entry.name, from: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias] }, body };
+		const saved = { kind: entry.kind, name: entry.name, from: entry.name, isNew: false, sha: entry.sha, meta: { ...entry.meta, alias: [...entry.meta.alias], tags: [...(entry.meta.tags ?? [])] }, body };
 		baseline = contentOf(saved);
 		const partial = !ignorePartial && partials[`${entry.kind}/${entry.name}`];
-		editing = partial ? { ...partial, from: entry.name, isNew: false, sha: entry.sha } : saved;
+		editing = partial ? { ...partial, meta: { tags: [], ...partial.meta }, from: entry.name, isNew: false, sha: entry.sha } : saved;
 	}
 
 	/** @param {string} key */
 	function openPartial(key) {
 		baseline = '';
-		editing = partials[key];
+		editing = { ...partials[key], meta: { tags: [], ...partials[key].meta } };
 	}
 
 	function discard() {
@@ -288,7 +322,7 @@
 			name: '',
 			from: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', alias: [], redirect: '' },
+			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', alias: [], tags: [], redirect: '' },
 			body: ''
 		};
 		// an untouched new item isn't worth keeping
@@ -300,6 +334,7 @@
 		const current = editing;
 		if (!api || !current) return;
 		current.meta.alias = current.meta.alias.map((x) => x.trim().replace(/^\/+|\/+$/g, '')).filter(Boolean);
+		current.meta.tags = [...new Set((current.meta.tags ?? []).map(cleanTag).filter(Boolean))];
 		const { kind: k, name, from, isNew } = current;
 		const partialKey = keyOf(current);
 		const content = contentOf(current);
@@ -617,7 +652,7 @@
 	{#if !api}
 		<Login onlogin={login} />
 	{:else if editing}
-		<Editor bind:item={editing} {images} {resolve} {ask} {manage} {alphabet} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
+		<Editor bind:item={editing} {images} {resolve} {ask} {manage} {alphabet} {categories} tagsInUse={allTags.map(([t]) => t)} onsave={save} onupload={upload} ondelete={remove} onback={() => (editing = null)} partial={!!partials[keyOf(editing)]} ondiscard={discard} />
 	{:else}
 		<header>
 			<div class="top">
@@ -643,6 +678,10 @@
 	{/if}
 
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
+
+	{#if tagsOpen}
+		<TagsDialog tags={allTags} {categories} onsave={saveCategories} onclose={() => (tagsOpen = false)} />
+	{/if}
 
 	{#if alphabetOpen}
 		<AlphabetDialog setup={alphabet} onsave={saveAlphabet} onclose={() => (alphabetOpen = false)} />
@@ -692,6 +731,12 @@
 					</button>
 				</li>
 			{/each}
+			<li>
+				<button class="entry" onclick={() => ((menu = false), (tagsOpen = true))}>
+					<Tag size={24} strokeWidth={1.75} />
+					tags
+				</button>
+			</li>
 			<li>
 				<!-- iaco's alphabet is called abelus, written in itself (a bee) -->
 				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>

@@ -1,10 +1,12 @@
 <script>
 	import Tp from './Tp.svelte';
+	import { Tag, BookBookmark } from '@lucide/svelte';
+	import { savedCategories, tagUrl, cleanTag } from './tags.js';
 	import { render } from './markdown.js';
 
 	/**
 	 * @type {{
-	 *   item: { title: string, description: string, image: string },
+	 *   item: { title: string, description: string, image: string, tags?: string[] },
 	 *   body: string | null,
 	 *   resolve?: (path: string) => string
 	 * }}
@@ -18,6 +20,19 @@
 	<header>
 		<h1><Tp text={item.title} /></h1>
 		{#if item.description}<p class="lead"><Tp text={item.description} /></p>{/if}
+		{#if item.tags?.length}
+			<!-- tags link to their pages; categories show a bookmark -->
+			<ul class="tags">
+				{#each item.tags.map(cleanTag).filter(Boolean) as tag (tag)}
+					<li>
+						<a href={tagUrl(tag)}>
+							{#if savedCategories.includes(tag)}<BookBookmark size={14} strokeWidth={1.75} />{:else}<Tag size={14} strokeWidth={1.75} />{/if}
+							{tag}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	</header>
 	{#if item.image}<img class="cover" src={resolve(item.image)} alt="" />{/if}
 	<div class="prose">
@@ -74,6 +89,24 @@
 		font-family: var(--title);
 		line-height: 1.2;
 		letter-spacing: -0.02em;
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.4rem 0.9rem;
+		margin: 1rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.tags a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-size: 0.85rem;
+		color: var(--muted);
 	}
 
 	.prose :global(img) {
