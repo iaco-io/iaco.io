@@ -174,7 +174,19 @@
 		background: var(--panel);
 	}
 
-	.prose :global(.grid .card-icon svg.icon) {
+	/* lucide icons: the svg file is used as a stencil, filled with the text's colour */
+	.prose :global(span.icon.lucide) {
+		display: inline-block;
+		width: 1.15em;
+		height: 1.15em;
+		vertical-align: -0.2em;
+		background: currentColor;
+		-webkit-mask: var(--icon) center / contain no-repeat;
+		mask: var(--icon) center / contain no-repeat;
+	}
+
+	.prose :global(.grid .card-icon .icon.lucide),
+		.prose :global(.grid .card-icon svg.icon) {
 		width: 40%;
 		height: 40%;
 		vertical-align: 0;

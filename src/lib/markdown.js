@@ -104,6 +104,11 @@ const newTabs = (/** @type {string} */ html) =>
 		external(href) && !/\starget=/.test(before + after) ? `<a ${before}href="${href}"${after} target="_blank" rel="noopener noreferrer">` : tag
 	);
 
+// ![](lucide/feather): any lucide icon (lucide.dev/icons), drawn in the text's colour
+const LUCIDE = /^lucide\/([a-z0-9-]+)(\.svg)?$/;
+const lucideIcon = (/** @type {string} */ name, /** @type {string} */ text = '') =>
+	`<span class="icon lucide" style="--icon:url(/lucide/${name}.svg)"${text ? ` role="img" aria-label="${escape(text)}"` : ' aria-hidden="true"'}></span>`;
+
 const IMAGE_LINE = /^!\[([^\]]*)\]\(([^)\s]+)\)$/;
 const LINK_LINE = /^\[\]\(([^)\s]+)\)$/;
 const escape = (/** @type {string} */ s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -138,7 +143,9 @@ function grid(source, resolve, inner, inlineOf) {
 				? `<p class="card-title">${inlineOf(title)}</p>${body ? inner(body) : ''}`
 				: '';
 			let picture = '';
-			if (image) {
+			if (image && LUCIDE.test(image)) {
+				picture = `<span class="card-icon">${lucideIcon(image.match(LUCIDE)?.[1] ?? '')}</span>`;
+			} else if (image) {
 				const local = !/^([a-z]+:|\/)/i.test(image);
 				picture = local && ICONS[image]
 					? `<span class="card-icon">${ICONS[image].replace('<svg', '<svg class="icon" aria-hidden="true"')}</span>`
@@ -148,7 +155,7 @@ function grid(source, resolve, inner, inlineOf) {
 			const tag = href ? 'a' : 'div';
 			const attrs = href ? ` href="${escape(href)}"${external(href) ? ' target="_blank" rel="noopener noreferrer"' : ''}` : '';
 			const only = picture && !text ? ' only' : '';
-			const kind = image && ICONS[image] ? ' with-icon' : '';
+			const kind = image && (ICONS[image] || LUCIDE.test(image)) ? ' with-icon' : '';
 			return `<${tag} class="card${only}${kind}"${attrs}>${picture}${text ? `<div class="card-text">${text}</div>` : ''}</${tag}>`;
 		})
 		.join('')}</div>`;
@@ -164,7 +171,8 @@ export function render(source, resolve = (path) => path) {
 		breaks: true,
 		extensions: [highlight],
 		walkTokens(token) {
-			if ((token.type === 'image' || token.type === 'link') && !/^([a-z]+:|\/|#)/i.test(token.href)) {
+			if (token.type === 'image' && LUCIDE.test(token.href)) token.href = `lucide:${token.href.match(LUCIDE)?.[1]}`;
+			else if ((token.type === 'image' || token.type === 'link') && !/^([a-z]+:|\/|#)/i.test(token.href)) {
 				// a one-colour svg from the media folder (like icons/youtube.svg) goes in as the icon itself
 				token.href = token.type === 'image' && ICONS[token.href] ? `icon:${token.href}` : resolve(token.href);
 			}
@@ -180,6 +188,7 @@ export function render(source, resolve = (path) => path) {
 				);
 			},
 			image({ href, text }) {
+				if (href.startsWith('lucide:')) return lucideIcon(href.slice(7), text);
 				if (!href.startsWith('icon:')) return false;
 				const label = text ? ` role="img" aria-label="${text.replace(/"/g, '&quot;')}"` : ' aria-hidden="true"';
 				return ICONS[href.slice(5)].replace('<svg', `<svg class="icon"${label}`);

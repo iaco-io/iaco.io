@@ -13,7 +13,10 @@ const isMedia = (/** @type {string} */ path) => /\.(mp3|m4a|wav|ogg|aac|flac|mp4
 const isPostMedia = (/** @type {string} */ path) =>
 	path.startsWith('/_app/immutable/assets/') && /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(path);
 // only the app itself is saved on install: code, styles, icons and pages
-const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter((p) => !isMedia(p) && !isPostMedia(p));
+// the lucide icons for posts (static/lucide) are many: each is saved only once a page shows it
+const ASSETS = [...IMMUTABLE, ...assets.map(toPath), ...prerendered.map(toPath)].filter(
+	(p) => !isMedia(p) && !isPostMedia(p) && !p.startsWith('/lucide/')
+);
 
 // saved images not opened for 10 days are dropped. the last time each was opened is kept in the media cache itself
 const KEEP = 10 * 24 * 60 * 60 * 1000;
