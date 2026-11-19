@@ -2,7 +2,7 @@ import { withAlphabet } from './tp.js';
 import { Marked } from 'marked';
 
 // properties at the top of each .md file, in this order
-export const FIELDS = ['title', 'description', 'image', 'date', 'draft', 'redirect', 'alias'];
+export const FIELDS = ['title', 'description', 'image', 'date', 'draft', 'redirect', 'alias', 'tags'];
 
 const QUOTES = /^["'‘’“”](.*)["'‘’“”]$/;
 const unquote = (/** @type {string} */ value) => value.trim().replace(QUOTES, '$1').trim();
@@ -63,6 +63,14 @@ export function urls(/** @type {'posts' | 'pages' | 'redirects'} */ kind, /** @t
 /** '/ig' or 'ig/' becomes '/ig/' */
 export const normalize = (/** @type {string} */ path) => `/${path.replace(/^\/+|\/+$/g, '')}/`;
 
+// svgs in the media folder drawn in one colour (stroke or fill "currentColor") are put inline in the text,
+// so they take the text's size and colour, light or dark
+const ICONS = Object.fromEntries(
+	Object.entries(import.meta.glob('/src/media/**/*.svg', { query: '?raw', import: 'default', eager: true }))
+		.filter(([, svg]) => /currentColor/.test(/** @type {string} */ (svg)))
+		.map(([path, svg]) => [path.slice('/src/media/'.length), /** @type {string} */ (svg).trim()])
+);
+
 /**
  * markdown to html; relative image and link paths go through `resolve`
  * @param {string} source @param {(path: string) => string} resolve
@@ -71,7 +79,15 @@ export function render(source, resolve = (path) => path) {
 	const marked = new Marked({
 		walkTokens(token) {
 			if ((token.type === 'image' || token.type === 'link') && !/^([a-z]+:|\/|#)/i.test(token.href)) {
-				token.href = resolve(token.href);
+				// a one-colour svg from the media folder (like icons/youtube.svg) goes in as the icon itself
+				token.href = token.type === 'image' && ICONS[token.href] ? `icon:${token.href}` : resolve(token.href);
+			}
+		},
+		renderer: {
+			image({ href, text }) {
+				if (!href.startsWith('icon:')) return false;
+				const label = text ? ` role="img" aria-label="${text.replace(/"/g, '&quot;')}"` : ' aria-hidden="true"';
+				return ICONS[href.slice(5)].replace('<svg', `<svg class="icon"${label}`);
 			}
 		}
 	});

@@ -81,6 +81,14 @@
 		border-radius: 1rem;
 	}
 
+	/* icons from the media folder sit in the text like a letter, in its colour */
+	.prose :global(svg.icon) {
+		display: inline-block;
+		width: 1.15em;
+		height: 1.15em;
+		vertical-align: -0.2em;
+	}
+
 	.prose :global(a) {
 		text-decoration: underline;
 		text-underline-offset: 0.2em;
