@@ -1,3 +1,4 @@
+import { external } from './links.js';
 import { withAlphabet } from './tp.js';
 import { Marked } from 'marked';
 
@@ -97,8 +98,7 @@ const highlight = {
 	}
 };
 
-/** links to other websites open in a new tab */
-const external = (/** @type {string} */ href) => /^https?:\/\//i.test(href) && !/^https?:\/\/(www\.)?iaco\.io(\/|$)/i.test(href);
+// links to other websites (and short links to them, like /youtube/) open in a new tab
 const newTabs = (/** @type {string} */ html) =>
 	html.replace(/<a\s([^>]*?)href="([^"]*)"([^>]*)>/g, (tag, before, href, after) =>
 		external(href) && !/\starget=/.test(before + after) ? `<a ${before}href="${href}"${after} target="_blank" rel="noopener noreferrer">` : tag

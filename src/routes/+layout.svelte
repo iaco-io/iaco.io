@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { Waves, Newspaper, BookBookmark } from '@lucide/svelte';
 	import { tagUrl } from '#lib/tags.js';
+	import { external, destination } from '#lib/links.js';
 	import Menu from '#lib/Menu.svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import DayClock from '#lib/DayClock.svelte';
@@ -19,6 +20,24 @@
 	]);
 
 	let open = $state(false);
+
+	// links that leave the site open in a new tab; in the installed app on an iphone (which would show them in a
+	// small built-in browser) they open in safari instead. short links like /youtube/ go straight to their site
+	const iosApp =
+		typeof navigator !== 'undefined' &&
+		/iPhone|iPad|iPod/.test(navigator.userAgent) &&
+		(matchMedia('(display-mode: standalone)').matches || /** @type {any} */ (navigator).standalone);
+	function leave(/** @type {MouseEvent} */ e) {
+		if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+		const a = /** @type {HTMLAnchorElement | null} */ (/** @type {Element} */ (e.target).closest?.('a[href]'));
+		if (!a || a.hasAttribute('download')) return;
+		const href = a.getAttribute('href') ?? '';
+		if (!external(href)) return;
+		e.preventDefault();
+		const to = destination(href);
+		if (iosApp) location.href = to.replace(/^(https?):/i, 'x-safari-$1:');
+		else window.open(to, '_blank', 'noopener,noreferrer');
+	}
 	// the cms has its own interface
 	const cms = $derived(page.url.pathname.startsWith('/cms'));
 
@@ -29,6 +48,8 @@
 		return () => document.removeEventListener('gesturestart', block);
 	});
 </script>
+
+<svelte:document onclick={leave} />
 
 
 <div class="statusbar" aria-hidden="true"></div>
