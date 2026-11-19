@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { Tag, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { EyeOff, PencilLine, ArrowUpNarrowWide, Tag, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -204,6 +204,18 @@
 	let alphabetOpen = $state(false);
 	// re-read when the setup changes
 	const alphabetName = $derived((alphabet, inAlphabet('abelus')));
+
+	// list filters: show only drafts, only pages off the menu, only items with unsaved changes on this device
+	// (several at once show any of them). posts can also put drafts and unsaved ones first
+	let filters = $state({ posts: { draft: false, local: false, first: false }, pages: { draft: false, local: false, hidden: false } });
+	const isLocal = (/** @type {Entry} */ e) => !!partials[`${e.kind}/${e.name}`];
+	/** @param {'posts' | 'pages'} k @param {Entry} e */
+	function shown(k, e) {
+		const f = /** @type {Record<string, boolean>} */ (filters[k]);
+		const on = ['draft', 'local', 'hidden'].filter((x) => f[x]);
+		if (!on.length) return true;
+		return on.some((x) => (x === 'draft' ? e.meta.draft : x === 'local' ? isLocal(e) : e.meta.hidden));
+	}
 
 	// tags promoted to categories, kept in src/categories.json; the newest list is read from github
 	const CATEGORIES = 'src/categories.json';
@@ -588,14 +600,44 @@
 {#snippet listOf(/** @type {Section} */ k)}
 	{#if k === 'media'}{@render mediaList()}{:else}
 	<!-- posts: z to a (newest first); pages and redirects: a to z -->
-	{@const items = entries
-		.filter((e) => e.kind === k)
-		.sort((a, b) => (k === 'posts' ? -1 : 1) * a.name.localeCompare(b.name, 'en', { numeric: true }))}
-	{@const fresh = newPartials.filter(([, p]) => p.kind === k)}
+	{@const all = entries.filter((e) => e.kind === k)}
+	{@const items = all
+		.filter((e) => k === 'redirects' || shown(k, e))
+		.sort((a, b) => (k === 'posts' ? -1 : 1) * a.name.localeCompare(b.name, 'en', { numeric: true }))
+		.sort((a, b) =>
+			k === 'posts' && filters.posts.first
+				? Number(b.meta.draft || isLocal(b)) - Number(a.meta.draft || isLocal(a))
+				: 0
+		)}
+	{@const filtering = k !== 'redirects' && Object.entries(filters[k]).some(([x, v]) => v && x !== 'first')}
+	{@const fresh = newPartials.filter(([, p]) => p.kind === k && (!filtering || filters[/** @type {'posts' | 'pages'} */ (k)].local))}
+	{#if k !== 'redirects' && all.length}
+		{@const f = filters[k]}
+		<!-- filters, each with how many it matches -->
+		<div class="filters">
+			{#if k === 'pages'}
+				<button class:on={filters.pages.hidden} title="off the menu" aria-pressed={filters.pages.hidden} onclick={() => (filters.pages.hidden = !filters.pages.hidden)}>
+					<EyeOff size={16} />{all.filter((e) => e.meta.hidden).length}
+				</button>
+			{/if}
+			<button class:on={f.draft} title="drafts" aria-pressed={f.draft} onclick={() => (f.draft = !f.draft)}>
+				<PencilLine size={16} />{all.filter((e) => e.meta.draft).length}
+			</button>
+			<button class:on={f.local} title="unsaved changes on this device" aria-pressed={f.local} onclick={() => (f.local = !f.local)}>
+				<CloudAlert size={16} />{all.filter(isLocal).length + newPartials.filter(([, p]) => p.kind === k).length}
+			</button>
+			{#if k === 'posts'}
+				<span class="gap"></span>
+				<button class:on={filters.posts.first} title="drafts and unsaved first" aria-pressed={filters.posts.first} onclick={() => (filters.posts.first = !filters.posts.first)}>
+					<ArrowUpNarrowWide size={16} />
+				</button>
+			{/if}
+		</div>
+	{/if}
 	{#if loading && !entries.length}
 		<p class="empty">loading…</p>
 	{:else if !items.length && !fresh.length}
-		<p class="empty">no {k} yet.</p>
+		<p class="empty">{all.length ? 'nothing matches.' : `no ${k} yet.`}</p>
 	{:else}
 		<ul>
 			{#each fresh as [key, p] (key)}
@@ -635,7 +677,8 @@
 						{#if partials[`${entry.kind}/${entry.name}`]}
 							<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
 						{/if}
-						{#if entry.meta.draft}<span class="badge">draft</span>{/if}
+						{#if entry.meta.hidden}<span class="mark" title="off the menu"><EyeOff size={17} /></span>{/if}
+						{#if entry.meta.draft}<span class="mark" title="draft"><PencilLine size={17} /></span>{/if}
 						{#if entry.kind === 'redirects'}<span class="detail">{entry.meta.redirect.replace(/^https?:\/\//, '')}</span>{/if}
 					</button>
 				</li>
@@ -1040,6 +1083,43 @@
 		font-size: 0.8rem;
 		font-weight: 400;
 		overflow-wrap: anywhere;
+	}
+
+	.filters {
+		display: flex;
+		gap: 0.4rem;
+		margin: 0 0 0.9rem;
+	}
+
+	.filters .gap {
+		flex: 1;
+	}
+
+	.filters button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		height: 2.1rem;
+		padding: 0 0.75rem;
+		border: 1px solid var(--glass-edge);
+		border-radius: 999px;
+		font: inherit;
+		font-size: 0.8rem;
+		color: var(--muted);
+		background: var(--glass);
+		cursor: pointer;
+	}
+
+	.filters button.on {
+		color: var(--bg);
+		background: var(--fg);
+		border-color: transparent;
+	}
+
+	.mark {
+		display: flex;
+		flex: none;
+		color: var(--muted);
 	}
 
 	.badge {
