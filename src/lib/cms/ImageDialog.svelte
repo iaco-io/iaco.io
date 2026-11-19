@@ -4,6 +4,7 @@
 	// replacing points every post and page that uses it to another file (picked or uploaded now);
 	// the old file can be kept or deleted. deleting a file that is still used asks for a replacement too.
 	import Gallery from './Gallery.svelte';
+	import Thumb from './Thumb.svelte';
 	import { Trash2, ImagePlus, ChevronDown, ArrowLeft, Save, Undo2, Replace, File as FileIcon, Music, ClipboardPaste } from '@lucide/svelte';
 	import { pasteFile } from './clipboard.js';
 
@@ -124,7 +125,7 @@
 <dialog bind:this={dialog} class="glass" oncancel={(e) => (e.preventDefault(), ondone(null))} onclick={outside}>
 	<form onsubmit={(e) => (e.preventDefault(), confirm())}>
 		{#if image || fresh}
-			<img class="big" src={fresh?.src ?? src} alt="" />
+			<span class="big"><Thumb src={fresh?.src ?? src} name={fresh ? `x${fresh.ext}` : name} size="28%" /></span>
 		{:else}
 			<span class="big file">{#if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={40} />{:else}<FileIcon size={40} />{/if}</span>
 		{/if}
@@ -153,7 +154,7 @@
 					{#if freshName && images.includes(freshName)}<small>that name is taken</small>{/if}
 				{:else}
 					<div class="picker">
-						{#if replacement && image}<img class="mini" src={resolve(replacement)} alt="" />{/if}
+						{#if replacement && image}<span class="mini"><Thumb src={resolve(replacement)} name={replacement} size="60%" /></span>{/if}
 						<button type="button" class="choose" onclick={() => (gallery = true)}>
 							{replacement || (keep ? 'pick one…' : 'nothing')}
 							<ChevronDown size={18} />
@@ -219,11 +220,19 @@
 		gap: 0.6rem;
 	}
 
+	.big,
+	.mini {
+		position: relative;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		border-radius: 0.9rem;
+		background: var(--panel);
+	}
+
 	.big {
 		width: 100%;
-		max-height: 10rem;
-		object-fit: cover;
-		border-radius: 0.9rem;
+		height: 10rem;
 	}
 
 	.uses {
@@ -349,7 +358,6 @@
 	.mini {
 		flex: none;
 		width: 2.875rem;
-		object-fit: cover;
 		border-radius: 0.75rem;
 	}
 

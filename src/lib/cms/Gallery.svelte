@@ -1,5 +1,6 @@
 <script>
 	// picks a media file from a grid of square thumbnails, as many columns as fit (icons for sound, video, files)
+	import Thumb from './Thumb.svelte';
 	import { ImageOff, Undo2, Music, Film, File as FileIcon } from '@lucide/svelte';
 
 	/**
@@ -40,7 +41,7 @@
 		{#each images as name (name)}
 			<button class="tile" class:active={current === name} title={name} onclick={() => ondone(name)}>
 				{#if /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(name)}
-					<img src={resolve(name)} alt={name} loading="lazy" />
+					<Thumb src={resolve(name)} {name} />
 				{:else}
 					{#if /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(name)}<Music size={22} />{:else if /\.(mp4|mov|webm|m4v)$/i.test(name)}<Film size={22} />{:else}<FileIcon size={22} />{/if}
 					<small>{name.replace(/^.*\//, '')}</small>

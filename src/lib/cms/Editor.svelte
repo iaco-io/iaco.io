@@ -3,6 +3,7 @@
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
+	import Thumb from './Thumb.svelte';
 	import TpKeys from './TpKeys.svelte';
 	import { tick } from 'svelte';
 	import { pasteFile } from './clipboard.js';
@@ -383,7 +384,7 @@
 							oncontextmenu={(e) => e.preventDefault()}
 							onclick={() => (pressed = false)}
 						>
-							<img src={resolve(item.meta.image)} alt={item.meta.image} />
+							<Thumb src={resolve(item.meta.image)} name={item.meta.image} size="60%" />
 						</button>
 					{/if}
 					<button class="choose" title="pick the main image" onclick={() => (gallery = true)}>
@@ -479,7 +480,7 @@
 					onclick={() => (pressed ? (pressed = false) : insert(snippet(name)))}
 				>
 					{#if isImage(name)}
-						<img src={resolve(name)} alt={name} />
+						<Thumb src={resolve(name)} {name} size="60%" />
 					{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
 				</button>
 			{/each}
@@ -849,6 +850,7 @@
 	}
 
 	.thumb {
+		position: relative;
 		display: grid;
 		place-items: center;
 		color: var(--muted);

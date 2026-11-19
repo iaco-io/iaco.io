@@ -1,8 +1,8 @@
 <script>
 	// a media file's picture. a one-colour svg (an icon drawn with "currentColor") is shown small, in the text colour,
 	// so it reads in light and dark; anything else fills the square
-	/** @type {{ src: string, name: string }} */
-	let { src, name } = $props();
+	/** @type {{ src: string, name: string, size?: string }} */
+	let { src, name, size = '40%' } = $props();
 
 	/** @type {Record<string, Promise<boolean>>} */
 	const known = (globalThis.__iconCheck ??= {});
@@ -19,7 +19,7 @@
 </script>
 
 {#if icon}
-	<span class="icon" style:--src="url('{src}')" role="img" aria-label={name}></span>
+	<span class="icon" style:width={size} style:--src="url('{src}')" role="img" aria-label={name}></span>
 {:else}
 	<img {src} alt="" loading="lazy" />
 {/if}
