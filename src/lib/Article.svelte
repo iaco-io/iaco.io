@@ -114,6 +114,11 @@
 		border-radius: 1rem;
 	}
 
+	/* a table whose header cells are all empty has no header (markdown always needs one) */
+	.prose :global(thead:not(:has(th:not(:empty)))) {
+		display: none;
+	}
+
 	/* icons from the media folder sit in the text like a letter, in its colour */
 	.prose :global(svg.icon) {
 		display: inline-block;
