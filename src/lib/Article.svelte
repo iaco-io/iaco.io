@@ -114,7 +114,97 @@
 		border-radius: 1rem;
 	}
 
-	/* a table whose header cells are all empty has no header (markdown always needs one) */
+	/* ==highlights==: a soft marker stroke; a colour circle picks the colour */
+	.prose :global(mark) {
+		--mark: rgb(255 214 102 / 0.55);
+		padding: 0.05em 0.2em;
+		border-radius: 0.3em;
+		color: inherit;
+		background: var(--mark);
+		-webkit-box-decoration-break: clone;
+		box-decoration-break: clone;
+	}
+
+	.prose :global(mark.red) { --mark: rgb(255 107 107 / 0.42); }
+	.prose :global(mark.orange) { --mark: rgb(255 159 67 / 0.45); }
+	.prose :global(mark.yellow) { --mark: rgb(255 214 102 / 0.55); }
+	.prose :global(mark.green) { --mark: rgb(102 204 136 / 0.42); }
+	.prose :global(mark.blue) { --mark: rgb(95 143 230 / 0.4); }
+	.prose :global(mark.purple) { --mark: rgb(170 120 230 / 0.4); }
+	.prose :global(mark.black) { --mark: rgb(20 20 30 / 0.85); color: #f4ecdc; }
+	.prose :global(mark.white) { --mark: rgb(255 255 255 / 0.9); color: #0b1f38; }
+	.prose :global(mark.brown) { --mark: rgb(165 110 70 / 0.42); }
+
+	/* ```grid``` blocks: cards that fill the width, 2–3 a row on a phone */
+	.prose :global(.grid) {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(9.5rem, 40%), 1fr));
+		gap: 0.75rem;
+		margin: 1.5rem 0;
+	}
+
+	.prose :global(.grid .card) {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		border: 1px solid var(--glass-edge);
+		border-radius: 1.1rem;
+		color: inherit;
+		text-decoration: none;
+		background: var(--glass);
+		transition: transform 0.2s ease;
+	}
+
+	.prose :global(a.card:hover) {
+		transform: translateY(-2px);
+	}
+
+	.prose :global(.grid .card > img) {
+		display: block;
+		width: 100%;
+		aspect-ratio: 1;
+		object-fit: cover;
+		border-radius: 0;
+	}
+
+	.prose :global(.grid .card-icon) {
+		display: grid;
+		place-items: center;
+		aspect-ratio: 1;
+		background: var(--panel);
+	}
+
+	.prose :global(.grid .card-icon svg.icon) {
+		width: 40%;
+		height: 40%;
+		vertical-align: 0;
+	}
+
+	.prose :global(.grid .card.only > img),
+	.prose :global(.grid .card.only .card-icon) {
+		height: 100%;
+	}
+
+	.prose :global(.grid .card-text) {
+		padding: 0.6rem 0.8rem 0.75rem;
+		font-size: 0.9rem;
+		line-height: 1.45;
+	}
+
+	.prose :global(.grid .card-title) {
+		margin: 0 0 0.2rem;
+		font-weight: 600;
+	}
+
+	.prose :global(.grid .card-text > :last-child) {
+		margin-bottom: 0;
+	}
+
+	.prose :global(.grid .card-text p) {
+		margin: 0.3rem 0;
+	}
+
+		/* a table whose header cells are all empty has no header (markdown always needs one) */
 	.prose :global(thead:not(:has(th:not(:empty)))) {
 		display: none;
 	}

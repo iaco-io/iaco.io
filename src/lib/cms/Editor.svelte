@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Tag, BookBookmark } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -85,6 +85,35 @@
 		const end = textarea?.selectionEnd ?? start;
 		item.body = item.body.slice(0, start) + text + item.body.slice(end);
 	}
+
+	// the toolbar: wraps the selected text (or a placeholder) in markdown, keeping the text selected
+	async function wrap(/** @type {string} */ before, /** @type {string} */ after, /** @type {string} */ placeholder) {
+		const start = textarea?.selectionStart ?? item.body.length;
+		const end = textarea?.selectionEnd ?? start;
+		const selected = item.body.slice(start, end) || placeholder;
+		item.body = item.body.slice(0, start) + before + selected + after + item.body.slice(end);
+		await tick();
+		textarea?.focus();
+		textarea?.setSelectionRange(start + before.length, start + before.length + selected.length);
+	}
+
+	/** puts a block on its own lines, after the line with the cursor */
+	async function block(/** @type {string} */ text) {
+		const at = textarea?.selectionEnd ?? item.body.length;
+		const lineEnd = item.body.indexOf('\n', at);
+		const start = lineEnd < 0 ? item.body.length : lineEnd;
+		const before = item.body.slice(0, start);
+		const lead = !before || before.endsWith('\n\n') ? '' : before.endsWith('\n') ? '\n' : '\n\n';
+		item.body = before + lead + text + '\n\n' + item.body.slice(start).replace(/^\n+/, '');
+		await tick();
+		textarea?.focus();
+		const caret = start + lead.length + text.length;
+		textarea?.setSelectionRange(caret, caret);
+	}
+
+	const COLOURS = ['', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫️', '⚪️', '🟤'];
+	let colours = $state(false);
+	const keepFocus = (/** @type {Event} */ e) => e.preventDefault();
 
 	/** asks for a name, then uploads; null when cancelled */
 	async function named(/** @type {File} */ file) {
@@ -492,6 +521,27 @@
 		</div>
 		{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
 
+		<div class="toolbar">
+			<button class="pill square" title="bold" aria-label="bold" onpointerdown={keepFocus} onclick={() => wrap('**', '**', 'bold')}><Bold size={18} /></button>
+			<button class="pill square" title="italic" aria-label="italic" onpointerdown={keepFocus} onclick={() => wrap('*', '*', 'italic')}><Italic size={18} /></button>
+			<button class="pill square" class:on={colours} title="highlight" aria-label="highlight" onpointerdown={keepFocus} onclick={() => (colours = !colours)}><Highlighter size={18} /></button>
+			<button class="pill square" title="link" aria-label="link" onpointerdown={keepFocus} onclick={() => wrap('[', '](https://)', 'text')}><LinkIcon size={18} /></button>
+			<button class="pill square" title="grid of cards" aria-label="grid" onpointerdown={keepFocus} onclick={() => block('```grid\n![](image.jpg)\ncard 1\ntext\n___\ncard 2\ntext\n```')}><LayoutGrid size={18} /></button>
+			<button class="pill square" title="table" aria-label="table" onpointerdown={keepFocus} onclick={() => block('| a | b |\n|---|---|\n| 1 | 2 |')}><Table size={18} /></button>
+			{#if colours}
+				<!-- a colour for the highlight; the first is the default yellow -->
+				<div class="colours">
+					{#each COLOURS as c}
+						<button
+							class="colour"
+							title={c || 'default'}
+							onpointerdown={keepFocus}
+							onclick={() => ((colours = false), wrap(`==${c}`, '==', 'text'))}
+						>{c || '=='}</button>
+					{/each}
+				</div>
+			{/if}
+		</div>
 		<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
 
 		<div class="previews">
@@ -828,6 +878,56 @@
 
 	.source :global(.value) {
 		color: #b5734a;
+	}
+
+	.toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin-bottom: 0.6rem;
+	}
+
+	.toolbar .square {
+		width: 2.6rem;
+		height: 2.6rem;
+		box-shadow: none;
+	}
+
+	.toolbar .on {
+		color: var(--bg);
+		background: var(--fg);
+	}
+
+	.colours {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.1rem;
+		width: 100%;
+		padding: 0.25rem;
+		border-radius: 1.2rem;
+		background: var(--glass);
+		border: 1px solid var(--glass-edge);
+	}
+
+	.colour {
+		display: grid;
+		place-items: center;
+		width: 1.95rem;
+		height: 1.95rem;
+		padding: 0;
+		border: 0;
+		border-radius: 999px;
+		font-size: 1.05rem;
+		font-weight: 700;
+		color: var(--muted);
+		background: none;
+		cursor: pointer;
+	}
+
+	/* the first one, "==", is the default (soft yellow) */
+	.colour:first-child {
+		font-size: 0.85rem;
 	}
 
 	.images {
