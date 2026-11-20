@@ -19,7 +19,7 @@
 </script>
 
 {#if icon}
-	<span class="icon" style:width={size} style:--src="url('{src}')" role="img" aria-label={name}></span>
+	<span class="icon" style:width={size} style:--src={`url(${JSON.stringify(src)})`} role="img" aria-label={name}></span>
 {:else}
 	<img {src} alt="" loading="lazy" />
 {/if}

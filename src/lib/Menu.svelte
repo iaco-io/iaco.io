@@ -31,7 +31,7 @@
 			<li>
 				<a class="entry" {href} onclick={close}>
 					{#if Icon}<Icon size={24} strokeWidth={1.75} />
-					{:else if picture?.mask}<span class="picture mask" style:--icon="url('{picture.src}')"></span>
+					{:else if picture?.mask}<span class="picture mask" style:--icon={`url(${JSON.stringify(picture.src)})`}></span>
 					{:else if picture}<img class="picture" src={picture.src} alt="" />{/if}
 					{label}
 				</a>
