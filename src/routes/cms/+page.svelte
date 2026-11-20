@@ -208,8 +208,11 @@
 
 	// list filters: show only drafts, only unlisted pages, only items with unsaved changes on this device
 	// (several at once show any of them). posts can also put drafts and unsaved ones first
-	let filters = $state({ posts: { draft: false, local: false, first: false }, pages: { draft: false, local: false, unlisted: false } });
+	let filters = $state({ posts: { draft: false, local: false, first: false }, pages: { draft: false, local: false, unlisted: false, first: false } });
 	const isLocal = (/** @type {Entry} */ e) => !!partials[`${e.kind}/${e.name}`];
+	// the groups when sorting: 0 drafts and unsaved, then (pages only) 1 unlisted, then the rest
+	const GROUPS = { posts: ['draft / local posts', 'active posts'], pages: ['draft / local pages', 'unlisted pages', 'active pages'] };
+	const rank = (/** @type {Entry} */ e) => (e.meta.draft || isLocal(e) ? 0 : e.kind === 'pages' && e.meta.unlisted ? 1 : e.kind === 'pages' ? 2 : 1);
 	/** @param {'posts' | 'pages'} k @param {Entry} e */
 	function shown(k, e) {
 		const f = /** @type {Record<string, boolean>} */ (filters[k]);
@@ -605,11 +608,8 @@
 	{@const items = all
 		.filter((e) => k === 'redirects' || shown(k, e))
 		.sort((a, b) => (k === 'posts' ? -1 : 1) * a.name.localeCompare(b.name, 'en', { numeric: true }))
-		.sort((a, b) =>
-			k === 'posts' && filters.posts.first
-				? Number(b.meta.draft || isLocal(b)) - Number(a.meta.draft || isLocal(a))
-				: 0
-		)}
+		.sort((a, b) => (k !== 'redirects' && filters[k].first ? rank(a) - rank(b) : 0))}
+	{@const grouped = k !== 'redirects' && filters[k].first}
 	{@const filtering = k !== 'redirects' && Object.entries(filters[k]).some(([x, v]) => v && x !== 'first')}
 	{@const fresh = newPartials.filter(([, p]) => p.kind === k && (!filtering || filters[/** @type {'posts' | 'pages'} */ (k)].local))}
 	{#if k !== 'redirects' && all.length}
@@ -627,9 +627,9 @@
 			<button class:on={f.local} title="unsaved changes on this device" aria-pressed={f.local} onclick={() => (f.local = !f.local)}>
 				<CloudAlert size={16} />{all.filter(isLocal).length + newPartials.filter(([, p]) => p.kind === k).length}
 			</button>
-			{#if k === 'posts'}
-				<span class="gap"></span>
-				<button class:on={filters.posts.first} title="drafts and unsaved first" aria-pressed={filters.posts.first} onclick={() => (filters.posts.first = !filters.posts.first)}>
+			<span class="gap"></span>
+			{#if f}
+				<button class:on={f.first} title="group: drafts and unsaved first" aria-pressed={f.first} onclick={() => (f.first = !f.first)}>
 					<ArrowUpNarrowWide size={16} />
 				</button>
 			{/if}
@@ -641,6 +641,11 @@
 		<p class="empty">{all.length ? 'nothing matches.' : `no ${k} yet.`}</p>
 	{:else}
 		<ul>
+			<!-- grouped: drafts & unsaved first, then (pages) unlisted, then the rest, each under a heading -->
+			{#if grouped}
+				<li class="group">{GROUPS[k][0]}</li>
+				{#if !fresh.length && !items.some((e) => rank(e) === 0)}<li class="none">none</li>{/if}
+			{/if}
 			{#each fresh as [key, p] (key)}
 				<li>
 					<button class="row glass" onclick={() => openPartial(key)}>
@@ -653,7 +658,16 @@
 					</button>
 				</li>
 			{/each}
-			{#each items as entry (entry.kind + entry.name)}
+			{#each items as entry, i (entry.kind + entry.name)}
+				{#if grouped}
+					<!-- headings (with 'none' for empty groups) before the first item past each group -->
+					{#each GROUPS[k].slice(1) as title, g}
+						{#if rank(entry) > g && (i === 0 ? true : rank(items[i - 1]) <= g)}
+							<li class="group">{title}</li>
+							{#if rank(entry) > g + 1}<li class="none">none</li>{/if}
+						{/if}
+					{/each}
+				{/if}
 				<!-- draft / unlisted as edited on this device, if there are unsaved changes -->
 				{@const now = partials[`${entry.kind}/${entry.name}`]?.meta ?? entry.meta}
 				<li>
@@ -703,6 +717,15 @@
 					</button>
 				</li>
 			{/each}
+			{#if grouped}
+				<!-- groups after the last item, all empty -->
+				{#each GROUPS[k].slice(1) as title, g}
+					{#if !items.some((e) => rank(e) > g)}
+						<li class="group">{title}</li>
+						<li class="none">none</li>
+					{/if}
+				{/each}
+			{/if}
 		</ul>
 	{/if}
 	{/if}
@@ -1158,6 +1181,23 @@
 		background: currentColor;
 		-webkit-mask: var(--icon) center / contain no-repeat;
 		mask: var(--icon) center / contain no-repeat;
+	}
+
+	.group {
+		margin: 0.8rem 0 0.1rem 0.3rem;
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--muted);
+	}
+
+	.none {
+		margin: 0 0 0.2rem 0.3rem;
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+
+	.group:first-child {
+		margin-top: 0;
 	}
 
 	.marks {
