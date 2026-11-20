@@ -75,7 +75,7 @@
 
 	/** @type {ReturnType<typeof github> | null} */
 	let api = $state(savedToken ? github(savedToken) : null);
-	let kind = $state(/** @type {Section} */ ('posts'));
+	let kind = $state(/** @type {Section} */ ('pages'));
 	let entries = $state(/** @type {Entry[]} */ (cached?.entries ?? []));
 	let files = $state(/** @type {string[]} */ (cached?.files ?? []));
 	let loading = $state(false);
@@ -83,8 +83,8 @@
 	let menu = $state(false);
 
 	const KINDS = /** @type {const} */ ([
-		{ kind: 'posts', icon: Feather },
 		{ kind: 'pages', icon: FileIcon },
+		{ kind: 'posts', icon: Feather },
 		{ kind: 'redirects', icon: ExternalLink },
 		{ kind: 'media', icon: ImageIcon }
 	]);
