@@ -136,35 +136,9 @@
 		cursor: pointer;
 	}
 
-	.track {
-		position: relative;
-		width: 2.4rem;
-		height: 1.4rem;
-		border-radius: 999px;
-		background: var(--glass);
-		border: 1px solid var(--glass-edge);
-		transition: background 0.2s ease;
-	}
 
-	.knob {
-		position: absolute;
-		top: 0.12rem;
-		left: 0.12rem;
-		width: 1.05rem;
-		height: 1.05rem;
-		border-radius: 999px;
-		background: var(--bg);
-		box-shadow: 0 0 6px var(--shadow-soft);
-		transition: transform 0.2s ease;
-	}
 
-	.switch[aria-checked='true'] .track {
-		background: var(--accent);
-	}
 
-	.switch[aria-checked='true'] .knob {
-		transform: translateX(1rem);
-	}
 
 	.buttons {
 		display: flex;

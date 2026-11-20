@@ -274,36 +274,9 @@
 		text-align: left;
 	}
 
-	.track {
-		position: relative;
-		flex: none;
-		width: 2.75rem;
-		height: 1.6rem;
-		border-radius: 999px;
-		background: var(--glass);
-		border: 1px solid var(--glass-edge);
-		transition: background 0.2s ease;
-	}
 
-	.knob {
-		position: absolute;
-		top: 0.15rem;
-		left: 0.15rem;
-		width: 1.2rem;
-		height: 1.2rem;
-		border-radius: 999px;
-		background: var(--bg);
-		box-shadow: 0 0 8px var(--shadow-soft);
-		transition: transform 0.2s ease;
-	}
 
-	.switch[aria-checked='true'] .track {
-		background: var(--accent);
-	}
 
-	.switch[aria-checked='true'] .knob {
-		transform: translateX(1.15rem);
-	}
 
 	.small {
 		width: 4rem;
