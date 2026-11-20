@@ -533,6 +533,9 @@
 							item.meta.icon = v && v !== 'circle-chevron-right' ? `lucide/${v}` : '';
 						}}
 					/>
+					{#if item.meta.icon}
+						<button class="pill square" title="back to the default icon" aria-label="default icon" onclick={() => (item.meta.icon = '')}><X size={18} /></button>
+					{/if}
 					<button class="pill square" title="pick from media" aria-label="pick from media" onclick={() => (iconGallery = true)}><ImageIcon size={18} /></button>
 				</div>
 				<datalist id="lucide-names">

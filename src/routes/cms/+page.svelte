@@ -677,7 +677,17 @@
 							</span>
 						{:else}
 							<span class="title">
-								{entry.meta.title || entry.name}
+								<span class="name">
+									<!-- a page's own icon (not the default one) -->
+									{#if entry.kind === 'pages' && now.icon && now.icon !== 'lucide/circle-chevron-right'}
+										{#if now.icon.startsWith('lucide/')}
+											<span class="page-icon mask" style:--icon="url('/lucide/{now.icon.slice(7)}.svg')"></span>
+										{:else}
+											<span class="page-icon"><Thumb src={resolve(now.icon)} name={now.icon} size="100%" /></span>
+										{/if}
+									{/if}
+									{entry.meta.title || entry.name}
+								</span>
 								<small>{addresses(entry).join(' • ')}</small>
 							</span>
 						{/if}
@@ -1124,6 +1134,30 @@
 		color: var(--bg);
 		background: var(--fg);
 		border-color: transparent;
+	}
+
+	.title .name {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.page-icon {
+		position: relative;
+		display: inline-grid;
+		place-items: center;
+		flex: none;
+		width: 1.1em;
+		height: 1.1em;
+		overflow: hidden;
+		border-radius: 0.25em;
+	}
+
+	.page-icon.mask {
+		border-radius: 0;
+		background: currentColor;
+		-webkit-mask: var(--icon) center / contain no-repeat;
+		mask: var(--icon) center / contain no-repeat;
 	}
 
 	.marks {
