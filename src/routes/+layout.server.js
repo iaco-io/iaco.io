@@ -17,8 +17,10 @@ function menuIcon(icon) {
 export function load() {
 	const used = new Set([...posts, ...pages].flatMap((item) => item.tags));
 	return {
+		// in the order of their file names: 01-…, 02-…, then the ones without a number
 		pages: pages
 			.filter((p) => !p.unlisted)
+			.toSorted((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }))
 			.map(({ url, title, icon }) => ({ url, title: title.toLowerCase(), icon: menuIcon(icon) })),
 		categories: savedCategories.filter((tag) => used.has(tag))
 	};
