@@ -556,7 +556,7 @@
 				<datalist id="lucide-names">
 					{#each lucideNames as n}<option value={n}></option>{/each}
 				</datalist>
-				<small class="note">a name from <a href="https://lucide.dev/icons" target="_blank" rel="noopener noreferrer">lucide.dev/icons</a>, or a picture from media</small>
+				<small class="note">a name from <a href="https://lucide.dev/icons" target="_blank" rel="noopener noreferrer">lucide.dev/icons</a> (lab icons too), or a picture from media</small>
 			</div>
 		{/if}
 		{#if short}
