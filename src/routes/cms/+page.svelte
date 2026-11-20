@@ -208,7 +208,7 @@
 
 	// list filters: show only drafts, only unlisted pages, only items with unsaved changes on this device
 	// (several at once show any of them). posts can also put drafts and unsaved ones first
-	let filters = $state({ posts: { draft: false, local: false, first: false }, pages: { draft: false, local: false, unlisted: false, first: false } });
+	let filters = $state({ posts: { draft: false, local: false, first: true }, pages: { draft: false, local: false, unlisted: false, first: true } });
 	const isLocal = (/** @type {Entry} */ e) => !!partials[`${e.kind}/${e.name}`];
 	// the groups when sorting: 0 drafts and unsaved, then (pages only) 1 unlisted, then the rest
 	const GROUPS = { posts: ['draft / local posts', 'active posts'], pages: ['draft / local pages', 'unlisted pages', 'active pages'] };
