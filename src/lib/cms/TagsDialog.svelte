@@ -1,6 +1,6 @@
 <script>
 	// every tag used in posts and pages, each with a switch: on promotes the tag to a category
-	// (shown with a bookmark instead of a tag, and listed in the blog's menu)
+	// (its switch shows a bookmark instead of a tag, and listed in the blog's menu)
 	import { Tag, BookBookmark, Save, Undo2 } from '@lucide/svelte';
 
 	/**
@@ -51,10 +51,11 @@
 			{#each tags as [tag, count] (tag)}
 				{@const on = picked.has(tag)}
 				<li>
-					<span class="icon">{#if on}<BookBookmark size={18} strokeWidth={1.75} />{:else}<Tag size={18} strokeWidth={1.75} />{/if}</span>
 					<span class="name">{tag} <small>{count}</small></span>
 					<button class="switch" role="switch" aria-checked={on} aria-label="{tag} is a category" onclick={() => toggle(tag)}>
-						<span class="track"><span class="knob"></span></span>
+						<span class="track"
+							><span class="knob">{#if on}<BookBookmark size={13} strokeWidth={2} />{:else}<Tag size={13} strokeWidth={2} />{/if}</span></span
+						>
 					</button>
 				</li>
 			{/each}
@@ -110,11 +111,6 @@
 		background: color-mix(in srgb, var(--bg) 60%, transparent);
 	}
 
-	.icon {
-		display: flex;
-		color: var(--muted);
-	}
-
 	.name {
 		flex: 1;
 		overflow-wrap: anywhere;
@@ -135,8 +131,8 @@
 
 	.track {
 		position: relative;
-		width: 2.4rem;
-		height: 1.4rem;
+		width: 2.8rem;
+		height: 1.6rem;
 		border-radius: 999px;
 		background: var(--glass);
 		border: 1px solid var(--glass-edge);
@@ -147,9 +143,12 @@
 		position: absolute;
 		top: 0.12rem;
 		left: 0.12rem;
-		width: 1.05rem;
-		height: 1.05rem;
+		display: grid;
+		place-items: center;
+		width: 1.25rem;
+		height: 1.25rem;
 		border-radius: 999px;
+		color: var(--muted);
 		background: var(--bg);
 		box-shadow: 0 0 6px var(--shadow-soft);
 		transition: transform 0.2s ease;
@@ -160,7 +159,8 @@
 	}
 
 	.switch[aria-checked='true'] .knob {
-		transform: translateX(1rem);
+		transform: translateX(1.2rem);
+		color: var(--accent);
 	}
 
 	.buttons {
