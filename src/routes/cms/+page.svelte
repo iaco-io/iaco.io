@@ -646,8 +646,10 @@
 					<button class="row glass" onclick={() => openPartial(key)}>
 						<span class="unsaved"><CloudAlert size={20} /></span>
 						<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
-						{#if p.kind === 'pages' && p.meta.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
-						{#if p.kind !== 'redirects' && p.meta.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
+						<span class="marks">
+							{#if p.kind === 'pages' && p.meta.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
+							{#if p.kind !== 'redirects' && p.meta.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
+						</span>
 					</button>
 				</li>
 			{/each}
@@ -679,11 +681,14 @@
 								<small>{addresses(entry).join(' • ')}</small>
 							</span>
 						{/if}
-						{#if partials[`${entry.kind}/${entry.name}`]}
-							<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
-						{/if}
-						{#if entry.kind === 'pages' && now.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
-						{#if entry.kind !== 'redirects' && now.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
+						<!-- unsaved, unlisted and draft, stacked -->
+						<span class="marks">
+							{#if partials[`${entry.kind}/${entry.name}`]}
+								<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
+							{/if}
+							{#if entry.kind === 'pages' && now.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
+							{#if entry.kind !== 'redirects' && now.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
+						</span>
 						{#if entry.kind === 'redirects'}<span class="detail">{entry.meta.redirect.replace(/^https?:\/\//, '')}</span>{/if}
 					</button>
 				</li>
@@ -1119,6 +1124,18 @@
 		color: var(--bg);
 		background: var(--fg);
 		border-color: transparent;
+	}
+
+	.marks {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.marks:empty {
+		display: none;
 	}
 
 	.mark {
