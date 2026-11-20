@@ -36,7 +36,10 @@
 
 	// redirects only need a name and a destination
 	const short = $derived(item.kind === 'redirects');
-	const validName = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.name));
+	// a number in front, when used, has a fixed width: 001- for posts, 01- for pages
+	const digits = $derived(item.kind === 'posts' ? 3 : item.kind === 'pages' ? 2 : 0);
+	const badNumber = $derived(!!digits && (item.name.match(/^(\d+)-/)?.[1].length ?? digits) !== digits);
+	const validName = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.name) && !badNumber);
 	const links = $derived.by(() => {
 		if (!validName) return '';
 		const { id, url } = urls(item.kind, item.name);
@@ -389,7 +392,7 @@
 			<textarea class="grow" rows="1" bind:value={() => item.meta.title, (v) => (item.meta.title = flat(v))} placeholder="title" onkeydown={oneLine} {@attach fit(() => item.meta.title)}></textarea>
 		</label>
 		<label>
-			<span>file name {links ? `→ ${links}` : ''}</span>
+			<span>file name {badNumber ? `→ number must be ${'0'.repeat(digits - 1)}1-` : links ? `→ ${links}` : ''}</span>
 			<span class="suffix">
 				<input bind:value={item.name} placeholder="file-name" />
 				<em>.md</em>
