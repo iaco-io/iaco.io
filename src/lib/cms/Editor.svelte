@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -505,7 +505,7 @@
 				aria-checked={item.meta.draft}
 				onclick={() => (item.meta.draft = !item.meta.draft)}
 			>
-				<span class="track"><span class="knob"></span></span>
+				<span class="track"><span class="knob">{#if item.meta.draft}<PencilLine size={14} strokeWidth={2} />{/if}</span></span>
 				draft <small>{short ? 'link not published' : 'hidden from the blog and rss'}</small>
 			</button>
 			{#if item.kind === 'pages'}
@@ -515,7 +515,7 @@
 					aria-checked={!!item.meta.unlisted}
 					onclick={() => (item.meta.unlisted = !item.meta.unlisted)}
 				>
-					<span class="track"><span class="knob"></span></span>
+					<span class="track"><span class="knob">{#if item.meta.unlisted}<ListX size={14} strokeWidth={2} />{/if}</span></span>
 					unlisted <small>not in the menu, still opens by its address</small>
 				</button>
 			{/if}
@@ -917,8 +917,8 @@
 	.track {
 		position: relative;
 		flex: none;
-		width: 2.75rem;
-		height: 1.6rem;
+		width: 3.1rem;
+		height: 1.8rem;
 		border-radius: 999px;
 		background: var(--glass);
 		border: 1px solid var(--glass-edge);
@@ -930,9 +930,12 @@
 		position: absolute;
 		top: 0.15rem;
 		left: 0.15rem;
-		width: 1.2rem;
-		height: 1.2rem;
+		display: grid;
+		place-items: center;
+		width: 1.4rem;
+		height: 1.4rem;
 		border-radius: 999px;
+		color: var(--accent);
 		background: var(--bg);
 		box-shadow: 0 0 8px var(--shadow-soft);
 		transition: transform 0.2s ease;
@@ -943,7 +946,7 @@
 	}
 
 	.switch[aria-checked='true'] .knob {
-		transform: translateX(1.15rem);
+		transform: translateX(1.3rem);
 	}
 
 	.source {
