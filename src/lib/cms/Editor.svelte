@@ -5,7 +5,7 @@
 	import Gallery from './Gallery.svelte';
 	import Thumb from './Thumb.svelte';
 	import TpKeys from './TpKeys.svelte';
-	import { tick } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import { pasteFile } from './clipboard.js';
 	import { urls, serialize } from '../markdown.js';
 
@@ -194,6 +194,18 @@
 			.then((r) => r.json())
 			.then((n) => (lucideNames = n))
 			.catch(() => {});
+	});
+
+	// the page icon field keeps what is typed, even the default name (which is saved as no icon);
+	// it only follows the icon when that changes from elsewhere: reset, a picture from media, another page
+	const iconName = (/** @type {string} */ v) => (v && v !== 'circle-chevron-right' ? v : '');
+	let iconText = $state('');
+	$effect(() => {
+		const icon = item.meta.icon ?? '';
+		const name = icon.startsWith('lucide/') ? icon.slice(7) : '';
+		untrack(() => {
+			if (iconName(iconText.trim()) !== name) iconText = name;
+		});
 	});
 
 	// the sitelen pona keyboard: a word goes into the open <tp> at the cursor, or into a new one
@@ -524,7 +536,7 @@
 					</span>
 					<input
 						class="icon-name"
-						value={lucide ? icon.slice(7) : ''}
+						bind:value={iconText}
 						placeholder={lucide ? 'circle-chevron-right' : icon}
 						list="lucide-names"
 						autocapitalize="off"
@@ -532,8 +544,8 @@
 						spellcheck="false"
 						aria-label="lucide icon name"
 						oninput={(e) => {
-							const v = e.currentTarget.value.trim();
-							item.meta.icon = v && v !== 'circle-chevron-right' ? `lucide/${v}` : '';
+							const v = iconName(e.currentTarget.value.trim());
+							item.meta.icon = v ? `lucide/${v}` : '';
 						}}
 					/>
 					{#if item.meta.icon}
