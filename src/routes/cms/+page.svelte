@@ -646,10 +646,14 @@
 					<button class="row glass" onclick={() => openPartial(key)}>
 						<span class="unsaved"><CloudAlert size={20} /></span>
 						<span class="title">{p.meta.title || (p.name ? `/${p.name}` : 'untitled')} <small>new, not saved yet</small></span>
+						{#if p.kind === 'pages' && p.meta.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
+						{#if p.kind !== 'redirects' && p.meta.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
 					</button>
 				</li>
 			{/each}
 			{#each items as entry (entry.kind + entry.name)}
+				<!-- draft / unlisted as edited on this device, if there are unsaved changes -->
+				{@const now = partials[`${entry.kind}/${entry.name}`]?.meta ?? entry.meta}
 				<li>
 					<button class="row glass" class:media={entry.kind !== 'redirects'} onclick={() => open(entry)}>
 						{#if entry.kind === 'redirects'}
@@ -678,8 +682,8 @@
 						{#if partials[`${entry.kind}/${entry.name}`]}
 							<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
 						{/if}
-						{#if entry.meta.unlisted}<span class="mark" title="unlisted"><ListX size={17} /></span>{/if}
-						{#if entry.meta.draft}<span class="mark" title="draft"><PencilLine size={17} /></span>{/if}
+						{#if entry.kind === 'pages' && now.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
+						{#if entry.kind !== 'redirects' && now.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
 						{#if entry.kind === 'redirects'}<span class="detail">{entry.meta.redirect.replace(/^https?:\/\//, '')}</span>{/if}
 					</button>
 				</li>
