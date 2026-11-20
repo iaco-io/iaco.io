@@ -4,7 +4,7 @@ date: 2026-11-20
 alias:
   - gym
   - move
-icon: lucide/biceps-flexed
+icon: muscle.svg
 ---
 enc:v1:
-rCPhbvVwdnodMS8AQmnEaMJOGX8QUB4NdJci37VY7D3xfvDGHfzdsT7ekt0=
+AfvkymAItLiwiXEmbQung4nLCQf7W9bQ9aiBtqrlQb7hVclSFQVGihL5TE4=
