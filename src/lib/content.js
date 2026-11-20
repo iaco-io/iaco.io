@@ -39,8 +39,8 @@ function load(kind) {
 				// tags sort posts and pages into topics; some tags are categories (src/categories.json)
 				tags: [...new Set([meta.tags ?? []].flat().map(cleanTag).filter(Boolean))],
 				draft: meta.draft === 'true',
-				// pages can stay off the menu (they still open by their address)
-				hidden: meta.hidden === 'true',
+				// unlisted pages stay off the menu (they still open by their address)
+				unlisted: meta.unlisted === 'true',
 				body
 			};
 		})

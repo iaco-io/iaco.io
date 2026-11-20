@@ -10,7 +10,7 @@
 	import { urls, serialize } from '../markdown.js';
 
 	/**
-	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, hidden?: boolean, alias: string[], redirect: string }} Meta
+	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted?: boolean, alias: string[], redirect: string }} Meta
 	 * @type {{
 	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, from: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
@@ -472,7 +472,7 @@
 				<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
 			</div>
 		</div>
-		<!-- draft and, for pages, off the menu, side by side -->
+		<!-- draft and, for pages, unlisted, side by side -->
 		<div class="switches wide">
 			<button
 				class="switch"
@@ -487,11 +487,11 @@
 				<button
 					class="switch"
 					role="switch"
-					aria-checked={!!item.meta.hidden}
-					onclick={() => (item.meta.hidden = !item.meta.hidden)}
+					aria-checked={!!item.meta.unlisted}
+					onclick={() => (item.meta.unlisted = !item.meta.unlisted)}
 				>
 					<span class="track"><span class="knob"></span></span>
-					off the menu <small>still opens by its address</small>
+					unlisted <small>not in the menu, still opens by its address</small>
 				</button>
 			{/if}
 		</div>

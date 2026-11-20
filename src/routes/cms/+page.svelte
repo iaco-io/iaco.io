@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { EyeOff, PencilLine, ArrowUpNarrowWide, Tag, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { ListX, PencilLine, ArrowUpNarrowWide, Tag, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -27,7 +27,7 @@
 
 	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
 	/** @typedef {Kind | 'media'} Section */
-	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, hidden: boolean, alias: string[], tags: string[], redirect: string }} Meta */
+	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted: boolean, alias: string[], tags: string[], redirect: string }} Meta */
 	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
 	// the token is remembered only in the installed app; in a browser tab it lasts until the tab closes
@@ -159,7 +159,7 @@
 		image: m.image ?? '',
 		date: m.date ?? '',
 		draft: m.draft === 'true',
-		hidden: m.hidden === 'true',
+		unlisted: m.unlisted === 'true',
 		alias: [m.alias ?? []].flat(),
 		tags: [m.tags ?? []].flat(),
 		redirect: m.redirect ?? ''
@@ -205,16 +205,16 @@
 	// re-read when the setup changes
 	const alphabetName = $derived((alphabet, inAlphabet('abelus')));
 
-	// list filters: show only drafts, only pages off the menu, only items with unsaved changes on this device
+	// list filters: show only drafts, only unlisted pages, only items with unsaved changes on this device
 	// (several at once show any of them). posts can also put drafts and unsaved ones first
-	let filters = $state({ posts: { draft: false, local: false, first: false }, pages: { draft: false, local: false, hidden: false } });
+	let filters = $state({ posts: { draft: false, local: false, first: false }, pages: { draft: false, local: false, unlisted: false } });
 	const isLocal = (/** @type {Entry} */ e) => !!partials[`${e.kind}/${e.name}`];
 	/** @param {'posts' | 'pages'} k @param {Entry} e */
 	function shown(k, e) {
 		const f = /** @type {Record<string, boolean>} */ (filters[k]);
-		const on = ['draft', 'local', 'hidden'].filter((x) => f[x]);
+		const on = ['draft', 'local', 'unlisted'].filter((x) => f[x]);
 		if (!on.length) return true;
-		return on.some((x) => (x === 'draft' ? e.meta.draft : x === 'local' ? isLocal(e) : e.meta.hidden));
+		return on.some((x) => (x === 'draft' ? e.meta.draft : x === 'local' ? isLocal(e) : e.meta.unlisted));
 	}
 
 	// tags promoted to categories, kept in src/categories.json; the newest list is read from github
@@ -336,7 +336,7 @@
 			name: '',
 			from: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', hidden: false, alias: [], tags: [], redirect: '' },
+			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', unlisted: false, alias: [], tags: [], redirect: '' },
 			body: ''
 		};
 		// an untouched new item isn't worth keeping
@@ -616,8 +616,8 @@
 		<!-- filters, each with how many it matches -->
 		<div class="filters">
 			{#if k === 'pages'}
-				<button class:on={filters.pages.hidden} title="off the menu" aria-pressed={filters.pages.hidden} onclick={() => (filters.pages.hidden = !filters.pages.hidden)}>
-					<EyeOff size={16} />{all.filter((e) => e.meta.hidden).length}
+				<button class:on={filters.pages.unlisted} title="unlisted" aria-pressed={filters.pages.unlisted} onclick={() => (filters.pages.unlisted = !filters.pages.unlisted)}>
+					<ListX size={16} />{all.filter((e) => e.meta.unlisted).length}
 				</button>
 			{/if}
 			<button class:on={f.draft} title="drafts" aria-pressed={f.draft} onclick={() => (f.draft = !f.draft)}>
@@ -677,7 +677,7 @@
 						{#if partials[`${entry.kind}/${entry.name}`]}
 							<span class="unsaved" title="unsaved changes on this device"><CloudAlert size={18} /></span>
 						{/if}
-						{#if entry.meta.hidden}<span class="mark" title="off the menu"><EyeOff size={17} /></span>{/if}
+						{#if entry.meta.unlisted}<span class="mark" title="unlisted"><ListX size={17} /></span>{/if}
 						{#if entry.meta.draft}<span class="mark" title="draft"><PencilLine size={17} /></span>{/if}
 						{#if entry.kind === 'redirects'}<span class="detail">{entry.meta.redirect.replace(/^https?:\/\//, '')}</span>{/if}
 					</button>

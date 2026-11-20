@@ -5,7 +5,7 @@ import { savedCategories } from '#lib/tags.js';
 export function load() {
 	const used = new Set([...posts, ...pages].flatMap((item) => item.tags));
 	return {
-		pages: pages.filter((p) => !p.hidden).map(({ url, title }) => ({ url, title: title.toLowerCase() })),
+		pages: pages.filter((p) => !p.unlisted).map(({ url, title }) => ({ url, title: title.toLowerCase() })),
 		categories: savedCategories.filter((tag) => used.has(tag))
 	};
 }
