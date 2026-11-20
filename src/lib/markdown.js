@@ -3,7 +3,7 @@ import { withAlphabet } from './tp.js';
 import { Marked } from 'marked';
 
 // properties at the top of each .md file, in this order
-export const FIELDS = ['title', 'description', 'image', 'date', 'draft', 'redirect', 'alias', 'tags', 'unlisted'];
+export const FIELDS = ['title', 'description', 'image', 'date', 'draft', 'redirect', 'alias', 'tags', 'unlisted', 'icon'];
 
 const QUOTES = /^["'‘’“”](.*)["'‘’“”]$/;
 const unquote = (/** @type {string} */ value) => value.trim().replace(QUOTES, '$1').trim();
@@ -103,6 +103,9 @@ const newTabs = (/** @type {string} */ html) =>
 	html.replace(/<a\s([^>]*?)href="([^"]*)"([^>]*)>/g, (tag, before, href, after) =>
 		external(href) && !/\starget=/.test(before + after) ? `<a ${before}href="${href}"${after} target="_blank" rel="noopener noreferrer">` : tag
 	);
+
+/** a one-colour svg in the media folder (shown in the text's colour) */
+export const isIcon = (/** @type {string} */ path) => !!ICONS[path];
 
 // ![](lucide/feather): any lucide icon (lucide.dev/icons), drawn in the text's colour
 const LUCIDE = /^lucide\/([a-z0-9-]+)(\.svg)?$/;

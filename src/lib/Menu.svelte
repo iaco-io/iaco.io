@@ -6,7 +6,7 @@
 	import Social from './Social.svelte';
 	import Rain from './Rain.svelte';
 
-	/** @type {{ open: boolean, links: { href: string, label: string, icon?: import('svelte').Component<any> }[] }} */
+	/** @type {{ open: boolean, links: { href: string, label: string, icon?: import('svelte').Component<any>, picture?: { src: string, mask: boolean } }[] }} */
 	let { open = $bindable(), links } = $props();
 
 	const close = () => (open = false);
@@ -27,10 +27,12 @@
 
 <Panel bind:open label="Main" edge>
 	<ul class="entries">
-		{#each links as { href, label, icon: Icon }}
+		{#each links as { href, label, icon: Icon, picture }}
 			<li>
 				<a class="entry" {href} onclick={close}>
-					{#if Icon}<Icon size={24} strokeWidth={1.75} />{/if}
+					{#if Icon}<Icon size={24} strokeWidth={1.75} />
+					{:else if picture?.mask}<span class="picture mask" style:--icon="url('{picture.src}')"></span>
+					{:else if picture}<img class="picture" src={picture.src} alt="" />{/if}
 					{label}
 				</a>
 			</li>
@@ -52,6 +54,22 @@
 </div>
 
 <style>
+	/* a page's own icon: lucide or one-colour svgs in the text colour, other pictures as they are */
+	.picture {
+		flex: none;
+		width: 24px;
+		height: 24px;
+		border-radius: 6px;
+		object-fit: cover;
+	}
+
+	.mask {
+		border-radius: 0;
+		background: currentColor;
+		-webkit-mask: var(--icon) center / contain no-repeat;
+		mask: var(--icon) center / contain no-repeat;
+	}
+
 	.rain {
 		display: flex;
 		justify-content: center;

@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -10,7 +10,7 @@
 	import { urls, serialize } from '../markdown.js';
 
 	/**
-	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted?: boolean, alias: string[], redirect: string }} Meta
+	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted?: boolean, icon?: string, alias: string[], redirect: string }} Meta
 	 * @type {{
 	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, from: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
@@ -182,6 +182,16 @@
 		};
 	});
 	let gallery = $state(false);
+	let iconGallery = $state(false);
+	// lucide's icon names, for suggestions in the page icon field (loaded once a page is open)
+	let lucideNames = $state(/** @type {string[]} */ ([]));
+	$effect(() => {
+		if (item.kind !== 'pages' || lucideNames.length) return;
+		fetch('/lucide/names.json')
+			.then((r) => r.json())
+			.then((n) => (lucideNames = n))
+			.catch(() => {});
+	});
 
 	// the sitelen pona keyboard: a word goes into the open <tp> at the cursor, or into a new one
 	let keys = $state(false);
@@ -495,6 +505,42 @@
 				</button>
 			{/if}
 		</div>
+		{#if item.kind === 'pages' && !item.meta.unlisted}
+			<!-- the page's icon in the blog menu: a lucide name, or a picture from the media folder -->
+			{@const icon = item.meta.icon || 'lucide/circle-chevron-right'}
+			{@const lucide = icon.startsWith('lucide/')}
+			<div class="wide">
+				<span class="label">page icon · in the menu</span>
+				<div class="picker">
+					<span class="thumb cover page-icon">
+						{#if lucide}
+							<span class="lucide" style:--icon="url('/lucide/{icon.slice(7)}.svg')"></span>
+						{:else}
+							<Thumb src={resolve(icon)} name={icon} size="60%" />
+						{/if}
+					</span>
+					<input
+						class="icon-name"
+						value={lucide ? icon.slice(7) : ''}
+						placeholder={lucide ? 'circle-chevron-right' : icon}
+						list="lucide-names"
+						autocapitalize="off"
+						autocorrect="off"
+						spellcheck="false"
+						aria-label="lucide icon name"
+						oninput={(e) => {
+							const v = e.currentTarget.value.trim();
+							item.meta.icon = v && v !== 'circle-chevron-right' ? `lucide/${v}` : '';
+						}}
+					/>
+					<button class="pill square" title="pick from media" aria-label="pick from media" onclick={() => (iconGallery = true)}><ImageIcon size={18} /></button>
+				</div>
+				<datalist id="lucide-names">
+					{#each lucideNames as n}<option value={n}></option>{/each}
+				</datalist>
+				<small class="note">a name from <a href="https://lucide.dev/icons" target="_blank" rel="noopener noreferrer">lucide.dev/icons</a>, or a picture from media</small>
+			</div>
+		{/if}
 		{#if short}
 			<div class="wide">
 				<span class="label">file · src/redirects/{item.name || '…'}.md</span>
@@ -581,6 +627,16 @@
 
 {#if keys}
 	<TpKeys oninsert={tp} onclose={() => (keys = false)} />
+{/if}
+
+{#if iconGallery}
+	<Gallery
+		images={images.filter((n) => /\.(svg|png|jpe?g|webp|avif|gif)$/i.test(n))}
+		{resolve}
+		current={item.meta.icon ?? ''}
+		label="page icon"
+		ondone={(name) => ((iconGallery = false), name !== null && (item.meta.icon = name))}
+	/>
 {/if}
 
 {#if gallery}
@@ -1050,6 +1106,24 @@
 		to {
 			opacity: 0.3;
 		}
+	}
+
+	.page-icon {
+		display: grid;
+		place-items: center;
+	}
+
+	.page-icon .lucide {
+		width: 55%;
+		aspect-ratio: 1;
+		background: var(--fg);
+		-webkit-mask: var(--icon) center / contain no-repeat;
+		mask: var(--icon) center / contain no-repeat;
+	}
+
+	.icon-name {
+		flex: 1;
+		min-width: 0;
 	}
 
 	.thumb.cover {

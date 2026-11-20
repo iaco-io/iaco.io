@@ -41,6 +41,8 @@ function load(kind) {
 				draft: meta.draft === 'true',
 				// unlisted pages stay off the menu (they still open by their address)
 				unlisted: meta.unlisted === 'true',
+				// a page's icon in the menu: lucide/name or a file from the media folder
+				icon: meta.icon || 'lucide/circle-chevron-right',
 				body
 			};
 		})

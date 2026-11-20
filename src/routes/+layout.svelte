@@ -9,14 +9,14 @@
 	import DayClock from '#lib/DayClock.svelte';
 	import { page } from '$app/state';
 
-	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string }[], categories: string[] } }} */
+	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string, icon: { src: string, mask: boolean } }[], categories: string[] } }} */
 	let { children, data } = $props();
 
 	const links = $derived([
 		{ href: '/', label: 'iaco.io', icon: Waves },
 		{ href: '/#latest', label: 'latest', icon: Newspaper },
 		...data.categories.map((tag) => ({ href: tagUrl(tag), label: tag, icon: BookBookmark })),
-		...data.pages.map((p) => ({ href: p.url, label: p.title }))
+		...data.pages.map((p) => ({ href: p.url, label: p.title, picture: p.icon }))
 	]);
 
 	let open = $state(false);

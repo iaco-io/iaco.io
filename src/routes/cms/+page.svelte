@@ -27,7 +27,7 @@
 
 	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
 	/** @typedef {Kind | 'media'} Section */
-	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted: boolean, alias: string[], tags: string[], redirect: string }} Meta */
+	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted: boolean, icon: string, alias: string[], tags: string[], redirect: string }} Meta */
 	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
 	// the token is remembered only in the installed app; in a browser tab it lasts until the tab closes
@@ -160,6 +160,7 @@
 		date: m.date ?? '',
 		draft: m.draft === 'true',
 		unlisted: m.unlisted === 'true',
+		icon: m.icon ?? '',
 		alias: [m.alias ?? []].flat(),
 		tags: [m.tags ?? []].flat(),
 		redirect: m.redirect ?? ''
@@ -336,7 +337,7 @@
 			name: '',
 			from: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', unlisted: false, alias: [], tags: [], redirect: '' },
+			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', unlisted: false, icon: '', alias: [], tags: [], redirect: '' },
 			body: ''
 		};
 		// an untouched new item isn't worth keeping
