@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="muscle.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="36.666667"
+     inkscape:cx="12"
+     inkscape:cy="12.027273"
+     inkscape:window-width="1889"
+     inkscape:window-height="1233"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3" />
+  <path
+     d="m 10.744478,18 c 0.725,-2.625 3.26,-4.5 6.18,-4.19 2.78,0.295 4.99,2.64 5.13,5.43 0.035,0.735 -0.065,1.44 -0.28,2.095 -0.13,0.4 -0.52,0.665 -0.945,0.665 H 5.938678 C 3.414498,22 1.521333,19.6907 2.016363,17.21555 L 5.059448,2 h 5.99998 l 2,3.5 L 8.774478,8.565 7.559428,7"
+     fill="none"
+     id="path1"
+     style="stroke-width:0.5" />
+  <path
+     d="m 10.744478,18 c 0.725,-2.625 3.26,-4.5 6.18,-4.19 2.78,0.295 4.99,2.64 5.13,5.43 0.035,0.735 -0.065,1.44 -0.28,2.095 -0.13,0.4 -0.52,0.665 -0.945,0.665 H 5.938678 C 3.414498,22 1.521333,19.6907 2.016363,17.21555 L 5.059448,2 h 5.99998 l 2,3.5 L 8.774478,8.565 7.559428,7"
+     stroke="currentColor"
+     stroke-width="2"
+     stroke-miterlimit="2"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path2" />
+  <path
+     d="m 8.779228,8.56495 2.28,8.435"
+     stroke="currentColor"
+     stroke-width="2"
+     stroke-miterlimit="2"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path3" />
+</svg>
