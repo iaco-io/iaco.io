@@ -247,7 +247,7 @@
 		Object.assign(body, { position: 'fixed', top: `${-y}px`, left: '0', right: '0', overflow: 'hidden' });
 		return () => {
 			Object.assign(body, { position: '', top: '', left: '', right: '', overflow: '' });
-			scrollTo(0, y);
+			scrollTo({ top: y, behavior: 'instant' }); // not the page's smooth scrolling, which would roll down from the top
 		};
 	});
 	// with the keyboard up, ios scrolls the whole screen when a finger drags anywhere that can't scroll itself.
