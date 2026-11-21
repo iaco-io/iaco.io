@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, PanelRight } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -7,6 +7,7 @@
 	import TpKeys from './TpKeys.svelte';
 	import { tick, untrack } from 'svelte';
 	import { pasteFile } from './clipboard.js';
+	import { highlight } from './highlight.js';
 	import { urls, serialize } from '../markdown.js';
 
 	/**
@@ -207,6 +208,50 @@
 			if (iconName(iconText.trim()) !== name) iconText = name;
 		});
 	});
+
+	// focus mode: tapping the text fills the screen with it, styled as markdown (marks still shown).
+	// the title on top, the toolbar at the bottom; images and sitelen pona open above the toolbar;
+	// the previews slide in from the right edge
+	let focus = $state(false);
+	let tray = $state(/** @type {'' | 'images'} */ (''));
+	let drawer = $state(false);
+	const styled = $derived(focus ? highlight(item.body) : '');
+	function leave() {
+		focus = drawer = keys = false;
+		tray = '';
+		textarea?.blur();
+	}
+	// it fits the visible part of the screen, so the toolbar stays right above the phone keyboard;
+	// the page behind doesn't scroll
+	let view = $state({ top: 0, height: 0 });
+	$effect(() => {
+		if (!focus) return;
+		const vv = window.visualViewport;
+		const fit = () => (view = { top: vv?.offsetTop ?? 0, height: vv?.height ?? innerHeight });
+		fit();
+		vv?.addEventListener('resize', fit);
+		vv?.addEventListener('scroll', fit);
+		const root = document.documentElement;
+		root.style.overflow = 'hidden';
+		return () => {
+			vv?.removeEventListener('resize', fit);
+			vv?.removeEventListener('scroll', fit);
+			root.style.overflow = '';
+		};
+	});
+	// a swipe from the right edge opens the previews, a swipe to the right closes them
+	let swipe = /** @type {{ x: number, y: number } | null} */ (null);
+	function swipestart(/** @type {TouchEvent} */ e) {
+		const { clientX: x, clientY: y } = e.touches[0];
+		swipe = drawer || x > innerWidth - 32 ? { x, y } : null;
+	}
+	function swipeend(/** @type {TouchEvent} */ e) {
+		if (!swipe) return;
+		const { clientX: x, clientY: y } = e.changedTouches[0];
+		const dx = x - swipe.x;
+		if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(y - swipe.y)) drawer = dx < 0;
+		swipe = null;
+	}
 
 	// the sitelen pona keyboard: a word goes into the open <tp> at the cursor, or into a new one
 	let keys = $state(false);
@@ -568,7 +613,24 @@
 	</div>
 
 	{#if !short}
-		<div class="images">
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div
+			class="writer"
+			class:focus
+			style:top={focus ? `${view.top}px` : null}
+			style:height={focus ? `${view.height}px` : null}
+			ontouchstart={focus ? swipestart : null}
+			ontouchend={focus ? swipeend : null}
+			onkeydown={(e) => focus && e.key === 'Escape' && (drawer ? (drawer = false) : leave())}
+		>
+		{#if focus}
+			<div class="focus-top">
+				<span class="focus-title">{item.meta.title || 'untitled'}</span>
+				<button class="pill square" class:on={drawer} title="previews" aria-label="previews" onclick={() => (drawer = !drawer)}><PanelRight size={18} /></button>
+				<button class="pill square" title="close focus mode" aria-label="close focus mode" onclick={leave}><X size={18} /></button>
+			</div>
+		{/if}
+		<div class="images" class:shut={focus && tray !== 'images'}>
 			<button class="pill square sp" class:on={keys} onpointerdown={(e) => e.preventDefault()} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onclick={() => (keys = !keys)}><tp>toki</tp></button>
 		<label class="pill square" title="upload images">
 				<ImagePlus size={18} />
@@ -598,8 +660,15 @@
 			{/if}
 		</div>
 		{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
+		{#if focus && keys}
+			<div class="tray"><TpKeys docked oninsert={tp} onclose={() => (keys = false)} /></div>
+		{/if}
 
 		<div class="toolbar">
+			{#if focus}
+				<button class="pill square" class:on={tray === 'images'} title="images" aria-label="images" onpointerdown={keepFocus} onclick={() => ((tray = tray === 'images' ? '' : 'images'), (keys = false))}><Images size={18} /></button>
+				<button class="pill square sp" class:on={keys} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onpointerdown={keepFocus} onclick={() => ((keys = !keys), (tray = ''))}><tp>toki</tp></button>
+			{/if}
 			<button class="pill square" title="bold" aria-label="bold" onpointerdown={keepFocus} onclick={() => wrap('**', '**', 'bold')}><Bold size={18} /></button>
 			<button class="pill square" title="italic" aria-label="italic" onpointerdown={keepFocus} onclick={() => wrap('*', '*', 'italic')}><Italic size={18} /></button>
 			<button class="pill square" class:on={colours} title="highlight" aria-label="highlight" onpointerdown={keepFocus} onclick={() => (colours = !colours)}><Highlighter size={18} /></button>
@@ -620,12 +689,20 @@
 				</div>
 			{/if}
 		</div>
-		<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…"></textarea>
+		<div class="paper">
+			{#if focus}<pre class="styled" aria-hidden="true">{@html styled}</pre>{/if}
+			<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…" onfocus={() => (focus = true)}></textarea>
+		</div>
 
-		<div class="previews">
+		<div class="previews" class:open={drawer}>
 			<Device label="phone" width={390} height={844} bind:frame={phone} />
 			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
 		</div>
+		</div>
+	{/if}
+
+	{#if keys && !focus}
+		<TpKeys oninsert={tp} onclose={() => (keys = false)} />
 	{/if}
 
 
@@ -643,9 +720,6 @@
 	<Save size={22} class={busy ? 'pulse' : ''} />
 </button>
 
-{#if keys}
-	<TpKeys oninsert={tp} onclose={() => (keys = false)} />
-{/if}
 
 {#if iconGallery}
 	<Gallery
@@ -1127,6 +1201,223 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	/* focus mode: the text fills the screen; title on top, then the text, the open tray and the toolbar */
+	.writer.focus {
+		position: fixed;
+		left: 0;
+		right: 0;
+		z-index: 60;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		padding: calc(env(safe-area-inset-top) + 0.6rem) 0.75rem calc(env(safe-area-inset-bottom) + 0.6rem);
+		background: var(--bg);
+	}
+
+	/* stays above the previews, so they can be closed from here */
+	.focus-top {
+		position: relative;
+		z-index: 62;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.focus-top .square {
+		width: 2.6rem;
+		height: 2.6rem;
+		box-shadow: none;
+	}
+
+	.focus-top .on {
+		color: var(--bg);
+		background: var(--fg);
+	}
+
+	.focus-title {
+		flex: 1;
+		overflow: hidden;
+		font-weight: 600;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		color: var(--muted);
+	}
+
+	.writer.focus .paper {
+		order: 1;
+		flex: 1;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		border: 1px solid var(--glass-edge);
+		border-radius: 0.9rem;
+		background: var(--glass);
+	}
+
+	.writer.focus .images {
+		order: 2;
+		margin: 0;
+		max-height: 7rem;
+		overflow-y: auto;
+	}
+
+	.writer.focus .images.shut,
+	.writer.focus .images > .sp,
+	.writer.focus .image-note {
+		display: none;
+	}
+
+	.writer.focus .tray {
+		order: 3;
+	}
+
+	.writer.focus .toolbar {
+		order: 4;
+		flex-wrap: nowrap;
+		margin: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+
+	.writer.focus .toolbar {
+		gap: 0.3rem;
+	}
+
+	.writer.focus .toolbar .square {
+		flex: none;
+		width: 2.25rem;
+		height: 2.25rem;
+	}
+
+	.writer.focus .colours {
+		position: absolute;
+		left: 0.75rem;
+		right: 0.75rem;
+		bottom: calc(env(safe-area-inset-bottom) + 3.8rem);
+		width: auto;
+		background: color-mix(in srgb, var(--bg) 92%, transparent);
+	}
+
+	/* the styled copy lies exactly under the textarea, letter for letter: same font, size, padding and wrapping;
+	   the textarea's own letters are invisible, its caret and selection stay */
+	.writer.focus .paper {
+		position: relative;
+	}
+
+	.styled,
+	.writer.focus textarea {
+		margin: 0;
+		padding: 0.9rem 1rem 40vh;
+		border: 0;
+		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: normal;
+		tab-size: 4;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		word-break: normal;
+	}
+
+	.styled {
+		min-height: 100%;
+		color: var(--fg);
+	}
+
+	.writer.focus textarea {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		resize: none;
+		overflow: hidden;
+		border-radius: 0;
+		color: transparent;
+		-webkit-text-fill-color: transparent;
+		caret-color: var(--fg);
+		background: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	.styled :global(.m) {
+		color: var(--soft);
+		font-weight: 400;
+	}
+
+	.styled :global(b) {
+		font-weight: 700;
+	}
+
+	.styled :global(.h) {
+		font-weight: 700;
+		color: var(--accent);
+	}
+
+	.styled :global(.link) {
+		color: var(--accent);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.styled :global(.quote) {
+		color: var(--muted);
+		font-style: italic;
+	}
+
+	.styled :global(code),
+	.styled :global(.code),
+	.styled :global(.fence) {
+		color: #b5734a;
+		font: inherit;
+	}
+
+	.styled :global(mark) {
+		--mark: rgb(255 214 102 / 0.55);
+		color: inherit;
+		border-radius: 0.2em;
+		background: var(--mark);
+	}
+	.styled :global(mark.red) { --mark: rgb(255 107 107 / 0.42); }
+	.styled :global(mark.orange) { --mark: rgb(255 159 67 / 0.45); }
+	.styled :global(mark.yellow) { --mark: rgb(255 214 102 / 0.55); }
+	.styled :global(mark.green) { --mark: rgb(102 204 136 / 0.42); }
+	.styled :global(mark.blue) { --mark: rgb(95 143 230 / 0.4); }
+	.styled :global(mark.purple) { --mark: rgb(170 120 230 / 0.4); }
+	.styled :global(mark.black) { --mark: rgb(20 20 30 / 0.85); color: #f4ecdc; }
+	.styled :global(mark.white) { --mark: rgb(255 255 255 / 0.9); color: #0b1f38; }
+	.styled :global(mark.brown) { --mark: rgb(165 110 70 / 0.42); }
+
+	/* the previews slide in from the right */
+	.writer.focus .previews {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 61;
+		width: min(100vw, 44rem);
+		margin: 0;
+		grid-template-columns: 1fr;
+		align-content: start;
+		padding: calc(env(safe-area-inset-top) + 4rem) 1rem calc(env(safe-area-inset-bottom) + 1rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		background: color-mix(in srgb, var(--bg) 94%, transparent);
+		-webkit-backdrop-filter: var(--blur);
+		backdrop-filter: var(--blur);
+		box-shadow: -10px 0 40px var(--shadow);
+		transform: translateX(105%);
+		transition: transform 0.3s ease;
+	}
+
+	.writer.focus .previews.open {
+		transform: none;
+	}
+
+	.writer.focus .previews > :global(figure:first-child) {
+		justify-self: center;
+		width: min(20rem, 100%);
 	}
 
 	.previews {

@@ -4,8 +4,9 @@
 	// tapping anywhere else closes it, except the text itself and its own button
 	import { Star, Plus, Smile } from '@lucide/svelte';
 
-	/** @type {{ oninsert: (word: string) => void, onclose: () => void }} */
-	let { oninsert, onclose } = $props();
+	// docked: sits in the focus editor's bottom bar (above the toolbar) and only closes from its button
+	/** @type {{ oninsert: (word: string) => void, onclose: () => void, docked?: boolean }} */
+	let { oninsert, onclose, docked = false } = $props();
 
 	// three groups: the words of lipu pu, the newer official ones (ku suli and unicode), then extras and for-fun words
 	const PU = 'a akesi ala alasa ale ali anpa ante anu awen e en esun ijo ike ilo insa jaki jan jelo jo kala kalama kama kasi ken kepeken kili kiwen ko kon kule kulupu kute la lape laso lawa len lete li lili linja lipu loje lon luka lukin lupa ma mama mani meli mi mije moku moli monsi mu mun musi mute nanpa nasa nasin nena ni nimi noka o olin ona open pakala pali palisa pan pana pi pilin pimeja pini pipi poka poki pona pu sama seli selo seme sewi sijelo sike sin sina sinpin sitelen sona soweli suli suno supa suwi tan taso tawa telo tenpo toki tomo tu unpa uta utala walo wan waso wawa weka wile'.split(' ');
@@ -16,7 +17,7 @@
 	let bottom = $state(0);
 	$effect(() => {
 		const vv = window.visualViewport;
-		if (!vv) return;
+		if (!vv || docked) return;
 		const place = () => (bottom = Math.max(0, innerHeight - vv.height - vv.offsetTop));
 		place();
 		vv.addEventListener('resize', place);
@@ -39,6 +40,7 @@
 	/** @type {HTMLElement | undefined} */
 	let panel = $state();
 	$effect(() => {
+		if (docked) return;
 		const outside = (/** @type {PointerEvent} */ e) => {
 			const target = /** @type {Element} */ (e.target);
 			if (panel?.contains(target) || target.closest?.('textarea:not(.grow), .sp')) return;
@@ -56,7 +58,7 @@
 	</button>
 {/snippet}
 
-<div class="keys glass" bind:this={panel} style:bottom="{bottom}px" role="dialog" aria-label="sitelen pona">
+<div class="keys glass" class:docked bind:this={panel} style:bottom={docked ? null : `${bottom}px`} role="dialog" aria-label="sitelen pona">
 	<div class="grid" bind:this={grid}>
 		<span class="mark" bind:this={marks[0]}></span>
 		{#each PU as word (word)}{@render key(word)}{/each}
@@ -86,6 +88,13 @@
 		border-radius: 1.25rem;
 		transform: translateX(-50%);
 		background: color-mix(in srgb, var(--bg) 88%, transparent);
+	}
+
+	.keys.docked {
+		position: static;
+		width: 100%;
+		margin: 0;
+		transform: none;
 	}
 
 	.grid {
