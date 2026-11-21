@@ -10,16 +10,16 @@ permissions:
   pages: write
   id-token: write
 
+# one deploy at a time; a newer push waits instead of cancelling one that is publishing
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
+# build and deploy are separate jobs, as github recommends: the deploy job only starts once the
+# uploaded site is fully stored, so it can always find it
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -31,5 +31,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
