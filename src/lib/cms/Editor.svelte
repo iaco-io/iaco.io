@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, PanelRight } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -154,7 +154,7 @@
 		/** @param {TouchEvent} e */
 		const start = (e) => {
 			const t = e.touches[0];
-			edge = t.clientX < 30 ? { x: t.clientX, y: t.clientY, dx: 0, horizontal: null } : null;
+			edge = t.clientX < 30 && pos === 0 ? { x: t.clientX, y: t.clientY, dx: 0, horizontal: null } : null;
 		};
 		/** @param {TouchEvent} e */
 		const move = (e) => {
@@ -209,15 +209,17 @@
 		});
 	});
 
-	// focus mode: tapping the text fills the screen with it, styled as markdown (marks still shown).
-	// the title on top, the toolbar at the bottom; images and sitelen pona open above the toolbar;
-	// the previews slide in from the right edge
-	let focus = $state(false);
+	// the body has its own screen, right of the form, like the cms's tabs: swipe left to it and right back
+	// (or its buttons). it is styled as markdown (marks still shown): the title on top, the text, and the
+	// toolbar at the bottom; images and sitelen pona open above the toolbar
+	let pos = $state(0); // 0 the form, 1 the body; in between while dragging
+	let dragging = $state(false);
+	const focus = $derived(pos > 0 || dragging);
 	let tray = $state(/** @type {'' | 'images'} */ (''));
-	let drawer = $state(false);
 	const styled = $derived(focus ? highlight(item.body) : '');
 	function leave() {
-		focus = drawer = keys = false;
+		pos = 0;
+		keys = false;
 		tray = '';
 		textarea?.blur();
 	}
@@ -231,27 +233,68 @@
 		fit();
 		vv?.addEventListener('resize', fit);
 		vv?.addEventListener('scroll', fit);
-		const root = document.documentElement;
-		root.style.overflow = 'hidden';
 		return () => {
 			vv?.removeEventListener('resize', fit);
 			vv?.removeEventListener('scroll', fit);
-			root.style.overflow = '';
 		};
 	});
-	// a swipe from the right edge opens the previews, a swipe to the right closes them
-	let swipe = /** @type {{ x: number, y: number } | null} */ (null);
-	function swipestart(/** @type {TouchEvent} */ e) {
-		const { clientX: x, clientY: y } = e.touches[0];
-		swipe = drawer || x > innerWidth - 32 ? { x, y } : null;
-	}
-	function swipeend(/** @type {TouchEvent} */ e) {
-		if (!swipe) return;
-		const { clientX: x, clientY: y } = e.changedTouches[0];
-		const dx = x - swipe.x;
-		if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(y - swipe.y)) drawer = dx < 0;
-		swipe = null;
-	}
+	$effect(() => {
+		if (pos !== 1) return;
+		const root = document.documentElement;
+		root.style.overflow = 'hidden';
+		return () => (root.style.overflow = '');
+	});
+	// the swipe between the two screens follows the finger; a flick or past half way goes over
+	$effect(() => {
+		/** @type {{ x: number, y: number, from: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number } | null} */
+		let s = null;
+		/** @param {TouchEvent} e */
+		const start = (e) => {
+			const { clientX: x, clientY: y } = e.touches[0];
+			const target = /** @type {Element} */ (e.target);
+			// not from the rows that scroll sideways, nor the left edge of the form (that goes back to the list)
+			if (target.closest?.('.toolbar, .images, .tray, .colours, .dialog, dialog') || (pos === 0 && x < 30)) return void (s = null);
+			s = { x, y, from: pos, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0 };
+		};
+		/** @param {TouchEvent} e */
+		const move = (e) => {
+			if (!s) return;
+			const { clientX: x, clientY: y } = e.touches[0];
+			const dx = x - s.x;
+			if (s.horizontal === null && Math.hypot(dx, y - s.y) > 6) s.horizontal = Math.abs(dx) > Math.abs(y - s.y);
+			if (s.horizontal === false) return void (s = null);
+			if (!s.horizontal) return;
+			const dt = e.timeStamp - s.lastT;
+			if (dt > 0) s.speed = s.speed * 0.5 + ((x - s.lastX) / dt) * 0.5;
+			s.lastX = x;
+			s.lastT = e.timeStamp;
+			const next = Math.min(1, Math.max(0, s.from - dx / innerWidth));
+			if (next === s.from && !dragging) return;
+			e.preventDefault();
+			dragging = true;
+			pos = next;
+		};
+		const end = () => {
+			if (!s) return;
+			if (dragging) {
+				const to = Math.abs(s.speed) > 0.35 ? (s.speed < 0 ? 1 : 0) : Math.round(pos);
+				dragging = false;
+				if (to) pos = 1;
+				else leave();
+			}
+			s = null;
+		};
+		addEventListener('touchstart', start, { passive: true });
+		addEventListener('touchmove', move, { passive: false });
+		addEventListener('touchend', end);
+		addEventListener('touchcancel', end);
+		return () => {
+			removeEventListener('touchstart', start);
+			removeEventListener('touchmove', move);
+			removeEventListener('touchend', end);
+			removeEventListener('touchcancel', end);
+		};
+	});
 
 	// the sitelen pona keyboard: a word goes into the open <tp> at the cursor, or into a new one
 	let keys = $state(false);
@@ -412,7 +455,7 @@
 </script>
 
 <!-- back stays where it first appears, also while scrolling -->
-<div class="bar" style:top="{place.top}px" style:left="{place.left}px" style:width="{place.width}px">
+<div class="bar" class:dragging style:translate={pos ? `${-pos * 100}vw 0` : null} style:top="{place.top}px" style:left="{place.left}px" style:width="{place.width}px">
 	<!-- while sliding from the left edge, the ring fills clockwise; full = let go to go back -->
 	<button class="pill back" class:charged={charge >= 1} aria-label="back" title="back" onclick={onback}>
 		<ArrowLeft size={18} />
@@ -438,7 +481,7 @@
 	</div>
 </div>
 
-<div class="sheet">
+<div class="sheet" class:dragging style:translate={pos ? `${-pos * 100}vw 0` : null}>
 	<div class="spot" bind:this={spot}></div>
 
 
@@ -613,26 +656,36 @@
 	</div>
 
 	{#if !short}
+		<button class="pill body-button" onclick={() => (pos = 1)}><NotebookPen size={18} /> edit markdown body</button>
+		<div class="previews">
+			<Device label="phone" width={390} height={844} bind:frame={phone} />
+			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
+		</div>
+	{/if}
+
+
+
+</div>
+
+	{#if !short}
+		<!-- the body's screen: comes in from the right -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="writer"
-			class:focus
-			style:top={focus ? `${view.top}px` : null}
-			style:height={focus ? `${view.height}px` : null}
-			ontouchstart={focus ? swipestart : null}
-			ontouchend={focus ? swipeend : null}
-			onkeydown={(e) => focus && e.key === 'Escape' && (drawer ? (drawer = false) : leave())}
+			class:shown={focus}
+			class:dragging
+			inert={!focus}
+			style:top="{view.top}px"
+			style:height={view.height ? `${view.height}px` : null}
+			style:transform="translateX({(1 - pos) * 100}%)"
+			onkeydown={(e) => e.key === 'Escape' && leave()}
 		>
-		{#if focus}
-			<div class="focus-top">
-				<span class="focus-title">{item.meta.title || 'untitled'}</span>
-				<button class="pill square" class:on={drawer} title="previews" aria-label="previews" onclick={() => (drawer = !drawer)}><PanelRight size={18} /></button>
-				<button class="pill square" title="close focus mode" aria-label="close focus mode" onclick={leave}><X size={18} /></button>
-			</div>
-		{/if}
-		<div class="images" class:shut={focus && tray !== 'images'}>
-			<button class="pill square sp" class:on={keys} onpointerdown={(e) => e.preventDefault()} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onclick={() => (keys = !keys)}><tp>toki</tp></button>
-		<label class="pill square" title="upload images">
+		<div class="focus-top">
+			<span class="focus-title">{item.meta.title || 'untitled'}</span>
+			<button class="pill square" title="back to the form" aria-label="back to the form" onclick={leave}><X size={18} /></button>
+		</div>
+		<div class="images" class:shut={tray !== 'images'}>
+			<label class="pill square" title="upload images">
 				<ImagePlus size={18} />
 				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 			</label>
@@ -660,15 +713,13 @@
 			{/if}
 		</div>
 		{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
-		{#if focus && keys}
+		{#if keys}
 			<div class="tray"><TpKeys docked oninsert={tp} onclose={() => (keys = false)} /></div>
 		{/if}
 
 		<div class="toolbar">
-			{#if focus}
 				<button class="pill square" class:on={tray === 'images'} title="images" aria-label="images" onpointerdown={keepFocus} onclick={() => ((tray = tray === 'images' ? '' : 'images'), (keys = false))}><Images size={18} /></button>
 				<button class="pill square sp" class:on={keys} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onpointerdown={keepFocus} onclick={() => ((keys = !keys), (tray = ''))}><tp>toki</tp></button>
-			{/if}
 			<button class="pill square" title="bold" aria-label="bold" onpointerdown={keepFocus} onclick={() => wrap('**', '**', 'bold')}><Bold size={18} /></button>
 			<button class="pill square" title="italic" aria-label="italic" onpointerdown={keepFocus} onclick={() => wrap('*', '*', 'italic')}><Italic size={18} /></button>
 			<button class="pill square" class:on={colours} title="highlight" aria-label="highlight" onpointerdown={keepFocus} onclick={() => (colours = !colours)}><Highlighter size={18} /></button>
@@ -690,24 +741,12 @@
 			{/if}
 		</div>
 		<div class="paper">
-			{#if focus}<pre class="styled" aria-hidden="true">{@html styled}</pre>{/if}
-			<textarea bind:this={textarea} bind:value={item.body} rows="22" placeholder="write in markdown…" onfocus={() => (focus = true)}></textarea>
+			<pre class="styled" aria-hidden="true">{@html styled}</pre>
+			<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…"></textarea>
 		</div>
 
-		<div class="previews" class:open={drawer}>
-			<Device label="phone" width={390} height={844} bind:frame={phone} />
-			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
-		</div>
 		</div>
 	{/if}
-
-	{#if keys && !focus}
-		<TpKeys oninsert={tp} onclose={() => (keys = false)} />
-	{/if}
-
-
-
-</div>
 
 <!-- save floats above the menu button (above the scroll button on big screens, where the menu is at the top) -->
 <button
@@ -1204,11 +1243,16 @@
 	}
 
 	/* focus mode: the text fills the screen; title on top, then the text, the open tray and the toolbar */
-	.writer.focus {
+	.writer {
 		position: fixed;
 		left: 0;
 		right: 0;
 		z-index: 60;
+		height: 100dvh;
+		visibility: hidden;
+		transition:
+			transform 0.35s ease,
+			visibility 0s linear 0.35s;
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
@@ -1217,6 +1261,26 @@
 	}
 
 	/* stays above the previews, so they can be closed from here */
+	.writer.shown {
+		visibility: visible;
+		transition: transform 0.35s ease;
+	}
+
+	.writer.dragging,
+	.sheet.dragging,
+	.bar.dragging {
+		transition: none;
+	}
+
+	.sheet,
+	.bar {
+		transition: translate 0.35s ease;
+	}
+
+	.body-button {
+		margin-top: 1.5rem;
+	}
+
 	.focus-top {
 		position: relative;
 		z-index: 62;
@@ -1231,11 +1295,6 @@
 		box-shadow: none;
 	}
 
-	.focus-top .on {
-		color: var(--bg);
-		background: var(--fg);
-	}
-
 	.focus-title {
 		flex: 1;
 		overflow: hidden;
@@ -1245,7 +1304,7 @@
 		color: var(--muted);
 	}
 
-	.writer.focus .paper {
+	.writer .paper {
 		order: 1;
 		flex: 1;
 		overflow-y: auto;
@@ -1255,24 +1314,22 @@
 		background: var(--glass);
 	}
 
-	.writer.focus .images {
+	.writer .images {
 		order: 2;
 		margin: 0;
 		max-height: 7rem;
 		overflow-y: auto;
 	}
 
-	.writer.focus .images.shut,
-	.writer.focus .images > .sp,
-	.writer.focus .image-note {
+	.writer .images.shut {
 		display: none;
 	}
 
-	.writer.focus .tray {
+	.writer .tray {
 		order: 3;
 	}
 
-	.writer.focus .toolbar {
+	.writer .toolbar {
 		order: 4;
 		flex-wrap: nowrap;
 		margin: 0;
@@ -1280,17 +1337,17 @@
 		scrollbar-width: none;
 	}
 
-	.writer.focus .toolbar {
+	.writer .toolbar {
 		gap: 0.3rem;
 	}
 
-	.writer.focus .toolbar .square {
+	.writer .toolbar .square {
 		flex: none;
 		width: 2.25rem;
 		height: 2.25rem;
 	}
 
-	.writer.focus .colours {
+	.writer .colours {
 		position: absolute;
 		left: 0.75rem;
 		right: 0.75rem;
@@ -1301,12 +1358,12 @@
 
 	/* the styled copy lies exactly under the textarea, letter for letter: same font, size, padding and wrapping;
 	   the textarea's own letters are invisible, its caret and selection stay */
-	.writer.focus .paper {
+	.writer .paper {
 		position: relative;
 	}
 
 	.styled,
-	.writer.focus textarea {
+	.writer textarea {
 		margin: 0;
 		padding: 0.9rem 1rem 40vh;
 		border: 0;
@@ -1325,7 +1382,7 @@
 		color: var(--fg);
 	}
 
-	.writer.focus textarea {
+	.writer textarea {
 		position: absolute;
 		inset: 0;
 		width: 100%;
@@ -1388,37 +1445,6 @@
 	.styled :global(mark.black) { --mark: rgb(20 20 30 / 0.85); color: #f4ecdc; }
 	.styled :global(mark.white) { --mark: rgb(255 255 255 / 0.9); color: #0b1f38; }
 	.styled :global(mark.brown) { --mark: rgb(165 110 70 / 0.42); }
-
-	/* the previews slide in from the right */
-	.writer.focus .previews {
-		position: fixed;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 61;
-		width: min(100vw, 44rem);
-		margin: 0;
-		grid-template-columns: 1fr;
-		align-content: start;
-		padding: calc(env(safe-area-inset-top) + 4rem) 1rem calc(env(safe-area-inset-bottom) + 1rem);
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		background: color-mix(in srgb, var(--bg) 94%, transparent);
-		-webkit-backdrop-filter: var(--blur);
-		backdrop-filter: var(--blur);
-		box-shadow: -10px 0 40px var(--shadow);
-		transform: translateX(105%);
-		transition: transform 0.3s ease;
-	}
-
-	.writer.focus .previews.open {
-		transform: none;
-	}
-
-	.writer.focus .previews > :global(figure:first-child) {
-		justify-self: center;
-		width: min(20rem, 100%);
-	}
 
 	.previews {
 		display: grid;
