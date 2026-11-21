@@ -3,8 +3,8 @@
 	// small screens: stacked bottom right. big screens: menu moves to the top right with a label.
 	import { Menu as MenuIcon, ArrowDown, ArrowUp } from '@lucide/svelte';
 
-	/** @type {{ onmenu: () => void, extra?: import('svelte').Snippet }} */
-	let { onmenu, extra } = $props();
+	/** @type {{ onmenu: () => void, open?: boolean, extra?: import('svelte').Snippet }} */
+	let { onmenu, open = false, extra } = $props();
 
 	let atTop = $state(true);
 	let scrollable = $state(true);
@@ -28,7 +28,7 @@
 
 {#if extra}<div class="extra">{@render extra()}</div>{/if}
 
-<button class="round glass menu" onclick={onmenu} aria-label="Open menu">
+<button class="round glass menu" onclick={onmenu} aria-label="Open menu" aria-expanded={open} aria-controls="panel">
 	<span>menu</span>
 	<MenuIcon size={20} />
 </button>

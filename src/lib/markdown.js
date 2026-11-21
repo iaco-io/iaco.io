@@ -1,5 +1,5 @@
 import { external } from './links.js';
-import { withAlphabet } from './tp.js';
+import { accessible } from './tp.js';
 import { Marked } from 'marked';
 
 // properties at the top of each .md file, in this order
@@ -129,12 +129,13 @@ function grid(source, resolve, inner, inlineOf) {
 		.map((card) => {
 			const lines = card.split('\n');
 			let image = '';
+			let alt = ''; // ![this](…): what the picture shows, for screen readers
 			let link = '';
 			for (let i = 0; i < 2 && lines.length; i++) {
 				const line = lines[0].trim();
 				const img = !image && IMAGE_LINE.exec(line);
 				const lnk = !link && LINK_LINE.exec(line);
-				if (img) image = img[2];
+				if (img) [, alt, image] = img;
 				else if (lnk) link = lnk[1];
 				else break;
 				lines.shift();
@@ -147,16 +148,18 @@ function grid(source, resolve, inner, inlineOf) {
 				: '';
 			let picture = '';
 			if (image && LUCIDE.test(image)) {
-				picture = `<span class="card-icon">${lucideIcon(image.match(LUCIDE)?.[1] ?? '')}</span>`;
+				picture = `<span class="card-icon">${lucideIcon(image.match(LUCIDE)?.[1] ?? '', alt)}</span>`;
 			} else if (image) {
 				const local = !/^([a-z]+:|\/)/i.test(image);
 				picture = local && ICONS[image]
-					? `<span class="card-icon">${ICONS[image].replace('<svg', '<svg class="icon" aria-hidden="true"')}</span>`
-					: `<img src="${escape(local ? resolve(image) : image)}" alt="" loading="lazy" />`;
+					? `<span class="card-icon">${ICONS[image].replace('<svg', `<svg class="icon"${alt ? ` role="img" aria-label="${escape(alt)}"` : ' aria-hidden="true"'}`)}</span>`
+					: `<img src="${escape(local ? resolve(image) : image)}" alt="${escape(alt)}" loading="lazy" />`;
 			}
 			const href = link && !/^([a-z]+:|\/|#)/i.test(link) ? resolve(link) : link;
 			const tag = href ? 'a' : 'div';
-			const attrs = href ? ` href="${escape(href)}"${external(href) ? ' target="_blank" rel="noopener noreferrer"' : ''}` : '';
+			// a link needs a name for screen readers: its text, else the picture's alt, else where it goes
+			const name = href && !title.trim() && !alt ? ` aria-label="${escape(href.replace(/^[a-z]+:\/\/(www\.)?/i, ''))}"` : '';
+			const attrs = href ? ` href="${escape(href)}"${name}${external(href) ? ' target="_blank" rel="noopener noreferrer"' : ''}` : '';
 			const only = picture && !text ? ' only' : '';
 			const kind = image && (ICONS[image] || LUCIDE.test(image)) ? ' with-icon' : '';
 			return `<${tag} class="card${only}${kind}"${attrs}>${picture}${text ? `<div class="card-text">${text}</div>` : ''}</${tag}>`;
@@ -198,5 +201,5 @@ export function render(source, resolve = (path) => path) {
 			}
 		}
 	});
-	return newTabs(/** @type {string} */ (marked.parse(withAlphabet(source), { async: false })));
+	return newTabs(/** @type {string} */ (marked.parse(accessible(source), { async: false })));
 }

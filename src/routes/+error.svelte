@@ -7,7 +7,7 @@
 	onMount(() => page.status === 404 && goto('/', { replaceState: true }));
 </script>
 
-<p>{page.status === 404 ? 'taking you home…' : page.error?.message}</p>
+<main><p role="status">{page.status === 404 ? 'taking you home…' : page.error?.message}</p></main>
 
 <style>
 	p {

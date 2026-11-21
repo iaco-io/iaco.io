@@ -26,13 +26,20 @@ export const tpParts = (/** @type {string} */ text) =>
 		.filter(Boolean)
 		.map((part) => {
 			const tag = part.match(/^<(tp|al)>([\s\S]*)<\/\1>$/);
-			if (!tag) return { kind: '', text: part };
-			return { kind: tag[1], text: tag[1] === 'al' ? alphabet(tag[2]) : tag[2] };
+			if (!tag) return { kind: '', text: part, plain: part };
+			return { kind: tag[1], text: tag[1] === 'al' ? alphabet(tag[2]) : tag[2], plain: tag[2] };
 		});
 
 /** <al> parts turned into the alphabet, keeping the tags (for markdown, before it is rendered) */
 export const withAlphabet = (/** @type {string} */ text) =>
 	text.replace(/<al>([\s\S]*?)<\/al>/g, (_, inner) => `<al>${alphabet(inner)}</al>`);
+
+/** the same for posts and pages: screen readers get the plain words (the alphabet's letters read badly aloud),
+ * and toki pona is marked as such */
+export const accessible = (/** @type {string} */ text) =>
+	text
+		.replace(/<al>([\s\S]*?)<\/al>/g, (_, inner) => `<al aria-hidden="true">${alphabet(inner)}</al><span class="sr-only">${inner}</span>`)
+		.replace(/<tp>/g, '<tp lang="tok">');
 
 /** the text without tags (alphabet applied), for page titles, meta and rss */
 export const plain = (/** @type {string} */ text) => withAlphabet(text).replace(/<\/?(tp|al)>/g, '');

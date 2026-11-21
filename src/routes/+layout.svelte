@@ -52,13 +52,14 @@
 	<header>
 		<a class="logo" href="/">iaco.io</a>
 	</header>
-	<DayClock icon="grid" />
+	<!-- a landmark of its own, so all content is in one (it is positioned on its own, the aside adds nothing visible) -->
+	<aside aria-label="day clock"><DayClock icon="grid" /></aside>
 {/if}
 
 {@render children()}
 
 {#if !cms}
-	<Fabs onmenu={() => (open = true)} />
+	<Fabs onmenu={() => (open = true)} {open} />
 	<Menu bind:open {links} />
 {/if}
 

@@ -74,7 +74,14 @@
 </script>
 
 {#if now}
-	<div class="dayclock" class:inline title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day">
+	<!-- read out as one picture with its meaning, not as the cryptic digits -->
+	<div
+		class="dayclock"
+		class:inline
+		role="img"
+		aria-label="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day"
+		title="day {ordinal} of {now.getFullYear()}, {percent.join('.')}% of the day"
+	>
 		<span class="date">{now.getFullYear()}-{day.slice(0, 2)}<span class="dot">•</span>{day[2]}</span>
 		<span class="time">{percent[0]}<small>.{percent[1]}%</small></span>
 		{#if icon === 'grid'}

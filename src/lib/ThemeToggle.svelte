@@ -39,13 +39,27 @@
 	}
 
 	onMount(() => set(document.documentElement.dataset.theme ?? 'system'));
+
+	// like any radio group (wai-aria): one tab stop, the arrow keys pick the next or previous theme
+	/** @param {KeyboardEvent} e */
+	function keydown(e) {
+		const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+		if (!step) return;
+		e.preventDefault();
+		const i = (options.findIndex((o) => o.value === theme) + step + options.length) % options.length;
+		set(options[i].value);
+		/** @type {HTMLElement | null} */ (e.currentTarget instanceof HTMLElement ? e.currentTarget.children[i] : null)?.focus();
+	}
 </script>
 
-<div class="toggle glass" role="radiogroup" aria-label="theme">
+<!-- the keys are handled on the group, focus stays on its radios (wai-aria radio group) -->
+<!-- svelte-ignore a11y_interactive_supports_focus -->
+<div class="toggle glass" role="radiogroup" aria-label="theme" onkeydown={keydown}>
 	{#each options as { value, label, icon: Icon }}
 		<button
 			role="radio"
 			aria-checked={theme === value}
+			tabindex={theme === value ? 0 : -1}
 			aria-label={label}
 			class:active={theme === value}
 			onclick={() => tap(value)}

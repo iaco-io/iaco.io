@@ -13,6 +13,24 @@
 
 	const close = () => (open = false);
 
+	// for keyboards and screen readers it acts as a dialog: while open, focus moves into it and the page behind
+	// can't be reached (inert, but live messages stay heard); when it closes, focus goes back where it was
+	/** @type {HTMLElement | undefined} */
+	let layer = $state();
+	$effect(() => {
+		if (!open || !layer?.parentElement) return;
+		const back = /** @type {HTMLElement | null} */ (document.activeElement);
+		const behind = [...layer.parentElement.children].filter(
+			(e) => e !== layer && !(/** @type {HTMLElement} */ (e).inert) && !e.matches('[role=status]')
+		);
+		for (const e of behind) /** @type {HTMLElement} */ (e).inert = true;
+		/** @type {HTMLElement | null | undefined} */ (panel?.querySelector('.close'))?.focus();
+		return () => {
+			for (const e of behind) /** @type {HTMLElement} */ (e).inert = false;
+			back?.focus({ preventScroll: true });
+		};
+	});
+
 	const BLEED = 200; // px drawn beyond the visible screen, above and below
 	let top = $state(0);
 	let height = $state(0);
@@ -116,7 +134,7 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
 
 <!-- clips the panel while it slides, so the page never gets wider; takes no space when closed -->
-<div class="layer" style:top="{top}px" style:height="{height}px" style:--bleed="{BLEED}px">
+<div bind:this={layer} class="layer" style:top="{top}px" style:height="{height}px" style:--bleed="{BLEED}px">
 	<div
 		class="backdrop"
 		class:open={open || drag}
@@ -132,6 +150,7 @@
 		class:open={open || drag}
 		class:dragging={drag}
 		style:transform={drag ? `translateX(${shift}px)` : null}
+		id="panel"
 		aria-label={label}
 		inert={!open}
 	>

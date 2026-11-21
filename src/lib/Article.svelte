@@ -22,7 +22,7 @@
 		{#if item.description}<p class="lead"><Tp text={item.description} /></p>{/if}
 		{#if item.tags?.length}
 			<!-- tags link to their pages; categories show a bookmark -->
-			<ul class="tags">
+			<ul class="tags" aria-label="tags">
 				{#each item.tags.map(cleanTag).filter(Boolean) as tag (tag)}
 					<li>
 						<a href={tagUrl(tag)}>
