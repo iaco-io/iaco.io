@@ -553,9 +553,6 @@
 	}
 
 	onMount(() => {
-		// the blog can be zoomed (for people who need bigger text); the cms keeps zoom off as before, so ios
-		// doesn't zoom into its small inputs while typing
-		document.querySelector('meta[name=viewport]')?.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
 		partials = listPartials();
 		if (api) {
 			refresh();
