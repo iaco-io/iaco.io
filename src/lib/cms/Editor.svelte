@@ -238,11 +238,17 @@
 			vv?.removeEventListener('scroll', fit);
 		};
 	});
+	// the page behind is held still while the body's screen is open (overflow alone doesn't stop ios from
+	// scrolling it while the keyboard is up): it is pinned where it was, and put back on leaving
 	$effect(() => {
 		if (pos !== 1) return;
-		const root = document.documentElement;
-		root.style.overflow = 'hidden';
-		return () => (root.style.overflow = '');
+		const y = scrollY;
+		const body = document.body.style;
+		Object.assign(body, { position: 'fixed', top: `${-y}px`, left: '0', right: '0', overflow: 'hidden' });
+		return () => {
+			Object.assign(body, { position: '', top: '', left: '', right: '', overflow: '' });
+			scrollTo(0, y);
+		};
 	});
 	// the swipe between the two screens follows the finger; a flick or past half way goes over
 	$effect(() => {
