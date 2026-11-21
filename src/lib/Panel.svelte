@@ -24,7 +24,7 @@
 			(e) => e !== layer && !(/** @type {HTMLElement} */ (e).inert) && !e.matches('[role=status]')
 		);
 		for (const e of behind) /** @type {HTMLElement} */ (e).inert = true;
-		/** @type {HTMLElement | null | undefined} */ (panel?.querySelector('.close'))?.focus();
+		/** @type {HTMLElement | null | undefined} */ (panel?.querySelector('.close'))?.focus({ preventScroll: true });
 		return () => {
 			for (const e of behind) /** @type {HTMLElement} */ (e).inert = false;
 			back?.focus({ preventScroll: true });
