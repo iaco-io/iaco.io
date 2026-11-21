@@ -250,6 +250,36 @@
 			scrollTo(0, y);
 		};
 	});
+	// with the keyboard up, ios scrolls the whole screen when a finger drags anywhere that can't scroll itself.
+	// so on the body's screen a drag only moves something that can still scroll that way (the text, the rows,
+	// the keys); anything else is held still
+	/** @type {HTMLElement | undefined} */
+	let writer = $state();
+	$effect(() => {
+		if (!writer) return;
+		let y = 0;
+		const start = (/** @type {TouchEvent} */ e) => (y = e.touches[0].clientY);
+		const move = (/** @type {TouchEvent} */ e) => {
+			const dy = y - e.touches[0].clientY; // > 0: the content would move up
+			y = e.touches[0].clientY;
+			for (let el = /** @type {HTMLElement | null} */ (e.target); el && el !== writer; el = el.parentElement) {
+				const { overflowY, overflowX } = getComputedStyle(el);
+				if (/auto|scroll/.test(overflowX) && el.scrollWidth > el.clientWidth && Math.abs(dy) < 2) return;
+				if (!/auto|scroll/.test(overflowY) || el.scrollHeight <= el.clientHeight) continue;
+				const room = dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0;
+				if (room) return;
+				break;
+			}
+			if (e.cancelable) e.preventDefault();
+		};
+		writer.addEventListener('touchstart', start, { passive: true });
+		writer.addEventListener('touchmove', move, { passive: false });
+		return () => {
+			writer?.removeEventListener('touchstart', start);
+			writer?.removeEventListener('touchmove', move);
+		};
+	});
+
 	// the swipe between the two screens follows the finger; a flick or past half way goes over
 	$effect(() => {
 		/** @type {{ x: number, y: number, from: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number } | null} */
@@ -677,6 +707,7 @@
 		<!-- the body's screen: comes in from the right -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
+			bind:this={writer}
 			class="writer"
 			class:shown={focus}
 			class:dragging
@@ -1267,6 +1298,18 @@
 	}
 
 	/* stays above the previews, so they can be closed from here */
+	/* the bar ios shows above the keyboard (arrows, done) is see-through: the screen's colour carries on
+	   below it, so the page doesn't show behind */
+	.writer::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		height: 100vh;
+		background: var(--bg);
+	}
+
 	.writer.shown {
 		visibility: visible;
 		transition: transform 0.35s ease;
