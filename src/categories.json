@@ -1,3 +1,6 @@
 [
-	"health-fundamentals"
+	{
+		"tag": "health-fundamentals",
+		"icon": "lucide/heart-plus"
+	}
 ]
