@@ -28,13 +28,27 @@
 	let list = $state();
 	let more = $state(false);
 	const measure = () => list && (more = list.scrollTop + list.clientHeight < list.scrollHeight - 1);
-	// when the menu opens with more links than fit, the list dips a little and comes back: there's more below
+	// when the menu opens with more links than fit, the list dips a little and comes back: there's more below.
+	// drawn frame by frame (smooth scrolling can be cut short); only the opening starts or stops it
 	$effect(() => {
-		if (!open || !list || !more || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		if (!open || !list || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		const el = list;
-		const down = setTimeout(() => el.scrollTo({ top: 48, behavior: 'smooth' }), 450);
-		const up = setTimeout(() => el.scrollTo({ top: 0, behavior: 'smooth' }), 850);
-		return () => (clearTimeout(down), clearTimeout(up));
+		let frame = 0;
+		const wait = setTimeout(() => {
+			if (el.scrollHeight <= el.clientHeight) return;
+			const start = performance.now();
+			const step = (/** @type {number} */ now) => {
+				const t = Math.min(1, (now - start) / 900);
+				el.scrollTop = Math.round(48 * Math.sin(Math.PI * t));
+				if (t < 1) frame = requestAnimationFrame(step);
+			};
+			frame = requestAnimationFrame(step);
+		}, 450);
+		return () => {
+			clearTimeout(wait);
+			cancelAnimationFrame(frame);
+			el.scrollTop = 0;
+		};
 	});
 	$effect(() => {
 		if (!list) return;
