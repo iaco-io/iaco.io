@@ -1,4 +1,5 @@
-// the blog and the cms install as two separate apps: each gets its own manifest, icon and name.
+// the blog and the cms install as two separate apps: each gets its own manifest (with its icons) and name.
+// no apple-touch-icon: iphones use one per website, so the cms got the blog's; without it they take the manifest's
 // done here so it's in the html even for the cms, which renders only in the browser.
 const apps = {
 	blog: { base: '', name: 'iaco' },
@@ -9,8 +10,8 @@ const apps = {
 export function handle({ event, resolve }) {
 	const app = event.url.pathname.startsWith('/cms') ? apps.cms : apps.blog;
 	const tags = [
+		`<link rel="icon" href="${app.base}/icon.svg" type="image/svg+xml" />`,
 		`<link rel="manifest" href="${app.base}/manifest.webmanifest" />`,
-		`<link rel="apple-touch-icon" href="${app.base}/apple-touch-icon.png" />`,
 		`<meta name="apple-mobile-web-app-title" content="${app.name}" />`
 	].join('\n\t\t');
 	return resolve(event, { transformPageChunk: ({ html }) => html.replace('%app.install%', tags) });
