@@ -320,7 +320,7 @@
 		const start = (/** @type {TouchEvent} */ e) => (down = { x: e.touches[0].clientX, y: e.touches[0].clientY });
 		const end = (/** @type {TouchEvent} */ e) => {
 			const t = e.changedTouches[0];
-			const button = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest('.toolbar button, .images button, .images label, .tray button, .to-previews'));
+			const button = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest('.toolbar button, .media-pop button, .media-pop label, .tray button, .to-previews'));
 			if (!button || !typing || !down || Math.hypot(t.clientX - down.x, t.clientY - down.y) > 10) return;
 			e.preventDefault();
 			button.click();
@@ -342,7 +342,7 @@
 			const { clientX: x, clientY: y } = e.touches[0];
 			const target = /** @type {Element} */ (e.target);
 			// not from the rows that scroll sideways, nor the left edge of the form (that goes back to the list)
-			if (target.closest?.('.toolbar, .images, .tray, .colours, .dialog, dialog') || (pos === 0 && x < 30)) return void (s = null);
+			if (target.closest?.('.toolbar, .media-pop, .tray, .colours, .dialog, dialog') || (pos === 0 && x < 30)) return void (s = null);
 			s = { x, y, from: pos, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0, t0: e.timeStamp, target };
 		};
 		/** @param {TouchEvent} e */
@@ -496,7 +496,6 @@
 
 	// thumbnails: images used in this post or uploaded now; the rest of media behind "more"
 	let added = $state(/** @type {string[]} */ ([]));
-	let showAll = $state(false);
 	const used = $derived([
 		...added,
 		...(item.meta.image ? [item.meta.image] : []),
@@ -790,36 +789,42 @@
 			<span class="focus-title">{item.meta.title || 'untitled'}</span>
 			<button class="pill square" title="back to the form" aria-label="back to the form" onclick={() => (leave(), textarea?.blur())}><X size={18} /></button>
 		</div>
-		<div class="images" class:shut={tray !== 'images'}>
-			<label class="pill square" title="upload images">
-				<ImagePlus size={18} />
-				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
-			</label>
-			<button class="pill square" title="paste an image" aria-label="paste an image" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /></button>
-			<!-- with all shown, 'less' comes first, so it's in reach without scrolling the row -->
-			{#if others.length && showAll}
-				<button class="pill more" onclick={() => (showAll = false)}>less</button>
-			{/if}
-			{#each [...shown, ...(showAll ? others : [])] as name (name)}
-				<button
-					class="thumb"
-					title="insert {name} · hold to rename, replace or delete"
-					onpointerdown={() => press(name)}
-					onpointerup={release}
-					onpointerleave={release}
-					onpointercancel={release}
-					oncontextmenu={(e) => e.preventDefault()}
-					onclick={() => (pressed ? (pressed = false) : insert(snippet(name)))}
-				>
-					{#if isImage(name)}
-						<Thumb src={resolve(name)} {name} size="60%" />
-					{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
-				</button>
-			{/each}
-			{#if others.length && !showAll}
-				<button class="pill more" onclick={() => (showAll = true)}>more ({others.length})</button>
-			{/if}
-		</div>
+		{#snippet thumb(/** @type {string} */ name)}
+			<button
+				class="thumb"
+				title="insert {name} · hold to rename, replace or delete"
+				onpointerdown={() => press(name)}
+				onpointerup={release}
+				onpointerleave={release}
+				onpointercancel={release}
+				oncontextmenu={(e) => e.preventDefault()}
+				onclick={() => (pressed ? (pressed = false) : (insert(snippet(name)), (tray = '')))}
+			>
+				{#if isImage(name)}
+					<Thumb src={resolve(name)} {name} size="60%" />
+				{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
+			</button>
+		{/snippet}
+		{#if tray === 'images'}
+			<!-- a small popup above the toolbar: the other media as a grid; at the bottom upload, paste and this
+			     post's own (tap to insert, hold to rename, replace or delete) -->
+			<div class="media-pop glass" role="dialog" aria-label="media">
+				{#if others.length}
+					<div class="media-grid">
+						{#each others as name (name)}{@render thumb(name)}{/each}
+					</div>
+				{/if}
+				<div class="images">
+					<label class="pill square" title="upload images">
+						<ImagePlus size={18} />
+						<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
+					</label>
+					<button class="pill square" title="paste an image" aria-label="paste an image" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /></button>
+					{#if shown.length}<span class="divider" aria-hidden="true"></span>{/if}
+					{#each shown as name (name)}{@render thumb(name)}{/each}
+				</div>
+			</div>
+		{/if}
 		{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
 		{#if keys}
 			<div class="tray"><TpKeys docked oninsert={tp} onclose={() => (keys = false)} /></div>
@@ -1452,9 +1457,36 @@
 		background: var(--glass);
 	}
 
-	/* one row that scrolls sideways */
-	.writer .images {
+	/* the media popup, above the toolbar */
+	.media-pop {
 		order: 2;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		max-height: 45%;
+		padding: 0.6rem;
+		border-radius: 1.2rem;
+	}
+
+	.media-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
+		gap: 0.45rem;
+		min-height: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: none;
+	}
+
+	.media-grid .thumb {
+		width: auto;
+		height: auto;
+		aspect-ratio: 1;
+	}
+
+	/* upload, paste, then this post's own: one row that scrolls sideways */
+	.media-pop .images {
+		flex: none;
 		flex-wrap: nowrap;
 		margin: 0;
 		overflow-x: auto;
@@ -1462,12 +1494,14 @@
 		scrollbar-width: none;
 	}
 
-	.writer .images > :global(*) {
+	.media-pop .images > :global(*) {
 		flex: none;
 	}
 
-	.writer .images.shut {
-		display: none;
+	.divider {
+		width: 1px;
+		height: 1.8rem;
+		background: var(--glass-edge);
 	}
 
 	.writer .tray {

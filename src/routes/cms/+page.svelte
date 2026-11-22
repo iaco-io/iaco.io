@@ -953,6 +953,15 @@
 	}
 
 	/* the lists fill the screen below the header; each scrolls on its own */
+	/* the page itself never scrolls (nor bounces): only the lists in it */
+	:global(html:has(main.lists)),
+	:global(html:has(main.lists) body) {
+		height: 100%;
+		min-height: 0;
+		overflow: hidden;
+		overscroll-behavior: none;
+	}
+
 	main.lists {
 		display: flex;
 		flex-direction: column;
