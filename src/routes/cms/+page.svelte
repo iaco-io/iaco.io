@@ -228,7 +228,7 @@
 
 	// list filters: show only drafts, only unlisted pages, only items with unsaved changes on this device
 	// (several at once show any of them). posts can also put drafts and unsaved ones first
-	let filters = $state({ posts: { draft: false, local: false, first: true }, pages: { draft: false, local: false, unlisted: false, first: true } });
+	let filters = $state({ posts: { draft: false, local: false, featured: false, first: true }, pages: { draft: false, local: false, unlisted: false, first: true } });
 	const isLocal = (/** @type {Entry} */ e) => !!partials[`${e.kind}/${e.name}`];
 	// the groups when sorting: 0 drafts and unsaved, then (pages only) 1 unlisted, then the rest
 	// (posts: drafts and unsaved, then featured, then the rest; pages: drafts and unsaved, unlisted, the rest)
@@ -238,9 +238,9 @@
 	/** @param {'posts' | 'pages'} k @param {Entry} e */
 	function shown(k, e) {
 		const f = /** @type {Record<string, boolean>} */ (filters[k]);
-		const on = ['draft', 'local', 'unlisted'].filter((x) => f[x]);
+		const on = ['draft', 'local', 'unlisted', 'featured'].filter((x) => f[x]);
 		if (!on.length) return true;
-		return on.some((x) => (x === 'draft' ? e.meta.draft : x === 'local' ? isLocal(e) : e.meta.unlisted));
+		return on.some((x) => (x === 'draft' ? e.meta.draft : x === 'local' ? isLocal(e) : x === 'featured' ? e.meta.featured : e.meta.unlisted));
 	}
 
 	// tags promoted to categories, kept in src/categories.json; the newest list is read from github
@@ -700,6 +700,10 @@
 			{#if k === 'pages'}
 				<button class:on={filters.pages.unlisted} title="unlisted" aria-pressed={filters.pages.unlisted} onclick={() => (filters.pages.unlisted = !filters.pages.unlisted)}>
 					<ListX size={16} />{all.filter((e) => e.meta.unlisted).length}
+				</button>
+			{:else if k === 'posts'}
+				<button class:on={filters.posts.featured} title="featured" aria-pressed={filters.posts.featured} onclick={() => (filters.posts.featured = !filters.posts.featured)}>
+					<Star size={16} />{all.filter((e) => e.meta.featured).length}
 				</button>
 			{/if}
 			<button class:on={f.draft} title="drafts" aria-pressed={f.draft} onclick={() => (f.draft = !f.draft)}>

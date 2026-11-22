@@ -205,7 +205,7 @@
 
 	.prose :global(.grid .card-title) {
 		margin: 0 0 0.2rem;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.prose :global(.grid .card-text > :last-child) {
