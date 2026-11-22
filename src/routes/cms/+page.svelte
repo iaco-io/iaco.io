@@ -13,7 +13,7 @@
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import { strip } from '#lib/cms/strip.js';
-	import { cleanTag, savedCategories } from '#lib/tags.js';
+	import { cleanTag, savedCategories, categoryIcons, readCategories, writeCategories } from '#lib/tags.js';
 	import TagsDialog from '#lib/cms/TagsDialog.svelte';
 	import DayClock from '#lib/DayClock.svelte';
 	import Thumb from '#lib/cms/Thumb.svelte';
@@ -240,6 +240,8 @@
 	// tags promoted to categories, kept in src/categories.json; the newest list is read from github
 	const CATEGORIES = 'src/categories.json';
 	let categories = $state(savedCategories);
+	// their own icons
+	let categoryLooks = $state({ icons: categoryIcons });
 	let tagsOpen = $state(false);
 	/** every tag used in posts and pages, with how many use it */
 	const allTags = $derived.by(() => {
@@ -249,12 +251,13 @@
 		return Object.entries(count).sort(([a], [b]) => a.localeCompare(b));
 	});
 
-	async function saveCategories(/** @type {string[]} */ list) {
+	async function saveCategories(/** @type {string[]} */ list, /** @type {Record<string, string>} */ icons) {
 		if (!api) return;
 		try {
 			const sha = (await api.list()).find((f) => f.path === CATEGORIES)?.sha;
-			await api.write(CATEGORIES, utf8ToBase64(JSON.stringify(list, null, '\t') + '\n'), sha, 'cms: update categories');
-			categories = list;
+			const file = writeCategories(list, icons);
+			await api.write(CATEGORIES, utf8ToBase64(JSON.stringify(file, null, '\t') + '\n'), sha, 'cms: update categories');
+			({ tags: categories, ...categoryLooks } = readCategories(file));
 			tagsOpen = false;
 			flash('categories saved. the site updates in a minute or two');
 		} catch (err) {
@@ -285,7 +288,7 @@
 			if (files.includes(CATEGORIES)) {
 				api
 					.read(CATEGORIES)
-					.then(({ text }) => (categories = JSON.parse(text)))
+					.then(({ text }) => ({ tags: categories, ...categoryLooks } = readCategories(JSON.parse(text))))
 					.catch(() => {});
 			}
 			if (files.includes(ALPHABET)) {
@@ -788,7 +791,7 @@
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
 
 	{#if tagsOpen}
-		<TagsDialog tags={allTags} {categories} onsave={saveCategories} onclose={() => (tagsOpen = false)} />
+		<TagsDialog tags={allTags} {categories} icons={categoryLooks.icons} onsave={saveCategories} onclose={() => (tagsOpen = false)} />
 	{/if}
 
 	{#if alphabetOpen}

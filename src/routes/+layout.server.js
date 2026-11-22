@@ -1,6 +1,6 @@
 import { posts, pages, media } from '#lib/content.js';
 import { isIcon } from '#lib/markdown.js';
-import { savedCategories } from '#lib/tags.js';
+import { savedCategories, categoryIcons, tagName, DEFAULT_CATEGORY_ICON } from '#lib/tags.js';
 
 /**
  * how a page's icon is drawn in the menu: lucide icons and one-colour svgs as a stencil in the text colour
@@ -22,6 +22,8 @@ export function load() {
 			.filter((p) => !p.unlisted)
 			.toSorted((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }))
 			.map(({ url, title, icon }) => ({ url, title: title.toLowerCase(), icon: menuIcon(icon) })),
-		categories: savedCategories.filter((tag) => used.has(tag))
+		categories: savedCategories
+			.filter((tag) => used.has(tag))
+			.map((tag) => ({ tag, name: tagName(tag), icon: menuIcon(categoryIcons[tag] || DEFAULT_CATEGORY_ICON) }))
 	};
 }

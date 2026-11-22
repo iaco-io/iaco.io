@@ -1,7 +1,7 @@
 <script>
 	import Tp from './Tp.svelte';
 	import { Tag, BookBookmark } from '@lucide/svelte';
-	import { savedCategories, tagUrl, cleanTag } from './tags.js';
+	import { savedCategories, tagUrl, cleanTag, tagName } from './tags.js';
 	import { render } from './markdown.js';
 
 	/**
@@ -27,7 +27,7 @@
 					<li>
 						<a href={tagUrl(tag)}>
 							{#if savedCategories.includes(tag)}<BookBookmark size={14} strokeWidth={1.75} />{:else}<Tag size={14} strokeWidth={1.75} />{/if}
-							{tag}
+							{tagName(tag)}
 						</a>
 					</li>
 				{/each}

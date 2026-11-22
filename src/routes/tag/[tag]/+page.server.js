@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { posts, pages } from '#lib/content.js';
-import { savedCategories } from '#lib/tags.js';
+import { savedCategories, tagName } from '#lib/tags.js';
 
 const items = [...posts, ...pages];
 const tags = [...new Set(items.flatMap((item) => item.tags))];
@@ -14,6 +14,7 @@ export function load({ params }) {
 	return {
 		tag: params.tag,
 		category: savedCategories.includes(params.tag),
+		name: tagName(params.tag), // underscores as spaces
 		items: tagged.map(({ url, title, description, image, kind }) => ({ url, title, description, image, kind }))
 	};
 }

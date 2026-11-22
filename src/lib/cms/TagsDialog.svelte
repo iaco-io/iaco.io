@@ -1,20 +1,23 @@
 <script>
-	// every tag used in posts and pages, each with a switch: on promotes the tag to a category
-	// (shown with a bookmark instead of a tag, and listed in the blog's menu)
+	// every tag used in posts and pages, each with a switch: on promotes the tag to a category, which shows in
+	// the blog's menu with its own icon (a lucide icon; a bookmark if none)
 	import { Tag, BookBookmark, Save, Undo2 } from '@lucide/svelte';
+	import { DEFAULT_CATEGORY_ICON } from '#lib/tags.js';
 
 	/**
 	 * @type {{
 	 *   tags: [string, number][],
 	 *   categories: string[],
-	 *   onsave: (categories: string[]) => Promise<void>,
+	 *   icons: Record<string, string>,
+		 *   onsave: (categories: string[], icons: Record<string, string>) => Promise<void>,
 	 *   onclose: () => void
 	 * }}
 	 */
-	let { tags, categories, onsave, onclose } = $props();
+	let { tags, categories, icons: savedIcons, onsave, onclose } = $props();
 
-	// a copy to edit; nothing changes until saved
+	// copies to edit; nothing changes until saved
 	let picked = $state(new Set(categories));
+	let icons = $state({ ...savedIcons });
 	let saving = $state(false);
 
 	function toggle(/** @type {string} */ tag) {
@@ -27,11 +30,25 @@
 		saving = true;
 		try {
 			// a category whose tag is no longer used is dropped
-			await onsave(tags.map(([t]) => t).filter((t) => picked.has(t)));
+			await onsave(
+				tags.map(([t]) => t).filter((t) => picked.has(t)),
+				icons
+			);
 		} finally {
 			saving = false;
 		}
 	}
+
+	// the lucide icons' names, offered while typing one
+	let lucideNames = $state(/** @type {string[]} */ ([]));
+	$effect(() => {
+		fetch('/lucide/names.json')
+			.then((r) => r.json())
+			.then((n) => (lucideNames = n))
+			.catch(() => {});
+	});
+	const iconName = (/** @type {string} */ tag) => (icons[tag] ?? '').replace(/^lucide\//, '');
+	const iconUrl = (/** @type {string} */ tag) => `/lucide/${(icons[tag] || DEFAULT_CATEGORY_ICON).replace(/^lucide\//, '')}.svg`;
 
 	/** @type {HTMLDialogElement | undefined} */
 	let dialog = $state();
@@ -58,12 +75,33 @@
 							><span class="knob">{#if on}<BookBookmark size={14} strokeWidth={2} />{:else}<Tag size={14} strokeWidth={2} />{/if}</span></span
 						>
 					</button>
+					{#if on}
+						<!-- the category's icon in the menu -->
+						<div class="looks">
+							<span class="preview" style:--icon="url({JSON.stringify(iconUrl(tag))})" aria-hidden="true"></span>
+							<input
+								aria-label="{tag}'s icon"
+								list="category-icons"
+								placeholder="book-bookmark"
+								autocapitalize="off"
+								spellcheck="false"
+								value={iconName(tag)}
+								oninput={(e) => {
+									const v = e.currentTarget.value.trim().toLowerCase();
+									icons[tag] = v && v !== 'book-bookmark' ? `lucide/${v}` : '';
+								}}
+							/>
+						</div>
+					{/if}
 				</li>
 			{/each}
 		</ul>
 	{:else}
 		<p class="empty">no tags yet. add them to posts and pages.</p>
 	{/if}
+	<datalist id="category-icons">
+		{#each lucideNames as n}<option value={n}></option>{/each}
+	</datalist>
 	<div class="buttons">
 		<button class="pill" aria-label="cancel" title="cancel" onclick={onclose}><Undo2 size={18} /></button>
 		<button class="pill primary" aria-label="save" title="save" disabled={saving} onclick={save}>
@@ -105,6 +143,7 @@
 
 	li {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.6rem;
 		padding: 0.5rem 0.7rem;
@@ -115,6 +154,36 @@
 	.icon {
 		display: flex;
 		color: var(--muted);
+	}
+
+	/* name and icon of a category, under its row */
+	.looks {
+		display: flex;
+		flex-basis: 100%;
+		align-items: center;
+		gap: 0.5rem;
+		padding-left: 1.85rem;
+	}
+
+	.looks input {
+		flex: 1;
+		min-width: 0;
+		padding: 0.45rem 0.7rem;
+		border: 1px solid var(--glass-edge);
+		border-radius: 0.7rem;
+		font: inherit;
+		font-size: 16px;
+		color: var(--fg);
+		background: var(--glass);
+	}
+
+	.preview {
+		flex: none;
+		width: 1.3rem;
+		height: 1.3rem;
+		background: currentColor;
+		-webkit-mask: var(--icon) center / contain no-repeat;
+		mask: var(--icon) center / contain no-repeat;
 	}
 
 	.name {

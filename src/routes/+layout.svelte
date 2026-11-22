@@ -1,7 +1,7 @@
 <script>
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { Waves, Newspaper, BookBookmark } from '@lucide/svelte';
+	import { Waves, Newspaper } from '@lucide/svelte';
 	import { tagUrl } from '#lib/tags.js';
 	import { external, destination } from '#lib/links.js';
 	import Menu from '#lib/Menu.svelte';
@@ -9,13 +9,13 @@
 	import DayClock from '#lib/DayClock.svelte';
 	import { page } from '$app/state';
 
-	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string, icon: { src: string, mask: boolean } }[], categories: string[] } }} */
+	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string, icon: { src: string, mask: boolean } }[], categories: { tag: string, name: string, icon: { src: string, mask: boolean } }[] } }} */
 	let { children, data } = $props();
 
 	const links = $derived([
 		{ href: '/', label: 'iaco.io', icon: Waves },
 		{ href: '/#latest', label: 'latest', icon: Newspaper },
-		...data.categories.map((tag) => ({ href: tagUrl(tag), label: tag, icon: BookBookmark })),
+		...data.categories.map(({ tag, name, icon }) => ({ href: tagUrl(tag), label: name, picture: icon })),
 		...data.pages.map((p) => ({ href: p.url, label: p.title, picture: p.icon }))
 	]);
 

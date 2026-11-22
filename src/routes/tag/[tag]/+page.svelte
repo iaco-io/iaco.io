@@ -7,8 +7,8 @@
 </script>
 
 <svelte:head>
-	<title>{data.tag} — iaco.io</title>
-	<meta name="description" content="{data.category ? 'category' : 'tag'}: {data.tag}" />
+	<title>{data.name} — iaco.io</title>
+	<meta name="description" content="{data.category ? 'category' : 'tag'}: {data.name}" />
 </svelte:head>
 
 <main>
@@ -16,7 +16,7 @@
 		<span class="kind">
 			{#if data.category}<BookBookmark size={18} strokeWidth={1.75} /> category{:else}<Tag size={18} strokeWidth={1.75} /> tag{/if}
 		</span>
-		<h1>{data.tag}</h1>
+		<h1>{data.name}</h1>
 	</header>
 	<ul>
 		{#each data.items as item (item.url)}
