@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen, Strikethrough, Code, TextQuote, ListTodo, SquareCode } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen, ScanEye, Strikethrough, Code, TextQuote, ListTodo, SquareCode } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -237,6 +237,15 @@
 		pos = 0;
 		keys = false;
 		tray = '';
+	}
+	// the eye in the text's corner: back to the form, at the previews
+	/** @type {HTMLElement | undefined} */
+	let previews = $state();
+	async function seePreviews() {
+		leave();
+		textarea?.blur();
+		await tick();
+		previews?.scrollIntoView({ block: 'start', behavior: 'instant' });
 	}
 	let typing = $state(false); // the text has the keyboard
 	// in the text while typing, ios moves the cursor after a touch is held a moment, and drags a selection's
@@ -746,7 +755,7 @@
 
 	{#if !short}
 		<button class="pill body-button" onclick={() => (pos = 1)}><NotebookPen size={18} /> edit markdown body</button>
-		<div class="previews">
+		<div class="previews" bind:this={previews}>
 			<Device label="phone" width={390} height={844} bind:frame={phone} />
 			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
 		</div>
@@ -836,9 +845,12 @@
 				</div>
 			{/if}
 		</div>
-		<div class="paper">
-			<pre class="styled" aria-hidden="true">{@html styled}</pre>
-			<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
+		<div class="text">
+			<div class="paper">
+				<pre class="styled" aria-hidden="true">{@html styled}</pre>
+				<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
+			</div>
+			<button class="pill square to-previews" title="see the previews" aria-label="see the previews" onclick={seePreviews}><ScanEye size={18} /></button>
 		</div>
 
 		</div>
@@ -1416,8 +1428,24 @@
 		color: var(--muted);
 	}
 
-	.writer .paper {
+	/* the text and the eye in its corner */
+	.writer .text {
 		order: 1;
+		flex: 1;
+		position: relative;
+		display: flex;
+		min-height: 0;
+	}
+
+	.to-previews {
+		position: absolute;
+		right: 0.6rem;
+		bottom: 0.6rem;
+		width: 2.4rem;
+		height: 2.4rem;
+	}
+
+	.writer .paper {
 		flex: 1;
 		overflow-y: auto;
 		overscroll-behavior: contain;
@@ -1564,6 +1592,9 @@
 		align-items: start;
 		gap: 1rem;
 		margin-top: 1.5rem;
+		scroll-margin-top: 4rem; /* clear of the back button */
+		/* room below the last preview */
+		padding-bottom: 200px;
 	}
 
 	.delete {
