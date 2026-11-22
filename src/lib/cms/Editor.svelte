@@ -847,7 +847,7 @@
 		</div>
 	{/if}
 
-<!-- save floats above the menu button (above the scroll button on big screens, where the menu is at the top) -->
+<!-- save floats in the bottom right corner -->
 <button
 	class="round save"
 	aria-label={busy || 'save'}
@@ -925,7 +925,7 @@
 	.save {
 		position: fixed;
 		right: var(--gap);
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 7.5rem);
+		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
 		z-index: 15;
 		border: 0;
 		color: var(--bg);
@@ -935,12 +935,6 @@
 	.save:disabled {
 		opacity: 0.4;
 		cursor: default;
-	}
-
-	@media (min-width: 768px) {
-		.save {
-			bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 3.75rem);
-		}
 	}
 
 	.actions {

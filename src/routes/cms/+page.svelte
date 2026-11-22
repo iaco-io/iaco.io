@@ -781,7 +781,8 @@
 </main>
 <input type="file" bind:this={mediaInput} onchange={addMedia} multiple hidden />
 
-{#if api}
+<!-- not in the editor: it has its own save button there, in the corner -->
+{#if api && !editing}
 	<Fabs onmenu={() => (menu = true)}>
 		{#snippet extra()}
 			{#if !editing && progress > 2.3}
