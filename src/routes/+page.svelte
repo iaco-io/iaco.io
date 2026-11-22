@@ -23,7 +23,8 @@
 	</section>
 
 	{#if data.posts.length}
-		<section id="latest" class="topics">
+		<!-- the posts as a grid: two columns on a phone, more on wider screens -->
+		<section id="latest" class="topics posts">
 			{#each data.posts as post}
 				<a class="card glass post" href={post.url}>
 					{#if post.image}<img src={post.image} alt="" />{/if}
@@ -97,13 +98,27 @@
 		scroll-margin-top: calc(var(--top) + 6rem);
 	}
 
+	.posts {
+		grid-template-columns: repeat(auto-fill, minmax(min(10rem, 100%), 1fr));
+		gap: 0.75rem;
+	}
+
+	@media (min-width: 640px) {
+		.posts {
+			grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+			gap: 1rem;
+		}
+	}
+
 	.card {
-		padding: 1.75rem;
+		--pad: 1.75rem;
+		padding: var(--pad);
 		border-radius: 1.5rem;
 		color: var(--accent);
 	}
 
 	.post {
+		--pad: clamp(1rem, 3vw, 1.5rem);
 		display: block;
 		transition: transform 0.2s ease;
 	}
@@ -114,8 +129,8 @@
 
 	.post img {
 		display: block;
-		width: calc(100% + 3.5rem);
-		margin: -1.75rem -1.75rem 0;
+		width: calc(100% + 2 * var(--pad));
+		margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) 0;
 		aspect-ratio: 16 / 10;
 		object-fit: cover;
 		border-radius: 1.5rem 1.5rem 0 0;
@@ -129,6 +144,16 @@
 		letter-spacing: -0.02em;
 		color: var(--fg);
 		font-weight: 600;
+	}
+
+	.post h2 {
+		margin-top: 0.8rem;
+		font-size: clamp(1.02rem, 3.2vw, 1.25rem);
+		overflow-wrap: anywhere;
+	}
+
+	.post p {
+		font-size: clamp(0.88rem, 2.6vw, 1rem);
 	}
 
 	.card p {

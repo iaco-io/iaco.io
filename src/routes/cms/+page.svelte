@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { Star, ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -30,7 +30,7 @@
 
 	/** @typedef {'posts' | 'pages' | 'redirects'} Kind */
 	/** @typedef {Kind | 'media'} Section */
-	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted: boolean, icon: string, alias: string[], tags: string[], redirect: string }} Meta */
+	/** @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted: boolean, featured: boolean, icon: string, alias: string[], tags: string[], redirect: string }} Meta */
 	/** @typedef {{ kind: Kind, name: string, sha: string, meta: Meta, body: string }} Entry */
 
 	// the token is remembered only in the installed app; in a browser tab it lasts until the tab closes
@@ -179,6 +179,7 @@
 		date: m.date ?? '',
 		draft: m.draft === 'true',
 		unlisted: m.unlisted === 'true',
+		featured: m.featured === 'true',
 		icon: m.icon ?? '',
 		alias: [m.alias ?? []].flat(),
 		tags: [m.tags ?? []].flat(),
@@ -230,8 +231,10 @@
 	let filters = $state({ posts: { draft: false, local: false, first: true }, pages: { draft: false, local: false, unlisted: false, first: true } });
 	const isLocal = (/** @type {Entry} */ e) => !!partials[`${e.kind}/${e.name}`];
 	// the groups when sorting: 0 drafts and unsaved, then (pages only) 1 unlisted, then the rest
-	const GROUPS = { posts: ['draft / local posts', 'active posts'], pages: ['draft / local pages', 'unlisted pages', 'active pages'] };
-	const rank = (/** @type {Entry} */ e) => (e.meta.draft || isLocal(e) ? 0 : e.kind === 'pages' && e.meta.unlisted ? 1 : e.kind === 'pages' ? 2 : 1);
+	// (posts: drafts and unsaved, then featured, then the rest; pages: drafts and unsaved, unlisted, the rest)
+	const GROUPS = { posts: ['draft / local posts', 'featured posts', 'active posts'], pages: ['draft / local pages', 'unlisted pages', 'active pages'] };
+	const rank = (/** @type {Entry} */ e) =>
+		e.meta.draft || isLocal(e) ? 0 : (e.kind === 'pages' ? e.meta.unlisted : e.meta.featured) ? 1 : 2;
 	/** @param {'posts' | 'pages'} k @param {Entry} e */
 	function shown(k, e) {
 		const f = /** @type {Record<string, boolean>} */ (filters[k]);
@@ -416,7 +419,7 @@
 			name: '',
 			from: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: kind === 'posts' ? today : '' /* only posts have a date (rss) */, draft: kind !== 'redirects', unlisted: false, icon: '', alias: [], tags: [], redirect: '' },
+			meta: { title: '', description: '', image: '', date: kind === 'posts' ? today : '' /* only posts have a date (rss) */, draft: kind !== 'redirects', unlisted: false, featured: false, icon: '', alias: [], tags: [], redirect: '' },
 			body: ''
 		};
 		// an untouched new item isn't worth keeping
@@ -733,6 +736,7 @@
 						<span class="marks">
 							{#if p.kind === 'pages' && p.meta.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
 							{#if p.kind !== 'redirects' && p.meta.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
+							{#if p.kind === 'posts' && p.meta.featured}<span class="mark" title="featured"><Star size={18} /></span>{/if}
 						</span>
 					</button>
 				</li>
@@ -791,6 +795,7 @@
 							{/if}
 							{#if entry.kind === 'pages' && now.unlisted}<span class="mark" title="unlisted"><ListX size={18} /></span>{/if}
 							{#if entry.kind !== 'redirects' && now.draft}<span class="mark" title="draft"><PencilLine size={18} /></span>{/if}
+							{#if entry.kind === 'posts' && now.featured}<span class="mark" title="featured"><Star size={18} /></span>{/if}
 						</span>
 						{#if entry.kind === 'redirects'}<span class="detail">{entry.meta.redirect.replace(/^https?:\/\//, '')}</span>{/if}
 					</button>

@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen, ScanEye, Strikethrough, Code, TextQuote, ListTodo, SquareCode } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen, ScanEye, Strikethrough, Code, TextQuote, ListTodo, SquareCode, Star } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -11,7 +11,7 @@
 	import { urls, serialize } from '../markdown.js';
 
 	/**
-	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted?: boolean, icon?: string, alias: string[], redirect: string }} Meta
+	 * @typedef {{ title: string, description: string, image: string, date: string, draft: boolean, unlisted?: boolean, featured?: boolean, icon?: string, alias: string[], redirect: string }} Meta
 	 * @type {{
 	 *   item: { kind: 'posts' | 'pages' | 'redirects', name: string, from: string, isNew: boolean, meta: Meta, body: string },
 	 *   images: string[],
@@ -681,7 +681,7 @@
 				<button class="pill add" onclick={() => item.meta.alias.push('')}><Plus size={16} /> alias</button>
 			</div>
 		</div>
-		<!-- draft and, for pages, unlisted, side by side -->
+		<!-- draft and, for pages, unlisted (for posts, featured), side by side -->
 		<div class="switches wide">
 			<button
 				class="switch"
@@ -701,6 +701,16 @@
 				>
 					<span class="track"><span class="knob">{#if item.meta.unlisted}<ListX size={14} strokeWidth={2} />{/if}</span></span>
 					unlisted <small>not in the menu, still opens by its address</small>
+				</button>
+			{:else if item.kind === 'posts'}
+				<button
+					class="switch"
+					role="switch"
+					aria-checked={!!item.meta.featured}
+					onclick={() => (item.meta.featured = !item.meta.featured)}
+				>
+					<span class="track"><span class="knob">{#if item.meta.featured}<Star size={14} strokeWidth={2} />{/if}</span></span>
+					featured
 				</button>
 			{/if}
 		</div>
