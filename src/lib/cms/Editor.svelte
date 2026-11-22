@@ -238,12 +238,11 @@
 		keys = false;
 		tray = '';
 	}
-	// the eye in the text's corner: back to the form, at the previews
+	// the eye in the text's corner: back to the form, at the previews (the keyboard stays up)
 	/** @type {HTMLElement | undefined} */
 	let previews = $state();
 	async function seePreviews() {
 		leave();
-		textarea?.blur();
 		await tick();
 		previews?.scrollIntoView({ block: 'start', behavior: 'instant' });
 	}
@@ -323,7 +322,7 @@
 		const start = (/** @type {TouchEvent} */ e) => (down = { x: e.touches[0].clientX, y: e.touches[0].clientY });
 		const end = (/** @type {TouchEvent} */ e) => {
 			const t = e.changedTouches[0];
-			const button = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest('.toolbar button, .images button, .images label, .tray button'));
+			const button = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest('.toolbar button, .images button, .images label, .tray button, .to-previews'));
 			if (!button || !typing || !down || Math.hypot(t.clientX - down.x, t.clientY - down.y) > 10) return;
 			e.preventDefault();
 			button.click();
@@ -373,7 +372,7 @@
 			if (!s) return;
 			// a tap on the form (not a drag) puts away the keyboard left up from the text
 			const t = e.changedTouches?.[0];
-			if (!dragging && pos === 0 && typing && t && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 10) textarea?.blur();
+			if (!dragging && s.from === 0 && pos === 0 && typing && t && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 10) textarea?.blur();
 			if (dragging) {
 				const to = Math.abs(s.speed) > 0.35 ? (s.speed < 0 ? 1 : 0) : Math.round(pos);
 				dragging = false;
@@ -850,7 +849,7 @@
 				<pre class="styled" aria-hidden="true">{@html styled}</pre>
 				<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
 			</div>
-			<button class="pill square to-previews" title="see the previews" aria-label="see the previews" onclick={seePreviews}><ScanEye size={18} /></button>
+			<button class="pill square to-previews" title="see the previews" aria-label="see the previews" onpointerdown={keepFocus} onclick={seePreviews}><ScanEye size={18} /></button>
 		</div>
 
 		</div>
