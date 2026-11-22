@@ -3,7 +3,7 @@ title: sleep
 alias:
   - rest
 tags:
-  - health_fundamentals
+  - health_101
 unlisted: true
 icon: lucide/bed-double
 ---
