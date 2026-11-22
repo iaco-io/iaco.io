@@ -1,5 +1,5 @@
 <script>
-	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen } from '@lucide/svelte';
+	import { ArrowLeft, CloudAlert, ImagePlus, Save, Trash2, Plus, X, ClipboardPaste, Music, Film, File as FileIcon, Calendar, ChevronDown, Image as ImageIcon, Tag, BookBookmark, Bold, Italic, Highlighter, Link as LinkIcon, LayoutGrid, Table, PencilLine, ListX, Images, NotebookPen, Strikethrough, Code, TextQuote, ListTodo, SquareCode } from '@lucide/svelte';
 	import { cleanTag } from '../tags.js';
 	import Device from './Device.svelte';
 	import Gallery from './Gallery.svelte';
@@ -115,6 +115,21 @@
 		textarea?.setSelectionRange(caret, caret);
 	}
 
+	/** puts a mark at the start of the line with the cursor (each selected line), or takes it away again */
+	async function prefix(/** @type {string} */ mark) {
+		const start = textarea?.selectionStart ?? item.body.length;
+		const end = textarea?.selectionEnd ?? start;
+		const from = item.body.lastIndexOf('\n', start - 1) + 1;
+		const lines = item.body.slice(from, end).split('\n');
+		const on = lines.every((l) => l.startsWith(mark));
+		const changed = lines.map((l) => (on ? l.slice(mark.length) : mark + l)).join('\n');
+		item.body = item.body.slice(0, from) + changed + item.body.slice(end);
+		await tick();
+		textarea?.focus();
+		const caret = from + changed.length;
+		textarea?.setSelectionRange(caret, caret);
+	}
+
 	const COLOURS = ['', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫️', '⚪️', '🟤'];
 	let colours = $state(false);
 	const keepFocus = (/** @type {Event} */ e) => e.preventDefault();
@@ -217,19 +232,25 @@
 	const focus = $derived(pos > 0 || dragging);
 	let tray = $state(/** @type {'' | 'images'} */ (''));
 	const styled = $derived(focus ? highlight(item.body) : '');
+	// back to the form; the keyboard stays up (and the text with it, out of sight) until a tap elsewhere
 	function leave() {
 		pos = 0;
 		keys = false;
 		tray = '';
-		textarea?.blur();
 	}
+	let typing = $state(false); // the text has the keyboard
+	// in the text while typing, ios moves the cursor after a touch is held a moment, and drags a selection's
+	// handles: those touches are the cursor's, not a swipe or a scroll to stop
+	const cursorTouch = (/** @type {EventTarget | null} */ target, /** @type {number} */ held) =>
+		typing && target === textarea && (held > 280 || textarea.selectionStart !== textarea.selectionEnd);
+	const live = $derived(focus || typing);
 	// it fits the visible part of the screen, so the toolbar stays right above the phone keyboard;
 	// the page behind doesn't scroll
-	let view = $state({ top: 0, height: 0 });
+	let view = $state({ top: 0, height: 0, keyboard: false });
 	$effect(() => {
 		if (!focus) return;
 		const vv = window.visualViewport;
-		const fit = () => (view = { top: vv?.offsetTop ?? 0, height: vv?.height ?? innerHeight });
+		const fit = () => (view = { top: vv?.offsetTop ?? 0, height: vv?.height ?? innerHeight, keyboard: !!vv && vv.height < innerHeight - 120 });
 		fit();
 		vv?.addEventListener('resize', fit);
 		vv?.addEventListener('scroll', fit);
@@ -258,8 +279,12 @@
 	$effect(() => {
 		if (!writer) return;
 		let y = 0;
-		const start = (/** @type {TouchEvent} */ e) => (y = e.touches[0].clientY);
+		let t0 = 0;
+		let free = /** @type {boolean | null} */ (null); // the cursor's touch: left alone
+		const start = (/** @type {TouchEvent} */ e) => ((y = e.touches[0].clientY), (t0 = e.timeStamp), (free = null));
 		const move = (/** @type {TouchEvent} */ e) => {
+			free ??= cursorTouch(e.target, e.timeStamp - t0);
+			if (free) return;
 			const dy = y - e.touches[0].clientY; // > 0: the content would move up
 			y = e.touches[0].clientY;
 			for (let el = /** @type {HTMLElement | null} */ (e.target); el && el !== writer; el = el.parentElement) {
@@ -280,9 +305,31 @@
 		};
 	});
 
+	// buttons under the text keep the keyboard up: ios moves the focus on a tap even when pointerdown is
+	// stopped, so a tap there (not a drag) becomes a plain click, which leaves the focus in the text
+	$effect(() => {
+		if (!writer) return;
+		/** @type {{ x: number, y: number } | null} */
+		let down = null;
+		const start = (/** @type {TouchEvent} */ e) => (down = { x: e.touches[0].clientX, y: e.touches[0].clientY });
+		const end = (/** @type {TouchEvent} */ e) => {
+			const t = e.changedTouches[0];
+			const button = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest('.toolbar button, .images button, .images label, .tray button'));
+			if (!button || !typing || !down || Math.hypot(t.clientX - down.x, t.clientY - down.y) > 10) return;
+			e.preventDefault();
+			button.click();
+		};
+		writer.addEventListener('touchstart', start, { passive: true });
+		writer.addEventListener('touchend', end, { passive: false });
+		return () => {
+			writer?.removeEventListener('touchstart', start);
+			writer?.removeEventListener('touchend', end);
+		};
+	});
+
 	// the swipe between the two screens follows the finger; a flick or past half way goes over
 	$effect(() => {
-		/** @type {{ x: number, y: number, from: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number } | null} */
+		/** @type {{ x: number, y: number, from: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number, t0: number, target: Element } | null} */
 		let s = null;
 		/** @param {TouchEvent} e */
 		const start = (e) => {
@@ -290,14 +337,17 @@
 			const target = /** @type {Element} */ (e.target);
 			// not from the rows that scroll sideways, nor the left edge of the form (that goes back to the list)
 			if (target.closest?.('.toolbar, .images, .tray, .colours, .dialog, dialog') || (pos === 0 && x < 30)) return void (s = null);
-			s = { x, y, from: pos, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0 };
+			s = { x, y, from: pos, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0, t0: e.timeStamp, target };
 		};
 		/** @param {TouchEvent} e */
 		const move = (e) => {
 			if (!s) return;
 			const { clientX: x, clientY: y } = e.touches[0];
 			const dx = x - s.x;
-			if (s.horizontal === null && Math.hypot(dx, y - s.y) > 6) s.horizontal = Math.abs(dx) > Math.abs(y - s.y);
+			if (s.horizontal === null && Math.hypot(dx, y - s.y) > 6) {
+				if (cursorTouch(s.target, e.timeStamp - s.t0)) return void (s = null);
+				s.horizontal = Math.abs(dx) > Math.abs(y - s.y);
+			}
 			if (s.horizontal === false) return void (s = null);
 			if (!s.horizontal) return;
 			const dt = e.timeStamp - s.lastT;
@@ -310,8 +360,11 @@
 			dragging = true;
 			pos = next;
 		};
-		const end = () => {
+		const end = (/** @type {TouchEvent} */ e) => {
 			if (!s) return;
+			// a tap on the form (not a drag) puts away the keyboard left up from the text
+			const t = e.changedTouches?.[0];
+			if (!dragging && pos === 0 && typing && t && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 10) textarea?.blur();
 			if (dragging) {
 				const to = Math.abs(s.speed) > 0.35 ? (s.speed < 0 ? 1 : 0) : Math.round(pos);
 				dragging = false;
@@ -709,9 +762,10 @@
 		<div
 			bind:this={writer}
 			class="writer"
-			class:shown={focus}
+			class:shown={live}
 			class:dragging
-			inert={!focus}
+			class:keyboard={view.keyboard}
+			inert={!live}
 			style:top="{view.top}px"
 			style:height={view.height ? `${view.height}px` : null}
 			style:transform="translateX({(1 - pos) * 100}%)"
@@ -719,7 +773,7 @@
 		>
 		<div class="focus-top">
 			<span class="focus-title">{item.meta.title || 'untitled'}</span>
-			<button class="pill square" title="back to the form" aria-label="back to the form" onclick={leave}><X size={18} /></button>
+			<button class="pill square" title="back to the form" aria-label="back to the form" onclick={() => (leave(), textarea?.blur())}><X size={18} /></button>
 		</div>
 		<div class="images" class:shut={tray !== 'images'}>
 			<label class="pill square" title="upload images">
@@ -759,8 +813,13 @@
 				<button class="pill square sp" class:on={keys} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onpointerdown={keepFocus} onclick={() => ((keys = !keys), (tray = ''))}><tp>toki</tp></button>
 			<button class="pill square" title="bold" aria-label="bold" onpointerdown={keepFocus} onclick={() => wrap('**', '**', 'bold')}><Bold size={18} /></button>
 			<button class="pill square" title="italic" aria-label="italic" onpointerdown={keepFocus} onclick={() => wrap('*', '*', 'italic')}><Italic size={18} /></button>
+			<button class="pill square" title="strike through" aria-label="strike through" onpointerdown={keepFocus} onclick={() => wrap('~~', '~~', 'text')}><Strikethrough size={18} /></button>
 			<button class="pill square" class:on={colours} title="highlight" aria-label="highlight" onpointerdown={keepFocus} onclick={() => (colours = !colours)}><Highlighter size={18} /></button>
+			<button class="pill square" title="code" aria-label="code" onpointerdown={keepFocus} onclick={() => wrap('`', '`', 'code')}><Code size={18} /></button>
 			<button class="pill square" title="link" aria-label="link" onpointerdown={keepFocus} onclick={() => wrap('[', '](https://)', 'text')}><LinkIcon size={18} /></button>
+			<button class="pill square" title="quote" aria-label="quote" onpointerdown={keepFocus} onclick={() => prefix('> ')}><TextQuote size={18} /></button>
+			<button class="pill square" title="task" aria-label="task" onpointerdown={keepFocus} onclick={() => prefix('- [ ] ')}><ListTodo size={18} /></button>
+			<button class="pill square" title="code block" aria-label="code block" onpointerdown={keepFocus} onclick={() => block('```\ncode\n```')}><SquareCode size={18} /></button>
 			<button class="pill square" title="grid of cards" aria-label="grid" onpointerdown={keepFocus} onclick={() => block('```grid\n![](image.jpg)\n[](https://)\ncard 1\ntext\n___\ncard 2\ntext\n```')}><LayoutGrid size={18} /></button>
 			<button class="pill square" title="table" aria-label="table" onpointerdown={keepFocus} onclick={() => block('| a | b |\n|---|---|\n| 1 | 2 |')}><Table size={18} /></button>
 			{#if colours}
@@ -779,7 +838,7 @@
 		</div>
 		<div class="paper">
 			<pre class="styled" aria-hidden="true">{@html styled}</pre>
-			<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…"></textarea>
+			<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
 		</div>
 
 		</div>
@@ -1308,6 +1367,10 @@
 		right: 0;
 		height: 100vh;
 		background: var(--bg);
+	}
+
+	.writer.keyboard {
+		padding-bottom: 0.35rem;
 	}
 
 	.writer.shown {
