@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { ListX, PencilLine, ArrowUpNarrowWide, Tag, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -13,7 +13,10 @@
 	import ImageDialog from '#lib/cms/ImageDialog.svelte';
 	import { pasteFile } from '#lib/cms/clipboard.js';
 	import { strip } from '#lib/cms/strip.js';
-	import { cleanTag, savedCategories, categoryIcons, readCategories, writeCategories } from '#lib/tags.js';
+	import { cleanTag, savedCategories, categoryIcons, readCategories, writeCategories, tagUrl, tagName } from '#lib/tags.js';
+	import savedOrder from '../../menu.json';
+	import MenuOrderDialog from '#lib/cms/MenuOrderDialog.svelte';
+	import { menuList } from '#lib/menuList.js';
 	import TagsDialog from '#lib/cms/TagsDialog.svelte';
 	import DayClock from '#lib/DayClock.svelte';
 	import Thumb from '#lib/cms/Thumb.svelte';
@@ -243,6 +246,39 @@
 	// their own icons
 	let categoryLooks = $state({ icons: categoryIcons });
 	let tagsOpen = $state(false);
+
+	// the order of the blog menu's links, kept in src/menu.json (by address)
+	const MENU = 'src/menu.json';
+	let menuOrder = $state(/** @type {string[]} */ (savedOrder));
+	let orderOpen = $state(false);
+	// the links as the blog's menu has them: home, latest, the used categories, the listed pages
+	const menuLinks = $derived.by(() => {
+		const live = entries.filter((e) => !e.meta.draft);
+		const used = new Set(live.flatMap((e) => e.meta.tags ?? []));
+		const links = [
+			{ href: '/', label: 'iaco.io' },
+			{ href: '/#latest', label: 'latest' },
+			...categories.filter((t) => used.has(t)).map((t) => ({ href: tagUrl(t), label: tagName(t) })),
+			...live
+				.filter((e) => e.kind === 'pages' && !e.meta.unlisted)
+				.toSorted((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }))
+				.map((e) => ({ href: urls('pages', e.name).url, label: (e.meta.title || e.name).toLowerCase() }))
+		];
+		const rank = (/** @type {string} */ href) => (menuOrder.indexOf(href) < 0 ? menuOrder.length : menuOrder.indexOf(href));
+		return links.toSorted((a, b) => rank(a.href) - rank(b.href));
+	});
+	async function saveOrder(/** @type {string[]} */ order) {
+		if (!api) return;
+		try {
+			const sha = (await api.list()).find((f) => f.path === MENU)?.sha;
+			await api.write(MENU, utf8ToBase64(JSON.stringify(order, null, '\t') + '\n'), sha, 'cms: menu order');
+			menuOrder = order;
+			orderOpen = false;
+			flash('menu order saved. the site updates in a minute or two');
+		} catch (err) {
+			flash(/** @type {Error} */ (err).message);
+		}
+	}
 	/** every tag used in posts and pages, with how many use it */
 	const allTags = $derived.by(() => {
 		/** @type {Record<string, number>} */
@@ -815,6 +851,10 @@
 		<TagsDialog tags={allTags} {categories} icons={categoryLooks.icons} {images} {resolve} onsave={saveCategories} onclose={() => (tagsOpen = false)} />
 	{/if}
 
+	{#if orderOpen}
+		<MenuOrderDialog links={menuLinks} onsave={saveOrder} onclose={() => (orderOpen = false)} />
+	{/if}
+
 	{#if alphabetOpen}
 		<AlphabetDialog setup={alphabet} onsave={saveAlphabet} onclose={() => (alphabetOpen = false)} />
 	{/if}
@@ -852,10 +892,7 @@
 	<Panel bind:open={menu} label="cms">
 		<!-- the blog's little clock, top left of the menu, level with the close button -->
 		<div class="menu-clock"><DayClock inline /></div>
-		<button class="entry" onclick={() => ((menu = false), logout())}>
-			<Lock size={24} strokeWidth={1.75} /> lock
-		</button>
-		<ul class="entries sections">
+		<ul class="entries" {@attach menuList(() => menu)}>
 			{#each KINDS as { kind: k, icon: Icon }}
 				<li>
 					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
@@ -871,6 +908,12 @@
 				</button>
 			</li>
 			<li>
+				<button class="entry" onclick={() => ((menu = false), (orderOpen = true))}>
+					<ListOrdered size={24} strokeWidth={1.75} />
+					menu order
+				</button>
+			</li>
+			<li>
 				<!-- iaco's alphabet is called abelus, written in itself (a bee) -->
 				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>
 					<BeeIcon size={24} strokeWidth={1.75} />
@@ -878,6 +921,9 @@
 				</button>
 			</li>
 		</ul>
+		<button class="entry lock" onclick={() => ((menu = false), logout())}>
+			<Lock size={24} strokeWidth={1.75} /> lock
+		</button>
 		{#snippet bottom()}
 			<ThemeToggle />
 			<Refresh />
@@ -1063,13 +1109,9 @@
 		color: var(--soft);
 	}
 
-	/* sections sit in the middle of the screen */
-	:global(.panel) ul.sections {
-		position: absolute;
-		top: 50%;
-		right: 2rem;
-		left: 2rem;
-		transform: translateY(-50%);
+	/* lock sits at the bottom, under the list */
+	.lock {
+		margin-top: auto;
 	}
 
 	/* the opposite of the glass buttons: solid cream on blue, ink on cream */

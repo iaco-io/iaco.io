@@ -5,6 +5,7 @@
 	import ThemeToggle from './ThemeToggle.svelte';
 	import Social from './Social.svelte';
 	import Rain from './Rain.svelte';
+	import { menuList } from './menuList.js';
 
 	/** @type {{ open: boolean, links: { href: string, label: string, icon?: import('svelte').Component<any>, picture?: { src: string, mask: boolean } }[] }} */
 	let { open = $bindable(), links } = $props();
@@ -24,44 +25,12 @@
 		timer = setTimeout(() => (copied = false), 2000);
 	}
 
-	/** @type {HTMLElement | undefined} */
-	let list = $state();
-	let more = $state(false);
-	const measure = () => list && (more = list.scrollTop + list.clientHeight < list.scrollHeight - 1);
-	// when the menu opens with more links than fit, the list dips a little and comes back: there's more below.
-	// drawn frame by frame (smooth scrolling can be cut short); only the opening starts or stops it
-	$effect(() => {
-		if (!open || !list || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-		const el = list;
-		let frame = 0;
-		const wait = setTimeout(() => {
-			if (el.scrollHeight <= el.clientHeight) return;
-			const start = performance.now();
-			const step = (/** @type {number} */ now) => {
-				const t = Math.min(1, (now - start) / 500);
-				el.scrollTop = Math.round(48 * Math.sin(Math.PI * t));
-				if (t < 1) frame = requestAnimationFrame(step);
-			};
-			frame = requestAnimationFrame(step);
-		}, 450);
-		return () => {
-			clearTimeout(wait);
-			cancelAnimationFrame(frame);
-			el.scrollTop = 0;
-		};
-	});
-	$effect(() => {
-		if (!list) return;
-		const observer = new ResizeObserver(measure);
-		observer.observe(list);
-		return () => observer.disconnect();
-	});
 </script>
 
 <Panel bind:open label="Main" edge>
 	<!-- the links scroll on their own when there are many: up to the top of the screen (under the close
 	     button), fading out at the bottom while there is more below -->
-	<ul class="entries scrolls" class:more bind:this={list} onscroll={measure}>
+	<ul class="entries" {@attach menuList(() => open)}>
 		{#each links as { href, label, icon: Icon, picture }}
 			<li>
 				<a class="entry" {href} onclick={close}>
@@ -103,27 +72,6 @@
 		background: currentColor;
 		-webkit-mask: var(--icon) center / contain no-repeat;
 		mask: var(--icon) center / contain no-repeat;
-	}
-
-	/* (over the panel's shared .entries rules) */
-	.entries.scrolls {
-		flex: 0 1 auto;
-		min-height: 0;
-		/* starts at the top of the screen; the room for the close button is padding, so it scrolls away */
-		margin: calc(-1 * (var(--top) + 5.5rem)) -0.5rem 0;
-		padding: calc(var(--top) + 5.5rem) 0.5rem 0.5rem;
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		scrollbar-width: none;
-	}
-
-	.scrolls::-webkit-scrollbar {
-		display: none;
-	}
-
-	.more {
-		-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
-		mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
 	}
 
 	.rain {

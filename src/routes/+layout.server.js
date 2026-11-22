@@ -1,6 +1,7 @@
 import { posts, pages, media } from '#lib/content.js';
 import { isIcon } from '#lib/markdown.js';
 import { savedCategories, categoryIcons, tagName, DEFAULT_CATEGORY_ICON } from '#lib/tags.js';
+import order from '../menu.json';
 
 /**
  * how a page's icon is drawn in the menu: lucide icons and one-colour svgs as a stencil in the text colour
@@ -24,6 +25,8 @@ export function load() {
 			.map(({ url, title, icon }) => ({ url, title: title.toLowerCase(), icon: menuIcon(icon) })),
 		categories: savedCategories
 			.filter((tag) => used.has(tag))
-			.map((tag) => ({ tag, name: tagName(tag), icon: menuIcon(categoryIcons[tag] || DEFAULT_CATEGORY_ICON) }))
+			.map((tag) => ({ tag, name: tagName(tag), icon: menuIcon(categoryIcons[tag] || DEFAULT_CATEGORY_ICON) })),
+		// the order set in the cms (links by address); links not in it come after, as usual
+		order: /** @type {string[]} */ (order)
 	};
 }

@@ -254,6 +254,27 @@
 		gap: 0.5rem;
 	}
 
+	/* a menu's list of links (see menuList.js): scrolls on its own, from the top of the screen (the room for the
+	   close button is padding, so it scrolls away under it), fading at the bottom while there is more below */
+	.panel :global(.entries.scrolls) {
+		flex: 0 1 auto;
+		min-height: 0;
+		margin: calc(-1 * (var(--top) + 5.5rem)) -0.5rem 0;
+		padding: calc(var(--top) + 5.5rem) 0.5rem 0.5rem;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: none;
+	}
+
+	.panel :global(.entries.scrolls::-webkit-scrollbar) {
+		display: none;
+	}
+
+	.panel :global(.entries.more) {
+		-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+		mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+	}
+
 	/* big menu entries, shared by the blog and the cms */
 	.panel :global(.entries) {
 		margin: 0;
