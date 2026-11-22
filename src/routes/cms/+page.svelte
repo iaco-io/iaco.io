@@ -356,7 +356,7 @@
 			name: '',
 			from: '',
 			isNew: true,
-			meta: { title: '', description: '', image: '', date: kind === 'redirects' ? '' : today, draft: kind !== 'redirects', unlisted: false, icon: '', alias: [], tags: [], redirect: '' },
+			meta: { title: '', description: '', image: '', date: kind === 'posts' ? today : '' /* only posts have a date (rss) */, draft: kind !== 'redirects', unlisted: false, icon: '', alias: [], tags: [], redirect: '' },
 			body: ''
 		};
 		// an untouched new item isn't worth keeping
@@ -377,7 +377,7 @@
 		if ((isNew || renamed) && files.includes(path)) return flash(`${name} already exists`);
 		try {
 			// redirects have no body to encrypt
-			const file = serialize(current.meta, k === 'redirects' ? '' : await encrypt(current.body));
+			const file = serialize(k === 'posts' ? current.meta : { ...current.meta, date: '' }, k === 'redirects' ? '' : await encrypt(current.body));
 			const message = `cms: ${isNew ? 'add' : renamed ? `rename ${from} to` : 'update'} ${k}/${name}`;
 			const sha = await api.write(path, utf8ToBase64(file), renamed ? undefined : current.sha, message);
 			if (renamed && current.sha) {

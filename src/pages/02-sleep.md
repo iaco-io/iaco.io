@@ -1,6 +1,5 @@
 ---
 title: sleep
-date: 2026-11-20
 alias:
   - rest
 tags:

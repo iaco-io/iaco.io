@@ -1,6 +1,5 @@
 ---
 title: calm
-date: 2026-11-20
 unlisted: true
 icon: lucide/flower-lotus
 ---

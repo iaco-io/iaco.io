@@ -1,7 +1,6 @@
 ---
 title: my socials
 description: (ᵔ🐽ᵔ)ฅ
-date: 2026-11-19
 ---
 enc:v1:
 sysCIUMBZEIKkKrgjsCL01K+GBAOW27sSq4UIXKopunkHpuzlAFiopmVsUuIM83tmUmECJGhwhyA

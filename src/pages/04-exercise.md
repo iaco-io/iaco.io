@@ -1,6 +1,5 @@
 ---
 title: gym
-date: 2026-11-20
 alias:
   - gym
   - move

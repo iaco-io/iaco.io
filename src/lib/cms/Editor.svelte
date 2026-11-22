@@ -592,7 +592,7 @@
 				<em>.md</em>
 			</span>
 		</label>
-		{#if !short}
+		{#if item.kind === 'posts'}
 			<label>
 				<span>date (rss only)</span>
 				<!-- shown as 2026-Nov-16; the real (invisible) date field on top opens the picker -->
@@ -602,6 +602,8 @@
 					<input type="date" bind:value={item.meta.date} />
 				</span>
 			</label>
+		{/if}
+		{#if !short}
 			<label class="wide">
 				<span>description</span>
 				<textarea class="grow" rows="1" bind:value={() => item.meta.description, (v) => (item.meta.description = flat(v))} placeholder="a short summary for lists and rss" onkeydown={oneLine} {@attach fit(() => item.meta.description)}></textarea>

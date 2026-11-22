@@ -1,6 +1,5 @@
 ---
 title: food
-date: 2026-11-20
 alias:
   - food
   - diet
