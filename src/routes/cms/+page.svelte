@@ -128,14 +128,15 @@
 	let scrollers = $state({});
 	/** @type {Record<string, number>} */
 	const places = {};
-	/** @type {Record<string, boolean>} */
-	let scrolled = $state({});
+	/** @type {Record<string, number>} */
+	let fades = $state({});
 	function remember(/** @type {string} */ k, /** @type {HTMLElement} */ el) {
 		places[k] = el.scrollTop;
-		scrolled[k] = el.scrollTop > 0;
+		const fade = Math.round(Math.min(40, Math.max(0, el.scrollTop)));
+		if (fades[k] !== fade) fades[k] = fade;
 	}
 	$effect(() => {
-		for (const [k, el] of Object.entries(scrollers)) if (el && places[k]) el.scrollTop = places[k];
+		for (const [k, el] of Object.entries(scrollers)) if (el && places[k]) (el.scrollTop = places[k]), remember(k, el);
 	});
 
 	/** `from` is the saved file name, so a changed name renames the file */
@@ -618,7 +619,7 @@
 
 {#snippet listOf(/** @type {Section} */ k)}
 	{#if k === 'media'}
-		<div class="scroll" class:scrolled={scrolled[k]} bind:this={scrollers[k]} onscroll={(e) => remember(k, e.currentTarget)}>{@render mediaList()}</div>
+		<div class="scroll" style:--fade="{fades[k] ?? 0}px" bind:this={scrollers[k]} onscroll={(e) => remember(k, e.currentTarget)}>{@render mediaList()}</div>
 	{:else}
 	<!-- posts: z to a (newest first); pages and redirects: a to z -->
 	{@const all = entries.filter((e) => e.kind === k)}
@@ -652,7 +653,7 @@
 			{/if}
 		</div>
 	{/if}
-	<div class="scroll" class:scrolled={scrolled[k]} bind:this={scrollers[k]} onscroll={(e) => remember(k, e.currentTarget)}>
+	<div class="scroll" style:--fade="{fades[k] ?? 0}px" bind:this={scrollers[k]} onscroll={(e) => remember(k, e.currentTarget)}>
 	{#if loading && !entries.length}
 		<p class="empty">loading…</p>
 	{:else if !items.length && !fresh.length}
@@ -968,6 +969,8 @@
 		flex: 1;
 		min-height: 0;
 		align-items: stretch;
+		/* only sideways: a few pixels of up-down here would scroll before the list does */
+		overflow-y: hidden;
 	}
 
 	main.lists .list {
@@ -991,10 +994,10 @@
 		padding-bottom: 11rem;
 	}
 
-	/* scrolled: the top fades under the filters and the header */
-	.scroll.scrolled {
-		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 2.5rem);
-		mask-image: linear-gradient(to bottom, transparent, #000 2.5rem);
+	/* the top fades under the filters, the fade growing with the first pixels scrolled (no sudden change) */
+	.scroll {
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade, 0px));
+		mask-image: linear-gradient(to bottom, transparent, #000 var(--fade, 0px));
 	}
 
 	.track {
