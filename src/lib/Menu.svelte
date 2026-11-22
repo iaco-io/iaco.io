@@ -38,7 +38,7 @@
 			if (el.scrollHeight <= el.clientHeight) return;
 			const start = performance.now();
 			const step = (/** @type {number} */ now) => {
-				const t = Math.min(1, (now - start) / 900);
+				const t = Math.min(1, (now - start) / 500);
 				el.scrollTop = Math.round(48 * Math.sin(Math.PI * t));
 				if (t < 1) frame = requestAnimationFrame(step);
 			};
