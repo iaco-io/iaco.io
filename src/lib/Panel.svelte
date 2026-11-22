@@ -52,15 +52,21 @@
 			return;
 		}
 		place();
-		const still = (/** @type {Event} */ e) => e.preventDefault();
+		// the page behind holds still; a long list in the menu scrolls itself
+		const still = (/** @type {Event} */ e) => !inList(e.target) && e.preventDefault();
 		addEventListener('wheel', still, { passive: false });
 		return () => removeEventListener('wheel', still);
 	});
 
+	/** @type {HTMLElement | undefined} */
+	let main = $state();
+	const inList = (/** @type {EventTarget | null} */ t) =>
+		!!main && main.scrollHeight > main.clientHeight && t instanceof Node && main.contains(t);
+
 	// dragging: `shift` is how far the panel is pushed out to the right (0 = fully open)
 	/** @type {HTMLElement | undefined} */
 	let panel = $state();
-	/** @type {{ x: number, y: number, from: boolean, width: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number } | null} */
+	/** @type {{ x: number, y: number, from: boolean, width: number, horizontal: boolean | null, lastX: number, lastT: number, speed: number, list: boolean } | null} */
 	let drag = $state(null);
 	let shift = $state(0);
 	const progress = $derived(drag ? 1 - shift / drag.width : open ? 1 : 0);
@@ -74,7 +80,7 @@
 		const { clientX: x, clientY: y } = e.touches[0];
 		// closed: only from the right edge; open: anywhere
 		if (!open && (!edge || x < window.innerWidth - 44)) return void (start = null);
-		start = { x, y, from: open, width: panel?.offsetWidth ?? 320, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0 };
+		start = { x, y, from: open, width: panel?.offsetWidth ?? 320, horizontal: null, lastX: x, lastT: e.timeStamp, speed: 0, list: open && inList(e.target) };
 	}
 
 	/** @param {TouchEvent} e */
@@ -91,7 +97,8 @@
 		if (dt > 0) d.speed = d.speed * 0.5 + ((x - d.lastX) / dt) * 0.5;
 		d.lastX = x;
 		d.lastT = e.timeStamp;
-		if (open) e.preventDefault();
+		// open, the page behind doesn't scroll; the menu's own list may, unless this is a sideways drag
+		if (open && !(d.list && !d.horizontal)) e.preventDefault();
 		if (!d.horizontal) {
 			if (d.horizontal === false) start = null;
 			return;
@@ -157,7 +164,7 @@
 		<button class="round glass close" onclick={close} aria-label="Close menu">
 			<X size={20} />
 		</button>
-		<div class="main">{@render children()}</div>
+		<div class="main" bind:this={main}>{@render children()}</div>
 		{#if bottom}<div class="bottom">{@render bottom()}</div>{/if}
 	</nav>
 </div>
@@ -229,11 +236,18 @@
 		right: var(--gap);
 	}
 
-	/* fills the panel, so content can push itself down with margin-top: auto */
+	/* fills the panel, so content can push itself down with margin-top: auto; scrolls when the list is long
+	   (the bottom row stays put). a little inner room keeps focus rings and shadows from being cut */
 	.main {
 		display: flex;
 		flex: 1;
 		flex-direction: column;
+		min-height: 0;
+		margin: -0.5rem;
+		padding: 0.5rem;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: none;
 	}
 
 	.bottom {
