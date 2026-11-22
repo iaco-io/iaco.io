@@ -23,10 +23,23 @@
 		clearTimeout(timer);
 		timer = setTimeout(() => (copied = false), 2000);
 	}
+
+	/** @type {HTMLElement | undefined} */
+	let list = $state();
+	let more = $state(false);
+	const measure = () => list && (more = list.scrollTop + list.clientHeight < list.scrollHeight - 1);
+	$effect(() => {
+		if (!list) return;
+		const observer = new ResizeObserver(measure);
+		observer.observe(list);
+		return () => observer.disconnect();
+	});
 </script>
 
 <Panel bind:open label="Main" edge>
-	<ul class="entries">
+	<!-- the links scroll on their own when there are many: up to the top of the screen (under the close
+	     button), fading out at the bottom while there is more below -->
+	<ul class="entries scrolls" class:more bind:this={list} onscroll={measure}>
 		{#each links as { href, label, icon: Icon, picture }}
 			<li>
 				<a class="entry" {href} onclick={close}>
@@ -68,6 +81,27 @@
 		background: currentColor;
 		-webkit-mask: var(--icon) center / contain no-repeat;
 		mask: var(--icon) center / contain no-repeat;
+	}
+
+	/* (over the panel's shared .entries rules) */
+	.entries.scrolls {
+		flex: 0 1 auto;
+		min-height: 0;
+		/* starts at the top of the screen; the room for the close button is padding, so it scrolls away */
+		margin: calc(-1 * (var(--top) + 5.5rem)) -0.5rem 0;
+		padding: calc(var(--top) + 5.5rem) 0.5rem 0.5rem;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: none;
+	}
+
+	.scrolls::-webkit-scrollbar {
+		display: none;
+	}
+
+	.more {
+		-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+		mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
 	}
 
 	.rain {

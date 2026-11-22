@@ -58,10 +58,11 @@
 		return () => removeEventListener('wheel', still);
 	});
 
-	/** @type {HTMLElement | undefined} */
-	let main = $state();
-	const inList = (/** @type {EventTarget | null} */ t) =>
-		!!main && main.scrollHeight > main.clientHeight && t instanceof Node && main.contains(t);
+	// a part of the menu that scrolls on its own (marked .scrolls), with more than fits
+	const inList = (/** @type {EventTarget | null} */ t) => {
+		const list = t instanceof Element ? t.closest('.scrolls') : null;
+		return !!list && list.scrollHeight > list.clientHeight;
+	};
 
 	// dragging: `shift` is how far the panel is pushed out to the right (0 = fully open)
 	/** @type {HTMLElement | undefined} */
@@ -164,7 +165,7 @@
 		<button class="round glass close" onclick={close} aria-label="Close menu">
 			<X size={20} />
 		</button>
-		<div class="main" bind:this={main}>{@render children()}</div>
+		<div class="main">{@render children()}</div>
 		{#if bottom}<div class="bottom">{@render bottom()}</div>{/if}
 	</nav>
 </div>
@@ -232,22 +233,18 @@
 
 	.close {
 		position: absolute;
+		z-index: 1; /* above a list scrolled up under it */
 		top: calc(var(--bleed) + var(--top) + var(--gap));
 		right: var(--gap);
 	}
 
-	/* fills the panel, so content can push itself down with margin-top: auto; scrolls when the list is long
-	   (the bottom row stays put). a little inner room keeps focus rings and shadows from being cut */
+	/* fills the panel, so content can push itself down with margin-top: auto. a part of it marked .scrolls
+	   may scroll on its own (the blog's list of links) */
 	.main {
 		display: flex;
 		flex: 1;
 		flex-direction: column;
 		min-height: 0;
-		margin: -0.5rem;
-		padding: 0.5rem;
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		scrollbar-width: none;
 	}
 
 	.bottom {

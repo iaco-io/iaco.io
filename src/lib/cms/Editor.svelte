@@ -239,6 +239,12 @@
 		tray = '';
 	}
 	let typing = $state(false); // the text has the keyboard
+	// a tap that would take the keyboard from the text (ios moves focus on tap) becomes a plain click instead
+	function stayTyping(/** @type {TouchEvent} */ e) {
+		if (!typing || !e.cancelable) return;
+		e.preventDefault();
+		/** @type {HTMLElement} */ (e.currentTarget).click();
+	}
 	// in the text while typing, ios moves the cursor after a touch is held a moment, and drags a selection's
 	// handles: those touches are the cursor's, not a swipe or a scroll to stop
 	const cursorTouch = (/** @type {EventTarget | null} */ target, /** @type {number} */ held) =>
@@ -858,7 +864,7 @@
 
 <!-- the markdown body's screen, from the bottom right corner -->
 {#if !short}
-	<button class="round glass to-body" aria-label="edit markdown body" title="edit markdown body" onclick={() => (pos = 1)}>
+	<button class="round glass to-body" aria-label="edit markdown body" title="edit markdown body" onpointerdown={keepFocus} ontouchend={stayTyping} onclick={() => (pos = 1)}>
 		<NotebookPen size={22} />
 	</button>
 {/if}
