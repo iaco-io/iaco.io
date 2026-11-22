@@ -744,8 +744,17 @@
 		{/if}
 	</div>
 
+	<!-- save, centred under the fields -->
+	<button
+		class="pill primary save"
+		disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
+		onclick={() => run('saving…', onsave)}
+	>
+		<Save size={18} class={busy ? 'pulse' : ''} />
+		{busy || 'save'}
+	</button>
+
 	{#if !short}
-		<button class="pill body-button" onclick={() => (pos = 1)}><NotebookPen size={18} /> edit markdown body</button>
 		<div class="previews">
 			<Device label="phone" width={390} height={844} bind:frame={phone} />
 			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
@@ -847,16 +856,12 @@
 		</div>
 	{/if}
 
-<!-- save floats in the bottom right corner -->
-<button
-	class="round save"
-	aria-label={busy || 'save'}
-	title={busy || 'save'}
-	disabled={!!busy || !validName || !item.meta.title.trim() || (short && !item.meta.redirect)}
-	onclick={() => run('saving…', onsave)}
->
-	<Save size={22} class={busy ? 'pulse' : ''} />
-</button>
+<!-- the markdown body's screen, from the bottom right corner -->
+{#if !short}
+	<button class="round glass to-body" aria-label="edit markdown body" title="edit markdown body" onclick={() => (pos = 1)}>
+		<NotebookPen size={22} />
+	</button>
+{/if}
 
 
 {#if iconGallery}
@@ -923,13 +928,15 @@
 	}
 
 	.save {
+		display: flex;
+		margin: 1.5rem auto 0;
+	}
+
+	.to-body {
 		position: fixed;
 		right: var(--gap);
 		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
 		z-index: 15;
-		border: 0;
-		color: var(--bg);
-		background: var(--fg);
 	}
 
 	.save:disabled {
@@ -1384,10 +1391,6 @@
 	.sheet,
 	.bar {
 		transition: translate 0.35s ease;
-	}
-
-	.body-button {
-		margin-top: 1.5rem;
 	}
 
 	.focus-top {
