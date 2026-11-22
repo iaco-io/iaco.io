@@ -3,25 +3,34 @@
 	// small screens: stacked bottom right. big screens: menu moves to the top right with a label.
 	import { Menu as MenuIcon, ArrowDown, ArrowUp } from '@lucide/svelte';
 
-	/** @type {{ onmenu: () => void, open?: boolean, extra?: import('svelte').Snippet }} */
-	let { onmenu, open = false, extra } = $props();
+	/** @type {{ onmenu: () => void, open?: boolean, extra?: import('svelte').Snippet, target?: HTMLElement | null }} */
+	let { onmenu, open = false, extra, target = null } = $props();
+
+	// what scrolls: the page, or the element given
+	const top = () => (target ? target.scrollTop : window.scrollY);
+	const height = () => (target ? target.clientHeight : window.innerHeight);
+	const full = () => (target ? target.scrollHeight : document.documentElement.scrollHeight);
 
 	let atTop = $state(true);
 	let scrollable = $state(true);
-	const onscroll = () => (atTop = window.scrollY < window.innerHeight / 3);
+	const onscroll = () => (atTop = top() < height() / 3);
 
 	// nothing to scroll to: the scroll button nearly disappears
 	$effect(() => {
-		const check = () => (scrollable = document.documentElement.scrollHeight > window.innerHeight + 8);
+		const check = () => (scrollable = full() > height() + 8);
 		const observer = new ResizeObserver(check);
-		observer.observe(document.body);
+		observer.observe(target?.firstElementChild ?? document.body);
+		if (target) observer.observe(target);
+		onscroll();
+		target?.addEventListener('scroll', onscroll);
 		addEventListener('resize', check);
 		return () => {
 			observer.disconnect();
+			target?.removeEventListener('scroll', onscroll);
 			removeEventListener('resize', check);
 		};
 	});
-	const jump = () => window.scrollTo({ top: atTop ? document.documentElement.scrollHeight : 0 });
+	const jump = () => (target ?? window).scrollTo({ top: atTop ? full() : 0, behavior: 'smooth' });
 </script>
 
 <svelte:window {onscroll} />

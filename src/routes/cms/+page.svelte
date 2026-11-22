@@ -123,6 +123,21 @@
 		go(k);
 	}
 
+	// each list scrolls on its own and keeps its place, also after a trip to the editor
+	/** @type {Record<string, HTMLElement | undefined>} */
+	let scrollers = $state({});
+	/** @type {Record<string, number>} */
+	const places = {};
+	/** @type {Record<string, boolean>} */
+	let scrolled = $state({});
+	function remember(/** @type {string} */ k, /** @type {HTMLElement} */ el) {
+		places[k] = el.scrollTop;
+		scrolled[k] = el.scrollTop > 0;
+	}
+	$effect(() => {
+		for (const [k, el] of Object.entries(scrollers)) if (el && places[k]) el.scrollTop = places[k];
+	});
+
 	/** `from` is the saved file name, so a changed name renames the file */
 	/** @type {{ id?: string, kind: Kind, name: string, from: string, isNew: boolean, sha?: string, meta: Meta, body: string } | null} */
 	let editing = $state(null);
@@ -602,7 +617,9 @@
 {/snippet}
 
 {#snippet listOf(/** @type {Section} */ k)}
-	{#if k === 'media'}{@render mediaList()}{:else}
+	{#if k === 'media'}
+		<div class="scroll" class:scrolled={scrolled[k]} bind:this={scrollers[k]} onscroll={(e) => remember(k, e.currentTarget)}>{@render mediaList()}</div>
+	{:else}
 	<!-- posts: z to a (newest first); pages and redirects: a to z -->
 	{@const all = entries.filter((e) => e.kind === k)}
 	{@const items = all
@@ -635,6 +652,7 @@
 			{/if}
 		</div>
 	{/if}
+	<div class="scroll" class:scrolled={scrolled[k]} bind:this={scrollers[k]} onscroll={(e) => remember(k, e.currentTarget)}>
 	{#if loading && !entries.length}
 		<p class="empty">loading…</p>
 	{:else if !items.length && !fresh.length}
@@ -728,6 +746,7 @@
 			{/if}
 		</ul>
 	{/if}
+	</div>
 	{/if}
 {/snippet}
 
@@ -736,7 +755,7 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="cms" class:centered={!api}>
+<main class="cms" class:centered={!api} class:lists={api && !editing}>
 	{#if !api}
 		<Login onlogin={login} />
 	{:else if editing}
@@ -783,7 +802,7 @@
 
 <!-- not in the editor: it has its own save button there, in the corner -->
 {#if api && !editing}
-	<Fabs onmenu={() => (menu = true)}>
+	<Fabs onmenu={() => (menu = true)} target={scrollers[kind]}>
 		{#snippet extra()}
 			{#if !editing && progress > 2.3}
 				<!-- fades in over the last 70% of the slide to the media tab -->
@@ -930,6 +949,52 @@
 		background: var(--bg);
 		box-shadow: 0 0 8px var(--shadow-soft);
 		transform: translateX(calc(var(--progress) * 2.65rem));
+	}
+
+	/* the lists fill the screen below the header; each scrolls on its own */
+	main.lists {
+		display: flex;
+		flex-direction: column;
+		height: 100dvh;
+		padding-bottom: 0;
+		overflow: hidden;
+	}
+
+	main.lists header {
+		flex: none;
+	}
+
+	main.lists .track {
+		flex: 1;
+		min-height: 0;
+		align-items: stretch;
+	}
+
+	main.lists .list {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		padding-bottom: 0;
+	}
+
+	.scroll {
+		flex: 1;
+		min-height: 0;
+		margin-inline: -0.5rem;
+		padding: 0.25rem 0.5rem 7rem;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: none;
+	}
+
+	.list:last-child .scroll {
+		padding-bottom: 11rem;
+	}
+
+	/* scrolled: the top fades under the filters and the header */
+	.scroll.scrolled {
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 2.5rem);
+		mask-image: linear-gradient(to bottom, transparent, #000 2.5rem);
 	}
 
 	.track {
