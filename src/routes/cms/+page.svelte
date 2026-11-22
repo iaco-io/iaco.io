@@ -993,14 +993,11 @@
 		flex: 1;
 		min-height: 0;
 		margin-inline: -0.5rem;
-		padding: 0.25rem 0.5rem 7rem;
+		/* 300px of room after the last item */
+		padding: 0.25rem 0.5rem 300px;
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		scrollbar-width: none;
-	}
-
-	.list:last-child .scroll {
-		padding-bottom: 11rem;
 	}
 
 	/* the top fades under the filters, the fade growing with the first pixels scrolled (no sudden change) */
