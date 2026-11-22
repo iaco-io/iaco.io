@@ -45,9 +45,10 @@
 			<button class="entry" onclick={copyRss}><Rss size={24} strokeWidth={1.75} /> rss</button>
 		</li>
 	</ul>
-	<div class="rain"><Rain /></div>
 	<div class="social"><Social /></div>
 	{#snippet bottom()}
+		<!-- rain, the theme, and the version (tap it to load the newest) -->
+		<Rain />
 		<ThemeToggle />
 		<Refresh />
 	{/snippet}
@@ -74,14 +75,8 @@
 		mask: var(--icon) center / contain no-repeat;
 	}
 
-	.rain {
-		display: flex;
-		justify-content: center;
-		margin-top: auto;
-		margin-bottom: 1.75rem;
-	}
-
 	.social {
+		margin-top: auto;
 		margin-bottom: 3rem;
 	}
 
