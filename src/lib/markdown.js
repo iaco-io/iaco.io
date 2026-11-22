@@ -161,8 +161,11 @@ function grid(source, resolve, inner, inlineOf) {
 			const name = href && !title.trim() && !alt ? ` aria-label="${escape(href.replace(/^[a-z]+:\/\/(www\.)?/i, ''))}"` : '';
 			const attrs = href ? ` href="${escape(href)}"${name}${external(href) ? ' target="_blank" rel="noopener noreferrer"' : ''}` : '';
 			const only = picture && !text ? ' only' : '';
+			// a card that is a link can't hold links (an address in its text, like www.iaco.io, becomes one on its
+			// own): browsers would break the card apart, so inside a linked card they are plain text
+			const words = href ? text.replace(/<a\b[^>]*>/g, '<span>').replace(/<\/a>/g, '</span>') : text;
 			const kind = image && (ICONS[image] || LUCIDE.test(image)) ? ' with-icon' : '';
-			return `<${tag} class="card${only}${kind}"${attrs}>${picture}${text ? `<div class="card-text">${text}</div>` : ''}</${tag}>`;
+			return `<${tag} class="card${only}${kind}"${attrs}>${picture}${words ? `<div class="card-text">${words}</div>` : ''}</${tag}>`;
 		})
 		.join('')}</div>`;
 }
