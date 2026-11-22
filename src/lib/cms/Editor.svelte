@@ -235,7 +235,7 @@
 	// back to the form; the keyboard stays up (and the text with it, out of sight) until a tap elsewhere
 	function leave() {
 		pos = 0;
-		keys = false;
+		keys = colours = false;
 		tray = '';
 	}
 	let typing = $state(false); // the text has the keyboard
@@ -822,23 +822,9 @@
 		{#if keys}
 			<div class="tray"><TpKeys docked oninsert={tp} onclose={() => (keys = false)} /></div>
 		{/if}
-
-		<div class="toolbar">
-				<button class="pill square" class:on={tray === 'images'} title="images" aria-label="images" onpointerdown={keepFocus} onclick={() => ((tray = tray === 'images' ? '' : 'images'), (keys = false))}><Images size={18} /></button>
-				<button class="pill square sp" class:on={keys} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onpointerdown={keepFocus} onclick={() => ((keys = !keys), (tray = ''))}><tp>toki</tp></button>
-			<button class="pill square" title="bold" aria-label="bold" onpointerdown={keepFocus} onclick={() => wrap('**', '**', 'bold')}><Bold size={18} /></button>
-			<button class="pill square" title="italic" aria-label="italic" onpointerdown={keepFocus} onclick={() => wrap('*', '*', 'italic')}><Italic size={18} /></button>
-			<button class="pill square" title="strike through" aria-label="strike through" onpointerdown={keepFocus} onclick={() => wrap('~~', '~~', 'text')}><Strikethrough size={18} /></button>
-			<button class="pill square" class:on={colours} title="highlight" aria-label="highlight" onpointerdown={keepFocus} onclick={() => (colours = !colours)}><Highlighter size={18} /></button>
-			<button class="pill square" title="code" aria-label="code" onpointerdown={keepFocus} onclick={() => wrap('`', '`', 'code')}><Code size={18} /></button>
-			<button class="pill square" title="link" aria-label="link" onpointerdown={keepFocus} onclick={() => wrap('[', '](https://)', 'text')}><LinkIcon size={18} /></button>
-			<button class="pill square" title="quote" aria-label="quote" onpointerdown={keepFocus} onclick={() => prefix('> ')}><TextQuote size={18} /></button>
-			<button class="pill square" title="task" aria-label="task" onpointerdown={keepFocus} onclick={() => prefix('- [ ] ')}><ListTodo size={18} /></button>
-			<button class="pill square" title="code block" aria-label="code block" onpointerdown={keepFocus} onclick={() => block('```\ncode\n```')}><SquareCode size={18} /></button>
-			<button class="pill square" title="grid of cards" aria-label="grid" onpointerdown={keepFocus} onclick={() => block('```grid\n![](image.jpg)\n[](https://)\ncard 1\ntext\n___\ncard 2\ntext\n```')}><LayoutGrid size={18} /></button>
-			<button class="pill square" title="table" aria-label="table" onpointerdown={keepFocus} onclick={() => block('| a | b |\n|---|---|\n| 1 | 2 |')}><Table size={18} /></button>
-			{#if colours}
-				<!-- a colour for the highlight; the first is the default yellow -->
+		{#if colours}
+			<!-- a colour for the highlight, above the toolbar like the images and the keys; the first is the default yellow -->
+			<div class="tray">
 				<div class="colours">
 					{#each COLOURS as c}
 						<button
@@ -849,7 +835,23 @@
 						>{c || '=='}</button>
 					{/each}
 				</div>
-			{/if}
+			</div>
+		{/if}
+
+		<div class="toolbar">
+				<button class="pill square" class:on={tray === 'images'} title="images" aria-label="images" onpointerdown={keepFocus} onclick={() => ((tray = tray === 'images' ? '' : 'images'), (keys = false), (colours = false))}><Images size={18} /></button>
+				<button class="pill square sp" class:on={keys} title="sitelen pona keyboard" aria-label="sitelen pona keyboard" onpointerdown={keepFocus} onclick={() => ((keys = !keys), (tray = ''), (colours = false))}><tp>toki</tp></button>
+			<button class="pill square" title="bold" aria-label="bold" onpointerdown={keepFocus} onclick={() => wrap('**', '**', 'bold')}><Bold size={18} /></button>
+			<button class="pill square" title="italic" aria-label="italic" onpointerdown={keepFocus} onclick={() => wrap('*', '*', 'italic')}><Italic size={18} /></button>
+			<button class="pill square" title="strike through" aria-label="strike through" onpointerdown={keepFocus} onclick={() => wrap('~~', '~~', 'text')}><Strikethrough size={18} /></button>
+			<button class="pill square" class:on={colours} title="highlight" aria-label="highlight" onpointerdown={keepFocus} onclick={() => ((colours = !colours), (keys = false), (tray = ''))}><Highlighter size={18} /></button>
+			<button class="pill square" title="code" aria-label="code" onpointerdown={keepFocus} onclick={() => wrap('`', '`', 'code')}><Code size={18} /></button>
+			<button class="pill square" title="link" aria-label="link" onpointerdown={keepFocus} onclick={() => wrap('[', '](https://)', 'text')}><LinkIcon size={18} /></button>
+			<button class="pill square" title="quote" aria-label="quote" onpointerdown={keepFocus} onclick={() => prefix('> ')}><TextQuote size={18} /></button>
+			<button class="pill square" title="task" aria-label="task" onpointerdown={keepFocus} onclick={() => prefix('- [ ] ')}><ListTodo size={18} /></button>
+			<button class="pill square" title="code block" aria-label="code block" onpointerdown={keepFocus} onclick={() => block('```\ncode\n```')}><SquareCode size={18} /></button>
+			<button class="pill square" title="grid of cards" aria-label="grid" onpointerdown={keepFocus} onclick={() => block('```grid\n![](image.jpg)\n[](https://)\ncard 1\ntext\n___\ncard 2\ntext\n```')}><LayoutGrid size={18} /></button>
+			<button class="pill square" title="table" aria-label="table" onpointerdown={keepFocus} onclick={() => block('| a | b |\n|---|---|\n| 1 | 2 |')}><Table size={18} /></button>
 		</div>
 		<div class="text">
 			<div class="paper">
@@ -1448,11 +1450,18 @@
 		background: var(--glass);
 	}
 
+	/* one row that scrolls sideways */
 	.writer .images {
 		order: 2;
+		flex-wrap: nowrap;
 		margin: 0;
-		max-height: 7rem;
-		overflow-y: auto;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scrollbar-width: none;
+	}
+
+	.writer .images > :global(*) {
+		flex: none;
 	}
 
 	.writer .images.shut {
@@ -1479,15 +1488,6 @@
 		flex: none;
 		width: 2.25rem;
 		height: 2.25rem;
-	}
-
-	.writer .colours {
-		position: absolute;
-		left: 0.75rem;
-		right: 0.75rem;
-		bottom: calc(env(safe-area-inset-bottom) + 3.8rem);
-		width: auto;
-		background: color-mix(in srgb, var(--bg) 92%, transparent);
 	}
 
 	/* the styled copy lies exactly under the textarea, letter for letter: same font, size, padding and wrapping;
