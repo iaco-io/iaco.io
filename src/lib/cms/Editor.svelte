@@ -796,6 +796,10 @@
 				<input type="file" accept="image/*" multiple onchange={upload} hidden disabled={!!busy} />
 			</label>
 			<button class="pill square" title="paste an image" aria-label="paste an image" disabled={!!busy} onclick={pasteImage}><ClipboardPaste size={18} /></button>
+			<!-- with all shown, 'less' comes first, so it's in reach without scrolling the row -->
+			{#if others.length && showAll}
+				<button class="pill more" onclick={() => (showAll = false)}>less</button>
+			{/if}
 			{#each [...shown, ...(showAll ? others : [])] as name (name)}
 				<button
 					class="thumb"
@@ -812,10 +816,8 @@
 					{:else if isAudio(name)}<Music size={18} />{:else if isVideo(name)}<Film size={18} />{:else}<FileIcon size={18} />{/if}
 				</button>
 			{/each}
-			{#if others.length}
-				<button class="pill more" onclick={() => (showAll = !showAll)}>
-					{showAll ? 'less' : `more (${others.length})`}
-				</button>
+			{#if others.length && !showAll}
+				<button class="pill more" onclick={() => (showAll = true)}>more ({others.length})</button>
 			{/if}
 		</div>
 		{#if imageNote}<small class="note image-note">{imageNote}</small>{/if}
