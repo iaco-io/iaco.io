@@ -4,7 +4,8 @@ date: 2026-11-20
 alias:
   - gym
   - move
+unlisted: true
 icon: muscle.svg
 ---
 enc:v1:
-AfvkymAItLiwiXEmbQung4nLCQf7W9bQ9aiBtqrlQb7hVclSFQVGihL5TE4=
+MsCveN4hJFn7Fmiv30TufjBqAWgiB4IKcFaOV2IuwO/lvozScZcQlzI5BHw=
