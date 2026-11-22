@@ -874,8 +874,12 @@
 		</div>
 		<div class="text">
 			<div class="paper">
+				<!-- the styled copy sets the height; the textarea lies over all of it (not just the visible part), so
+				     a tap anywhere lands on the same letter in both -->
+				<div class="layers">
 				<pre class="styled" aria-hidden="true">{@html styled}</pre>
 				<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
+				</div>
 			</div>
 			<button class="pill primary to-previews" title="see the previews" aria-label="see the previews" onpointerdown={keepFocus} onclick={leave}><ScanEye size={22} /></button>
 		</div>
@@ -1541,8 +1545,9 @@
 
 	/* the styled copy lies exactly under the textarea, letter for letter: same font, size, padding and wrapping;
 	   the textarea's own letters are invisible, its caret and selection stay */
-	.writer .paper {
+	.layers {
 		position: relative;
+		min-height: 100%;
 	}
 
 	.styled,
