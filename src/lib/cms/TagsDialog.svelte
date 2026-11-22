@@ -1,7 +1,9 @@
 <script>
 	// every tag used in posts and pages, each with a switch: on promotes the tag to a category, which shows in
-	// the blog's menu with its own icon (a lucide icon; a bookmark if none)
-	import { Tag, BookBookmark, Save, Undo2 } from '@lucide/svelte';
+	// the blog's menu with its own icon (a lucide icon, or an svg from media; a bookmark if none)
+	import { Tag, BookBookmark, Save, Undo2, Image as ImageIcon } from '@lucide/svelte';
+	import Gallery from './Gallery.svelte';
+	import Thumb from './Thumb.svelte';
 	import { DEFAULT_CATEGORY_ICON } from '#lib/tags.js';
 
 	/**
@@ -9,11 +11,13 @@
 	 *   tags: [string, number][],
 	 *   categories: string[],
 	 *   icons: Record<string, string>,
+ *   images: string[],
+ *   resolve: (name: string) => string,
 		 *   onsave: (categories: string[], icons: Record<string, string>) => Promise<void>,
 	 *   onclose: () => void
 	 * }}
 	 */
-	let { tags, categories, icons: savedIcons, onsave, onclose } = $props();
+	let { tags, categories, icons: savedIcons, images, resolve, onsave, onclose } = $props();
 
 	// copies to edit; nothing changes until saved
 	let picked = $state(new Set(categories));
@@ -47,7 +51,11 @@
 			.then((n) => (lucideNames = n))
 			.catch(() => {});
 	});
+	// a lucide icon shows by its name, a media file by its file name
 	const iconName = (/** @type {string} */ tag) => (icons[tag] ?? '').replace(/^lucide\//, '');
+	const isMedia = (/** @type {string} */ tag) => !!icons[tag] && !icons[tag].startsWith('lucide/');
+	// the category whose icon is being picked from media
+	let picking = $state(/** @type {string | null} */ (null));
 	const iconUrl = (/** @type {string} */ tag) => `/lucide/${(icons[tag] || DEFAULT_CATEGORY_ICON).replace(/^lucide\//, '')}.svg`;
 
 	/** @type {HTMLDialogElement | undefined} */
@@ -78,7 +86,11 @@
 					{#if on}
 						<!-- the category's icon in the menu -->
 						<div class="looks">
-							<span class="preview" style:--icon="url({JSON.stringify(iconUrl(tag))})" aria-hidden="true"></span>
+							{#if isMedia(tag)}
+								<span class="preview media" aria-hidden="true"><Thumb src={resolve(icons[tag])} name={icons[tag]} size="100%" /></span>
+							{:else}
+								<span class="preview" style:--icon="url({JSON.stringify(iconUrl(tag))})" aria-hidden="true"></span>
+							{/if}
 							<input
 								aria-label="{tag}'s icon"
 								list="category-icons"
@@ -87,10 +99,12 @@
 								spellcheck="false"
 								value={iconName(tag)}
 								oninput={(e) => {
-									const v = e.currentTarget.value.trim().toLowerCase();
-									icons[tag] = v && v !== 'book-bookmark' ? `lucide/${v}` : '';
+									const v = e.currentTarget.value.trim();
+									// a file name (with a dot) is a media file; anything else a lucide name
+									icons[tag] = !v || v === 'book-bookmark' ? '' : v.includes('.') ? v : `lucide/${v.toLowerCase()}`;
 								}}
 							/>
+							<button class="pill square pick" title="pick an svg from media" aria-label="pick an svg from media" onclick={() => (picking = tag)}><ImageIcon size={18} /></button>
 						</div>
 					{/if}
 				</li>
@@ -109,6 +123,19 @@
 		</button>
 	</div>
 </dialog>
+
+{#if picking}
+	<Gallery
+		images={images.filter((n) => /\.svg$/i.test(n))}
+		{resolve}
+		current={icons[picking] ?? ''}
+		label="category icon"
+		ondone={(name) => {
+			if (name !== null && picking) icons[picking] = name;
+			picking = null;
+		}}
+	/>
+{/if}
 
 <style>
 	dialog {
@@ -175,6 +202,22 @@
 		font-size: 16px;
 		color: var(--fg);
 		background: var(--glass);
+	}
+
+	.preview.media {
+		position: relative;
+		overflow: hidden;
+		display: grid;
+		place-items: center;
+		background: none;
+		-webkit-mask: none;
+		mask: none;
+	}
+
+	.pick {
+		flex: none;
+		width: 2.3rem;
+		height: 2.3rem;
 	}
 
 	.preview {

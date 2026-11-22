@@ -791,7 +791,7 @@
 	{#if message}<div class="toast glass" role="status">{message}</div>{/if}
 
 	{#if tagsOpen}
-		<TagsDialog tags={allTags} {categories} icons={categoryLooks.icons} onsave={saveCategories} onclose={() => (tagsOpen = false)} />
+		<TagsDialog tags={allTags} {categories} icons={categoryLooks.icons} {images} {resolve} onsave={saveCategories} onclose={() => (tagsOpen = false)} />
 	{/if}
 
 	{#if alphabetOpen}
