@@ -865,7 +865,7 @@
 				<pre class="styled" aria-hidden="true">{@html styled}</pre>
 				<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
 			</div>
-			<button class="pill square to-previews" title="see the previews" aria-label="see the previews" onpointerdown={keepFocus} onclick={leave}><ScanEye size={18} /></button>
+			<button class="pill primary to-previews" title="see the previews" aria-label="see the previews" onpointerdown={keepFocus} onclick={leave}><ScanEye size={22} /></button>
 		</div>
 
 		</div>
@@ -1442,10 +1442,11 @@
 
 	.to-previews {
 		position: absolute;
-		right: 0.6rem;
-		bottom: 0.6rem;
-		width: 2.4rem;
-		height: 2.4rem;
+		right: 0.75rem;
+		bottom: 0.75rem;
+		width: 3rem;
+		height: 3rem;
+		box-shadow: 0 4px 14px var(--shadow);
 	}
 
 	.writer .paper {
