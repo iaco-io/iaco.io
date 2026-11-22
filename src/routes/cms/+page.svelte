@@ -251,19 +251,40 @@
 		return Object.entries(count).sort(([a], [b]) => a.localeCompare(b));
 	});
 
-	async function saveCategories(/** @type {string[]} */ list, /** @type {Record<string, string>} */ icons) {
+	/**
+	 * saves the tags dialog in one commit: the categories (with their icons) and any renamed tags, which change
+	 * in every post and page that uses them (nothing else in those files changes)
+	 */
+	async function saveCategories(
+		/** @type {string[]} */ list,
+		/** @type {Record<string, string>} */ icons,
+		/** @type {Record<string, string>} */ renames
+	) {
 		if (!api) return;
+		const to = (/** @type {string} */ t) => renames[t] ?? t;
+		/** @type {{ path: string, content?: string }[]} */
+		const changes = [];
+		for (const e of entries) {
+			if (e.kind === 'redirects' || !e.meta.tags?.some((t) => renames[t])) continue;
+			changes.push({ path: fileOf(e.kind, e.name), content: serialize({ ...e.meta, tags: [...new Set(e.meta.tags.map(to))] }, e.body) });
+		}
+		/** @type {Record<string, string>} */
+		const moved = {};
+		for (const [t, icon] of Object.entries(icons)) if (icon) moved[to(t)] ??= icon;
+		const file = writeCategories([...new Set(list.map(to))], moved);
+		changes.push({ path: CATEGORIES, content: JSON.stringify(file, null, '\t') + '\n' });
 		try {
-			const sha = (await api.list()).find((f) => f.path === CATEGORIES)?.sha;
-			const file = writeCategories(list, icons);
-			await api.write(CATEGORIES, utf8ToBase64(JSON.stringify(file, null, '\t') + '\n'), sha, 'cms: update categories');
+			const renamed = Object.keys(renames).length;
+			await api.commit(changes, renamed ? `cms: rename ${Object.entries(renames).map(([a, b]) => `${a} to ${b}`).join(', ')}` : 'cms: update categories');
 			({ tags: categories, ...categoryLooks } = readCategories(file));
 			tagsOpen = false;
-			flash('categories saved. the site updates in a minute or two');
+			flash(`${renamed ? 'tags renamed and categories' : 'categories'} saved. the site updates in a minute or two`);
+			if (renamed) await refresh();
 		} catch (err) {
 			flash(/** @type {Error} */ (err).message);
 		}
 	}
+
 
 	async function saveAlphabet(/** @type {typeof savedAlphabet} */ setup) {
 		if (!api) return;

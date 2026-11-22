@@ -2,6 +2,7 @@
 	// every tag used in posts and pages, each with a switch: on promotes the tag to a category, which shows in
 	// the blog's menu with its own icon (a lucide icon, or an svg from media; a bookmark if none)
 	import { Tag, BookBookmark, Save, Undo2, Image as ImageIcon } from '@lucide/svelte';
+	import { cleanTag } from '#lib/tags.js';
 	import Gallery from './Gallery.svelte';
 	import Thumb from './Thumb.svelte';
 	import { DEFAULT_CATEGORY_ICON } from '#lib/tags.js';
@@ -13,7 +14,7 @@
 	 *   icons: Record<string, string>,
  *   images: string[],
  *   resolve: (name: string) => string,
-		 *   onsave: (categories: string[], icons: Record<string, string>) => Promise<void>,
+		 *   onsave: (categories: string[], icons: Record<string, string>, renames: Record<string, string>) => Promise<void>,
 	 *   onclose: () => void
 	 * }}
 	 */
@@ -36,7 +37,8 @@
 			// a category whose tag is no longer used is dropped
 			await onsave(
 				tags.map(([t]) => t).filter((t) => picked.has(t)),
-				icons
+				icons,
+				renames()
 			);
 		} finally {
 			saving = false;
@@ -54,6 +56,15 @@
 	// a lucide icon shows by its name, a media file by its file name
 	const iconName = (/** @type {string} */ tag) => (icons[tag] ?? '').replace(/^lucide\//, '');
 	const isMedia = (/** @type {string} */ tag) => !!icons[tag] && !icons[tag].startsWith('lucide/');
+	// each tag's name can be edited; saving renames it everywhere (a category stays one, with its icon)
+	let names = $state(/** @type {Record<string, string>} */ ({}));
+	const renames = () =>
+		Object.fromEntries(
+			Object.entries(names)
+				.map(([from, v]) => [from, cleanTag(v)])
+				.filter(([from, to]) => to && to !== from)
+		);
+
 	// the category whose icon is being picked from media
 	let picking = $state(/** @type {string | null} */ (null));
 	const iconUrl = (/** @type {string} */ tag) => `/lucide/${(icons[tag] || DEFAULT_CATEGORY_ICON).replace(/^lucide\//, '')}.svg`;
@@ -77,7 +88,16 @@
 				{@const on = picked.has(tag)}
 				<li>
 					<span class="icon">{#if on}<BookBookmark size={18} strokeWidth={1.75} />{:else}<Tag size={18} strokeWidth={1.75} />{/if}</span>
-					<span class="name">{tag} <small>{count}</small></span>
+					<!-- the name can be changed: saving renames the tag in every post and page -->
+					<input
+						class="rename"
+						aria-label="name of {tag}"
+						value={names[tag] ?? tag}
+						oninput={(e) => (names[tag] = e.currentTarget.value)}
+						autocapitalize="off"
+						spellcheck="false"
+					/>
+					<small class="count">{count}</small>
 					<button class="switch" role="switch" aria-checked={on} aria-label="{tag} is a category" onclick={() => toggle(tag)}>
 						<span class="track"
 							><span class="knob">{#if on}<BookBookmark size={14} strokeWidth={2} />{:else}<Tag size={14} strokeWidth={2} />{/if}</span></span
@@ -183,6 +203,29 @@
 		color: var(--muted);
 	}
 
+	/* looks like the name until touched */
+	.rename {
+		flex: 1;
+		min-width: 0;
+		padding: 0.3rem 0.5rem;
+		margin-left: -0.5rem;
+		border: 1px solid transparent;
+		border-radius: 0.7rem;
+		font: inherit;
+		font-size: 16px;
+		color: var(--fg);
+		background: none;
+	}
+
+	.rename:focus {
+		border-color: var(--glass-edge);
+		background: var(--glass);
+	}
+
+	.count {
+		color: var(--muted);
+	}
+
 	/* name and icon of a category, under its row */
 	.looks {
 		display: flex;
@@ -229,15 +272,7 @@
 		mask: var(--icon) center / contain no-repeat;
 	}
 
-	.name {
-		flex: 1;
-		overflow-wrap: anywhere;
-	}
 
-	.name small {
-		margin-left: 0.3rem;
-		color: var(--muted);
-	}
 
 	.switch {
 		display: flex;
