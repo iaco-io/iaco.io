@@ -238,14 +238,6 @@
 		keys = false;
 		tray = '';
 	}
-	// the eye in the text's corner: back to the form, at the previews (the keyboard stays up)
-	/** @type {HTMLElement | undefined} */
-	let previews = $state();
-	async function seePreviews() {
-		leave();
-		await tick();
-		previews?.scrollIntoView({ block: 'start', behavior: 'instant' });
-	}
 	let typing = $state(false); // the text has the keyboard
 	// in the text while typing, ios moves the cursor after a touch is held a moment, and drags a selection's
 	// handles: those touches are the cursor's, not a swipe or a scroll to stop
@@ -754,7 +746,7 @@
 
 	{#if !short}
 		<button class="pill body-button" onclick={() => (pos = 1)}><NotebookPen size={18} /> edit markdown body</button>
-		<div class="previews" bind:this={previews}>
+		<div class="previews">
 			<Device label="phone" width={390} height={844} bind:frame={phone} />
 			<Device label="desktop" width={1280} height={800} bind:frame={desktop} />
 		</div>
@@ -849,7 +841,7 @@
 				<pre class="styled" aria-hidden="true">{@html styled}</pre>
 				<textarea bind:this={textarea} bind:value={item.body} placeholder="write in markdown…" onfocus={() => (typing = true)} onblur={() => (typing = false)}></textarea>
 			</div>
-			<button class="pill square to-previews" title="see the previews" aria-label="see the previews" onpointerdown={keepFocus} onclick={seePreviews}><ScanEye size={18} /></button>
+			<button class="pill square to-previews" title="see the previews" aria-label="see the previews" onpointerdown={keepFocus} onclick={leave}><ScanEye size={18} /></button>
 		</div>
 
 		</div>
@@ -1591,7 +1583,6 @@
 		align-items: start;
 		gap: 1rem;
 		margin-top: 1.5rem;
-		scroll-margin-top: 4rem; /* clear of the back button */
 		/* room below the last preview */
 		padding-bottom: 200px;
 	}
