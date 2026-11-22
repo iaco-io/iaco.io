@@ -28,6 +28,14 @@
 	let list = $state();
 	let more = $state(false);
 	const measure = () => list && (more = list.scrollTop + list.clientHeight < list.scrollHeight - 1);
+	// when the menu opens with more links than fit, the list dips a little and comes back: there's more below
+	$effect(() => {
+		if (!open || !list || !more || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const el = list;
+		const down = setTimeout(() => el.scrollTo({ top: 48, behavior: 'smooth' }), 450);
+		const up = setTimeout(() => el.scrollTo({ top: 0, behavior: 'smooth' }), 850);
+		return () => (clearTimeout(down), clearTimeout(up));
+	});
 	$effect(() => {
 		if (!list) return;
 		const observer = new ResizeObserver(measure);
