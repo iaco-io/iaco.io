@@ -893,6 +893,11 @@
 		<!-- the blog's little clock, top left of the menu, level with the close button -->
 		<div class="menu-clock"><DayClock inline /></div>
 		<ul class="entries" {@attach menuList(() => menu)}>
+			<li>
+				<button class="entry" onclick={() => ((menu = false), logout())}>
+					<Lock size={24} strokeWidth={1.75} /> lock
+				</button>
+			</li>
 			{#each KINDS as { kind: k, icon: Icon }}
 				<li>
 					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
@@ -921,9 +926,6 @@
 				</button>
 			</li>
 		</ul>
-		<button class="entry lock" onclick={() => ((menu = false), logout())}>
-			<Lock size={24} strokeWidth={1.75} /> lock
-		</button>
 		{#snippet bottom()}
 			<ThemeToggle />
 			<Refresh />
@@ -1107,11 +1109,6 @@
 		font-size: 1rem;
 		font-weight: 600;
 		color: var(--soft);
-	}
-
-	/* lock sits at the bottom, under the list */
-	.lock {
-		margin-top: auto;
 	}
 
 	/* the opposite of the glass buttons: solid cream on blue, ink on cream */
