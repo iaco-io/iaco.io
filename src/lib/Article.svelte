@@ -3,6 +3,7 @@
 	import { Tag, BookBookmark } from '@lucide/svelte';
 	import { savedCategories, tagUrl, cleanTag, tagName } from './tags.js';
 	import { render } from './markdown.js';
+	import { fadeCards } from './focusFade.js';
 
 	/**
 	 * @type {{
@@ -35,7 +36,7 @@
 		{/if}
 	</header>
 	{#if item.image}<img class="cover" src={resolve(item.image)} alt="" />{/if}
-	<div class="prose">
+	<div class="prose" {@attach fadeCards}>
 		{#if body === null}<p class="loading">…</p>{:else}{@html html}{/if}
 	</div>
 </article>
