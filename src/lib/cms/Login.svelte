@@ -1,5 +1,5 @@
 <script>
-	import { KeyRound, Feather } from '@lucide/svelte';
+	import { KeyRound, Feather, ArrowLeft } from '@lucide/svelte';
 
 	/** @type {{ onlogin: (token: string) => Promise<void> }} */
 	let { onlogin } = $props();
@@ -30,6 +30,7 @@
 	}
 </script>
 
+<div class="login">
 <form class="card glass" onsubmit={submit} autocomplete="on">
 	<h1>iaco.io <small>v {__VERSION__}</small></h1>
 	<span class="feather"><Feather size={24} /></span>
@@ -58,6 +59,10 @@
 		{busy ? 'checking…' : 'log in'}
 	</button>
 </form>
+
+<!-- back to the blog (a full load: the blog is its own app) -->
+<a class="pill back" href="/" data-sveltekit-reload><ArrowLeft size={18} /> return to blog</a>
+</div>
 
 <style>
 	.feather {
@@ -112,5 +117,18 @@
 	button {
 		width: 100%;
 		margin-top: 1.25rem;
+	}
+
+	/* the form and the way back stay together */
+	.login {
+		width: min(24rem, 100%);
+		margin: 0 auto;
+	}
+
+	.back {
+		display: flex;
+		width: fit-content;
+		margin: 1.25rem auto 0;
+		text-decoration: none;
 	}
 </style>
