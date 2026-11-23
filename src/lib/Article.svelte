@@ -14,6 +14,24 @@
 	let { item, body, resolve = (path) => path } = $props();
 
 	const html = $derived(body === null ? '' : render(body, resolve));
+
+	// a grid card's picture is square, unless the image is portrait: then it keeps its own shape, uncut.
+	// (only the image itself knows its shape, once loaded)
+	/** @param {HTMLElement} prose */
+	const shapes = (prose) => {
+		const mark = (/** @type {HTMLImageElement} */ img) => img.classList.toggle('tall', img.naturalHeight > img.naturalWidth);
+		const watch = () => {
+			for (const img of prose.querySelectorAll('.grid .card > img')) {
+				const pic = /** @type {HTMLImageElement} */ (img);
+				if (pic.complete && pic.naturalWidth) mark(pic);
+				else pic.addEventListener('load', () => mark(pic), { once: true });
+			}
+		};
+		watch();
+		const observer = new MutationObserver(watch);
+		observer.observe(prose, { childList: true, subtree: true });
+		return () => observer.disconnect();
+	};
 </script>
 
 <article>
@@ -35,7 +53,7 @@
 		{/if}
 	</header>
 	{#if item.image}<img class="cover" src={resolve(item.image)} alt="" />{/if}
-	<div class="prose">
+	<div class="prose" {@attach shapes}>
 		{#if body === null}<p class="loading">…</p>{:else}{@html html}{/if}
 	</div>
 </article>
@@ -192,7 +210,11 @@
 		vertical-align: 0;
 	}
 
-	.prose :global(.grid .card.only > img),
+	.prose :global(.grid .card > img.tall) {
+		aspect-ratio: auto;
+		height: auto;
+	}
+
 	.prose :global(.grid .card.only .card-icon) {
 		height: 100%;
 	}
