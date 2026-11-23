@@ -159,7 +159,7 @@
 		transform: translateY(-2px);
 	}
 
-	/* card pictures have the shape of a youtube preview (16:9), filled and cut to fit */
+	/* card pictures (and icons) have the shape of a youtube preview (16:9), filled and cut to fit */
 	.prose :global(.grid .card > img) {
 		display: block;
 		width: 100%;
@@ -171,7 +171,7 @@
 	.prose :global(.grid .card-icon) {
 		display: grid;
 		place-items: center;
-		aspect-ratio: 1;
+		aspect-ratio: 16 / 9; /* the same shape as the pictures */
 		background: var(--panel);
 	}
 
@@ -188,8 +188,8 @@
 
 	.prose :global(.grid .card-icon .icon.lucide),
 		.prose :global(.grid .card-icon svg.icon) {
-		width: 40%;
-		height: 40%;
+		width: 45%;
+		height: 45%;
 		vertical-align: 0;
 	}
 
