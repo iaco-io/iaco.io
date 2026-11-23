@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { Star, ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
+	import { Star, ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film, Ruler } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -333,15 +333,8 @@
 		}
 	}
 
-	// three taps on the version show how this device measures the screen (for layout gaps on iphones)
+	// how this device measures the screen (menu: screen), for layout gaps on iphones
 	let viewport = $state(false);
-	let taps = 0;
-	let tapTimer = 0;
-	function tapVersion() {
-		clearTimeout(tapTimer);
-		if (++taps === 3) (viewport = true), (taps = 0);
-		else tapTimer = setTimeout(() => (taps = 0), 600);
-	}
 
 	async function refresh() {
 		if (!api) return;
@@ -837,8 +830,7 @@
 	{:else}
 		<header>
 			<div class="top">
-				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-				<h1>iaco.io <small onclick={tapVersion}>v {__VERSION__}</small></h1>
+				<h1>iaco.io <small>v {__VERSION__}</small></h1>
 				<div class="kinds glass" role="tablist" aria-label="sections" style:--progress={progress}>
 					<span class="thumb"></span>
 					{#each KINDS as { kind: k, icon: Icon }}
@@ -924,6 +916,13 @@
 				<button class="entry" onclick={() => ((menu = false), (orderOpen = true))}>
 					<ListOrdered size={24} strokeWidth={1.75} />
 					menu order
+				</button>
+			</li>
+			<li>
+				<!-- how this device measures the screen, to sort out layout gaps on iphones -->
+				<button class="entry" onclick={() => ((menu = false), (viewport = true))}>
+					<Ruler size={24} strokeWidth={1.75} />
+					screen
 				</button>
 			</li>
 			<li>
