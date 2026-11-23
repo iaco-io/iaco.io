@@ -35,6 +35,20 @@
 	// iphone home-screen apps stop short of the bottom: things there move down (see phantom.js)
 	onMount(watchPhantom);
 
+	// back at the start after an error (see +error.svelte): a short note to try again
+	let tryAgain = $state(false);
+	onMount(() => {
+		try {
+			const at = sessionStorage.getItem('try-again');
+			if (!at || Date.now() - Number(at) > 15_000 || sessionStorage.getItem('try-again-shown') === at) return;
+			sessionStorage.setItem('try-again-shown', at);
+		} catch {
+			return;
+		}
+		tryAgain = true;
+		setTimeout(() => (tryAgain = false), 4000);
+	});
+
 	// links that leave the site open in a new tab (in the installed app on an iphone, apple shows them in its small
 	// built-in browser; there's no way to send them to safari). short links like /youtube/ go straight to their site
 	function leave(/** @type {MouseEvent} */ e) {
@@ -72,12 +86,27 @@
 
 {@render children()}
 
+{#if tryAgain}<div class="try-again glass" role="status">please try again</div>{/if}
+
 {#if !cms}
 	<Fabs onmenu={() => (open = true)} {open} />
 	<Menu bind:open {links} />
 {/if}
 
 <style>
+	.try-again {
+		position: fixed;
+		left: 50%;
+		bottom: calc(env(safe-area-inset-bottom) - var(--phantom) + 1.5rem);
+		z-index: 50;
+		transform: translateX(-50%);
+		padding: 0.7rem 1.1rem;
+		border-radius: 999px;
+		font-size: 0.9rem;
+		font-weight: 500;
+		box-shadow: 0 6px 24px var(--shadow);
+	}
+
 	/* only in the installed app: in safari a fixed bar at the edge makes it paint a solid toolbar */
 	/* installed app: content scrolls up under the clock, softly blurred there.
 	   the blur covers only the clock area; pages start 16px lower (see --top) so nothing sits under it at rest */
