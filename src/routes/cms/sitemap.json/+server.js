@@ -13,7 +13,8 @@ const entry = (item) => ({
 	title: plain(item.title).toLowerCase(),
 	url: item.url,
 	aliases: item.paths.filter((p) => p !== item.url),
-	...(item.unlisted && { unlisted: true })
+	...(item.unlisted && { unlisted: true }),
+	...(item.featured && { featured: true })
 });
 
 export async function GET() {

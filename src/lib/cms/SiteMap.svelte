@@ -1,12 +1,12 @@
 <script>
 	// every link on the site, grouped; the other addresses that lead to the same place are beside it, smaller
-	import { X } from '@lucide/svelte';
+	import { X, File as FileIcon, Feather, ExternalLink, Tag, ListX, BookBookmark, Star, ArrowRight } from '@lucide/svelte';
 	import { decrypt } from '#lib/crypto.js';
 
 	/** @type {{ onclose: () => void }} */
 	let { onclose } = $props();
 
-	/** @typedef {{ title: string, url: string, aliases: string[], unlisted?: boolean, category?: boolean, to?: string }} Link */
+	/** @typedef {{ title: string, url: string, aliases: string[], unlisted?: boolean, featured?: boolean, category?: boolean, to?: string }} Link */
 	let map = $state(/** @type {Record<string, Link[]> | null} */ (null));
 	let failed = $state(false);
 	$effect(() => {
@@ -16,12 +16,13 @@
 			.catch(() => (failed = true));
 	});
 
-	const GROUPS = [
-		['pages', 'pages'],
-		['posts', 'posts'],
-		['links', 'short links'],
-		['tags', 'tags']
-	];
+	// each group with the icon the cms uses for it
+	const GROUPS = /** @type {const} */ ([
+		['pages', 'pages', FileIcon],
+		['posts', 'posts', Feather],
+		['links', 'short links', ExternalLink],
+		['tags', 'tags', Tag]
+	]);
 
 	/** @type {HTMLDialogElement | undefined} */
 	let dialog = $state();
@@ -39,17 +40,21 @@
 		<p class="note">loading…</p>
 	{:else}
 		<div class="groups">
-			{#each GROUPS as [key, label]}
+			{#each GROUPS as [key, label, Icon]}
 				{#if map[key]?.length}
 					<section>
-						<h3>{label}</h3>
+						<h3><Icon size={15} /> {label}</h3>
 						<ul>
 							{#each map[key] as link}
 								<li>
 									<a href={link.url} data-sveltekit-reload>{link.url}</a>
-									<span class="title">{[link.title, link.unlisted && 'unlisted', link.category && 'category'].filter(Boolean).join(' · ')}</span>
-									{#if link.to}<span class="extra">→ {link.to}</span>{/if}
-									{#each link.aliases as alias}<a class="extra" href={alias} data-sveltekit-reload>{alias}</a>{/each}
+									{#if key === 'tags'}<span class="title">{link.title}</span>{/if}
+									<!-- marks, as in the cms lists -->
+									{#if link.unlisted}<span class="mark" title="unlisted" aria-label="unlisted"><ListX size={15} /></span>{/if}
+									{#if link.featured}<span class="mark" title="featured" aria-label="featured"><Star size={15} /></span>{/if}
+									{#if link.category}<span class="mark" title="category" aria-label="category"><BookBookmark size={15} /></span>{/if}
+									{#if link.to}<span class="extra to"><ArrowRight size={13} /> {link.to}</span>{/if}
+									{#each link.aliases as alias}<a class="extra" href={alias} data-sveltekit-reload>{alias.replace(/\/$/, '')}</a>{/each}
 								</li>
 							{/each}
 						</ul>
@@ -142,6 +147,24 @@
 		font-weight: 400;
 		color: var(--soft);
 		overflow-wrap: anywhere;
+	}
+
+	h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.mark {
+		display: inline-flex;
+		align-self: center;
+		color: var(--muted);
+	}
+
+	.to {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
 	}
 
 	.note {
