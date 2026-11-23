@@ -73,7 +73,7 @@
 </form>
 
 <!-- back to the blog (a full load: the blog is its own app) -->
-<a class="pill back" href="/" data-sveltekit-reload><ArrowLeft size={18} /> return to blog</a>
+<a class="pill back" href="/" data-sveltekit-reload><ArrowLeft size={20} /> return to blog</a>
 </div>
 
 {#if mapOpen}<SiteMap onclose={() => (mapOpen = false)} />{/if}
@@ -146,7 +146,9 @@
 	.back {
 		display: flex;
 		width: fit-content;
-		margin: 0.85rem auto 0;
+		margin: 1.6rem auto 0;
+		padding: 0.85rem 1.5rem;
+		font-size: 1.05rem;
 		text-decoration: none;
 	}
 </style>
