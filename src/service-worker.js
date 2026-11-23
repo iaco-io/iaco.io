@@ -90,7 +90,9 @@ self.addEventListener('fetch', (event) => {
 				if (cached) return cached;
 			}
 			try {
-				const response = await fetch(event.request);
+				// always checked with the server (cheap when unchanged): the browser's own short-lived copy could be
+				// from the version before, and mixing an old page's data with new code shows the wrong things
+				const response = await fetch(url.href, { cache: 'no-cache' });
 				if (response.ok) cache.put(event.request, response.clone());
 				return response;
 			} catch {
