@@ -1,5 +1,6 @@
 <script>
 	import { KeyRound, Feather, ArrowLeft } from '@lucide/svelte';
+	import SiteMap from './SiteMap.svelte';
 
 	/** @type {{ onlogin: (token: string) => Promise<void> }} */
 	let { onlogin } = $props();
@@ -7,6 +8,16 @@
 	let token = $state('');
 	let error = $state('');
 	let busy = $state(false);
+
+	// three taps on the feather within 1 second (like the theme switch's for the cms) open the site map
+	let mapOpen = $state(false);
+	/** @type {number[]} */
+	let taps = [];
+	function tapFeather() {
+		const now = Date.now();
+		taps = [...taps.filter((t) => now - t < 1000), now];
+		if (taps.length >= 3) (taps = []), (mapOpen = true);
+	}
 
 	/** @param {SubmitEvent} [e] */
 	async function submit(e) {
@@ -33,7 +44,8 @@
 <div class="login">
 <form class="card glass" onsubmit={submit} autocomplete="on">
 	<h1>iaco.io <small>v {__VERSION__}</small></h1>
-	<span class="feather"><Feather size={24} /></span>
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+	<span class="feather" onclick={tapFeather}><Feather size={24} /></span>
 
 	<!-- lets password managers save the token under a username -->
 	<input class="hidden" type="text" name="username" autocomplete="username" value="iaco-io" readonly tabindex="-1" />
@@ -64,6 +76,8 @@
 <a class="pill back" href="/" data-sveltekit-reload><ArrowLeft size={18} /> return to blog</a>
 </div>
 
+{#if mapOpen}<SiteMap onclose={() => (mapOpen = false)} />{/if}
+
 <style>
 	.feather {
 		position: absolute;
@@ -71,6 +85,10 @@
 		right: 2rem;
 		display: flex;
 		color: var(--soft);
+		cursor: default;
+		-webkit-user-select: none;
+		user-select: none;
+		touch-action: manipulation; /* quick taps aren't taken for a double-tap zoom */
 	}
 
 	form {
@@ -128,7 +146,7 @@
 	.back {
 		display: flex;
 		width: fit-content;
-		margin: 1.25rem auto 0;
+		margin: 0.85rem auto 0;
 		text-decoration: none;
 	}
 </style>

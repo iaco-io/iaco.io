@@ -58,7 +58,7 @@ export const pages = load('pages');
 // short links like /youtube/, they only redirect
 export const redirects = load('redirects').filter((item) => item.redirect);
 
-const reserved = ['/cms/', '/preview/', '/rss.xml/', '/post/', '/_app/'];
+const reserved = ['/cms/', '/preview/', '/rss.xml/', '/sitemap.json/', '/post/', '/_app/'];
 
 /** every url on the site, pointing at its post or page */
 export const routes = new Map();

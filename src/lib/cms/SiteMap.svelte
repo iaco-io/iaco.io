@@ -1,0 +1,150 @@
+<script>
+	// every link on the site, grouped; the other addresses that lead to the same place are beside it, smaller
+	import { X } from '@lucide/svelte';
+
+	/** @type {{ onclose: () => void }} */
+	let { onclose } = $props();
+
+	/** @typedef {{ title: string, url: string, aliases: string[], unlisted?: boolean, category?: boolean, to?: string }} Link */
+	let map = $state(/** @type {Record<string, Link[]> | null} */ (null));
+	let failed = $state(false);
+	$effect(() => {
+		fetch('/sitemap.json')
+			.then((r) => r.json())
+			.then((m) => (map = m))
+			.catch(() => (failed = true));
+	});
+
+	const GROUPS = [
+		['pages', 'pages'],
+		['posts', 'posts'],
+		['links', 'short links'],
+		['tags', 'tags']
+	];
+
+	/** @type {HTMLDialogElement | undefined} */
+	let dialog = $state();
+	$effect(() => dialog?.showModal());
+</script>
+
+<dialog class="dialog glass" bind:this={dialog} oncancel={(e) => (e.preventDefault(), onclose())} aria-label="site map">
+	<header>
+		<h2>site map</h2>
+		<button class="pill" aria-label="close" onclick={onclose}><X size={18} /></button>
+	</header>
+	{#if failed}
+		<p class="note">couldn't load the site map.</p>
+	{:else if !map}
+		<p class="note">loading…</p>
+	{:else}
+		<div class="groups">
+			{#each GROUPS as [key, label]}
+				{#if map[key]?.length}
+					<section>
+						<h3>{label}</h3>
+						<ul>
+							{#each map[key] as link}
+								<li>
+									<a href={link.url} data-sveltekit-reload>{link.url}</a>
+									<span class="title">{[link.title, link.unlisted && 'unlisted', link.category && 'category'].filter(Boolean).join(' · ')}</span>
+									{#if link.to}<span class="extra">→ {link.to}</span>{/if}
+									{#each link.aliases as alias}<a class="extra" href={alias} data-sveltekit-reload>{alias}</a>{/each}
+								</li>
+							{/each}
+						</ul>
+					</section>
+				{/if}
+			{/each}
+		</div>
+	{/if}
+</dialog>
+
+<style>
+	.dialog {
+		width: min(32rem, calc(100vw - 2rem));
+		max-height: calc(100dvh - 3rem);
+		padding: 1.1rem 1.25rem;
+		border-radius: 1.5rem;
+		color: var(--fg);
+		background: color-mix(in srgb, var(--bg) 88%, transparent);
+	}
+
+	.dialog[open] {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.dialog::backdrop {
+		background: rgb(0 0 0 / 0.3);
+		-webkit-backdrop-filter: blur(4px);
+		backdrop-filter: blur(4px);
+	}
+
+	header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	h2 {
+		margin: 0;
+		font-size: 1.2rem;
+	}
+
+	.groups {
+		min-height: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
+	h3 {
+		margin: 0.9rem 0 0.4rem;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--muted);
+	}
+
+	section:first-child h3 {
+		margin-top: 0;
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.15rem 0.6rem;
+		padding: 0.3rem 0;
+	}
+
+	a {
+		color: var(--fg);
+		font-weight: 500;
+		text-decoration: none;
+		overflow-wrap: anywhere;
+	}
+
+	.title {
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+
+	/* the other addresses: smaller, grey */
+	.extra {
+		font-size: 0.8rem;
+		font-weight: 400;
+		color: var(--soft);
+		overflow-wrap: anywhere;
+	}
+
+	.note {
+		margin: 0;
+		color: var(--muted);
+	}
+</style>
