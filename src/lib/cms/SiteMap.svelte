@@ -20,7 +20,7 @@
 	const GROUPS = /** @type {const} */ ([
 		['pages', 'pages', FileIcon],
 		['posts', 'posts', Feather],
-		['links', 'short links', ExternalLink],
+		['links', 'redirects', ExternalLink],
 		['tags', 'tags', Tag]
 	]);
 
