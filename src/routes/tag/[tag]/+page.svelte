@@ -2,6 +2,7 @@
 	// everything with one tag (or category): its posts newest first, then its pages
 	import { Tag, BookBookmark } from '@lucide/svelte';
 	import Tp from '#lib/Tp.svelte';
+	import { focusFade } from '#lib/focusFade.js';
 
 	let { data } = $props();
 </script>
@@ -18,7 +19,7 @@
 		</span>
 		<h1>{data.name}</h1>
 	</header>
-	<ul>
+	<ul use:focusFade>
 		{#each data.items as item (item.url)}
 			<li>
 				<a class="card glass" href={item.url}>

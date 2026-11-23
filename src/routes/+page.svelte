@@ -1,5 +1,6 @@
 <script>
 	import Tp from '#lib/Tp.svelte';
+	import { focusFade } from '#lib/focusFade.js';
 	import { Waves, Feather, Sprout } from '@lucide/svelte';
 
 	const topics = [
@@ -24,7 +25,7 @@
 
 	{#if data.posts.length}
 		<!-- the posts as a grid: two columns on a phone, more on wider screens -->
-		<section id="latest" class="topics posts">
+		<section id="latest" class="topics posts" use:focusFade>
 			{#each data.posts as post}
 				<a class="card glass post" href={post.url}>
 					{#if post.image}<img src={post.image} alt="" />{/if}
