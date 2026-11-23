@@ -10,7 +10,7 @@
 	let map = $state(/** @type {Record<string, Link[]> | null} */ (null));
 	let failed = $state(false);
 	$effect(() => {
-		fetch('/sitemap.json')
+		fetch('/cms/sitemap.json')
 			.then((r) => r.json())
 			.then(async ({ map: locked }) => (map = JSON.parse(await decrypt(locked))))
 			.catch(() => (failed = true));

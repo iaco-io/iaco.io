@@ -1,4 +1,4 @@
-// every link on the site, for the cms login's site map (three taps on its feather): pages, posts, short links
+// every link on the site (at /cms/sitemap.json), for the cms login's site map (three taps on its feather): pages, posts, short links
 // and tags, each with the other addresses that lead to it. encrypted, like the posts' and pages' text
 import { json } from '@sveltejs/kit';
 import { encrypt } from '#lib/crypto.js';
