@@ -14,25 +14,6 @@
 	let { item, body, resolve = (path) => path } = $props();
 
 	const html = $derived(body === null ? '' : render(body, resolve));
-
-	// a grid card's picture is square (a portrait image is cut to a square), unless the image is landscape:
-	// then it keeps its own shape, uncut.
-	// (only the image itself knows its shape, once loaded)
-	/** @param {HTMLElement} prose */
-	const shapes = (prose) => {
-		const mark = (/** @type {HTMLImageElement} */ img) => img.classList.toggle('wide', img.naturalWidth > img.naturalHeight);
-		const watch = () => {
-			for (const img of prose.querySelectorAll('.grid .card > img')) {
-				const pic = /** @type {HTMLImageElement} */ (img);
-				if (pic.complete && pic.naturalWidth) mark(pic);
-				else pic.addEventListener('load', () => mark(pic), { once: true });
-			}
-		};
-		watch();
-		const observer = new MutationObserver(watch);
-		observer.observe(prose, { childList: true, subtree: true });
-		return () => observer.disconnect();
-	};
 </script>
 
 <article>
@@ -54,7 +35,7 @@
 		{/if}
 	</header>
 	{#if item.image}<img class="cover" src={resolve(item.image)} alt="" />{/if}
-	<div class="prose" {@attach shapes}>
+	<div class="prose">
 		{#if body === null}<p class="loading">…</p>{:else}{@html html}{/if}
 	</div>
 </article>
@@ -178,10 +159,11 @@
 		transform: translateY(-2px);
 	}
 
+	/* card pictures have the shape of a youtube preview (16:9), filled and cut to fit */
 	.prose :global(.grid .card > img) {
 		display: block;
 		width: 100%;
-		aspect-ratio: 1;
+		aspect-ratio: 16 / 9;
 		object-fit: cover;
 		border-radius: 0;
 	}
@@ -209,11 +191,6 @@
 		width: 40%;
 		height: 40%;
 		vertical-align: 0;
-	}
-
-	.prose :global(.grid .card > img.wide) {
-		aspect-ratio: auto;
-		height: auto;
 	}
 
 	.prose :global(.grid .card.only .card-icon) {
