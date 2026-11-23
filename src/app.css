@@ -354,11 +354,3 @@ a {
 	white-space: nowrap;
 	border: 0;
 }
-
-/* iphone home-screen apps: a page as tall as the screen at least, so ios uses all of it (it sometimes leaves
-   the clock's height empty at the bottom of shorter pages; see src/lib/phantom.js) */
-@media (display-mode: standalone) {
-	html {
-		min-height: 100lvh;
-	}
-}
