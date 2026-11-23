@@ -125,6 +125,44 @@
 		open = next;
 	}
 
+	// on a desktop, a sideways two-finger swipe on a trackpad does the same as a finger: it pulls the panel in
+	// from the right (swipe left), or pushes it out (swipe right). the trackpad sends no end, so a short pause
+	// settles it; the glide after the fingers lift is ignored for a moment
+	let pause = 0;
+	let calm = 0;
+	/** @param {WheelEvent} e */
+	function wheel(e) {
+		if (!edge && !open) return;
+		if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.timeStamp < calm) return;
+		// something under the pointer that scrolls sideways keeps the swipe for itself
+		for (let el = /** @type {Element | null} */ (e.target); el && el !== document.body; el = el.parentElement)
+			if (el.scrollWidth > el.clientWidth && /auto|scroll/.test(getComputedStyle(el).overflowX)) return;
+		// closed, only a swipe to the left pulls it in (a swipe right stays the browser's, back in history)
+		if (!drag && !open && e.deltaX <= 0) return;
+		e.preventDefault();
+		if (!drag) {
+			if (!open) place();
+			const width = panel?.offsetWidth ?? 320;
+			drag = { x: 0, y: 0, from: open, width, horizontal: true, lastX: 0, lastT: e.timeStamp, speed: 0, list: false };
+			shift = open ? 0 : width;
+		}
+		const d = drag;
+		const dt = e.timeStamp - d.lastT;
+		if (dt > 0) d.speed = d.speed * 0.5 + (-e.deltaX / dt) * 0.5;
+		d.lastT = e.timeStamp;
+		shift = Math.min(d.width, Math.max(0, shift - e.deltaX));
+		clearTimeout(pause);
+		pause = window.setTimeout(() => {
+			touchend();
+			calm = performance.now() + 400;
+		}, 140);
+	}
+
+	$effect(() => {
+		addEventListener('wheel', wheel, { passive: false });
+		return () => removeEventListener('wheel', wheel);
+	});
+
 	$effect(() => {
 		addEventListener('touchstart', touchstart, { passive: true });
 		addEventListener('touchmove', touchmove, { passive: false });

@@ -1,5 +1,5 @@
-// Svelte action for a grid: each child is fully opaque near the vertical
-// middle of the screen and fades towards `min` as it moves away from it.
+// Svelte action for a grid: each child is fully opaque while its middle is in the middle part of the screen
+// (between 20% and 80% of its height), and dim (`min`) outside it. the change is instant, no fading
 export function focusFade(node, min = 0.3) {
 	let frame = 0;
 
@@ -8,8 +8,8 @@ export function focusFade(node, min = 0.3) {
 		const mid = innerHeight / 2;
 		for (const el of node.children) {
 			const r = el.getBoundingClientRect();
-			const d = Math.min(Math.abs(r.top + r.height / 2 - mid) / mid, 1);
-			el.style.opacity = 1 - (1 - min) * d;
+			const near = Math.abs(r.top + r.height / 2 - mid) < mid * 0.6;
+			el.style.opacity = near ? '1' : String(min);
 		}
 	};
 	const schedule = () => (frame ||= requestAnimationFrame(update));
