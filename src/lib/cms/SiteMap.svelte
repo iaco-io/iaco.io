@@ -1,6 +1,7 @@
 <script>
 	// every link on the site, grouped; the other addresses that lead to the same place are beside it, smaller
 	import { X } from '@lucide/svelte';
+	import { decrypt } from '#lib/crypto.js';
 
 	/** @type {{ onclose: () => void }} */
 	let { onclose } = $props();
@@ -11,7 +12,7 @@
 	$effect(() => {
 		fetch('/sitemap.json')
 			.then((r) => r.json())
-			.then((m) => (map = m))
+			.then(async ({ map: locked }) => (map = JSON.parse(await decrypt(locked))))
 			.catch(() => (failed = true));
 	});
 
