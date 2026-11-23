@@ -22,6 +22,7 @@
 	import Thumb from '#lib/cms/Thumb.svelte';
 	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
+	import Viewport from '#lib/cms/Viewport.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
 	import savedAlphabet from '../../alphabet.json';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
@@ -330,6 +331,16 @@
 		} catch (err) {
 			flash(/** @type {Error} */ (err).message);
 		}
+	}
+
+	// three taps on the version show how this device measures the screen (for layout gaps on iphones)
+	let viewport = $state(false);
+	let taps = 0;
+	let tapTimer = 0;
+	function tapVersion() {
+		clearTimeout(tapTimer);
+		if (++taps === 3) (viewport = true), (taps = 0);
+		else tapTimer = setTimeout(() => (taps = 0), 600);
 	}
 
 	async function refresh() {
@@ -826,7 +837,8 @@
 	{:else}
 		<header>
 			<div class="top">
-				<h1>iaco.io <small>v {__VERSION__}</small></h1>
+				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+				<h1>iaco.io <small onclick={tapVersion}>v {__VERSION__}</small></h1>
 				<div class="kinds glass" role="tablist" aria-label="sections" style:--progress={progress}>
 					<span class="thumb"></span>
 					{#each KINDS as { kind: k, icon: Icon }}
@@ -860,6 +872,8 @@
 	{#if alphabetOpen}
 		<AlphabetDialog setup={alphabet} onsave={saveAlphabet} onclose={() => (alphabetOpen = false)} />
 	{/if}
+
+	{#if viewport}<Viewport onclose={() => (viewport = false)} />{/if}
 
 	{#if dialog}
 		<ImageDialog {...dialog.props} {images} {resolve} ondone={dialog.done} />
