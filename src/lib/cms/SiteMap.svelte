@@ -24,6 +24,11 @@
 		['tags', 'tags', Tag]
 	]);
 
+	// the sections, to jump to from the buttons at the bottom
+	/** @type {Record<string, HTMLElement>} */
+	const sections = $state({});
+	const jump = (/** @type {string} */ key) => sections[key]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
 	/** @type {HTMLDialogElement | undefined} */
 	let dialog = $state();
 	$effect(() => dialog?.showModal());
@@ -42,7 +47,7 @@
 		<div class="groups">
 			{#each GROUPS as [key, label, Icon]}
 				{#if map[key]?.length}
-					<section>
+					<section bind:this={sections[key]}>
 						<h3><Icon size={15} /> {label}</h3>
 						<ul>
 							{#each map[key] as link}
@@ -62,6 +67,14 @@
 				{/if}
 			{/each}
 		</div>
+		<!-- one button per section, always at the bottom -->
+		<nav class="jumps" aria-label="sections">
+			{#each GROUPS as [key, label, Icon]}
+				{#if map[key]?.length}
+					<button class="pill" title={label} aria-label="go to {label}" onclick={() => jump(key)}><Icon size={18} /></button>
+				{/if}
+			{/each}
+		</nav>
 	{/if}
 </dialog>
 
@@ -113,6 +126,28 @@
 
 	section:first-child h3 {
 		margin-top: 0;
+	}
+
+	/* a little room and a thin line between sections */
+	section + section {
+		margin-top: 1.1rem;
+		padding-top: 1.1rem;
+		border-top: 1px solid var(--glass-edge);
+	}
+
+	section + section h3 {
+		margin-top: 0;
+	}
+
+	.jumps {
+		display: flex;
+		justify-content: center;
+		gap: 0.5rem;
+		padding-top: 0.25rem;
+	}
+
+	.jumps .pill {
+		box-shadow: none;
 	}
 
 	ul {
