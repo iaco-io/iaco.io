@@ -15,11 +15,12 @@
 
 	const html = $derived(body === null ? '' : render(body, resolve));
 
-	// a grid card's picture is square, unless the image is portrait: then it keeps its own shape, uncut.
+	// a grid card's picture is square (a portrait image is cut to a square), unless the image is landscape:
+	// then it keeps its own shape, uncut.
 	// (only the image itself knows its shape, once loaded)
 	/** @param {HTMLElement} prose */
 	const shapes = (prose) => {
-		const mark = (/** @type {HTMLImageElement} */ img) => img.classList.toggle('tall', img.naturalHeight > img.naturalWidth);
+		const mark = (/** @type {HTMLImageElement} */ img) => img.classList.toggle('wide', img.naturalWidth > img.naturalHeight);
 		const watch = () => {
 			for (const img of prose.querySelectorAll('.grid .card > img')) {
 				const pic = /** @type {HTMLImageElement} */ (img);
@@ -210,7 +211,7 @@
 		vertical-align: 0;
 	}
 
-	.prose :global(.grid .card > img.tall) {
+	.prose :global(.grid .card > img.wide) {
 		aspect-ratio: auto;
 		height: auto;
 	}
