@@ -161,10 +161,12 @@
 		color: var(--muted);
 	}
 
+	/* where a short link goes: in a warm colour, apart from the grey aliases */
 	.to {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.25rem;
+		color: #c07a4a;
 	}
 
 	.note {
