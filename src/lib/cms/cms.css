@@ -88,3 +88,10 @@
 	width: 2.75rem;
 	padding: 0;
 }
+
+/* popups stay clear of the iphone's clock and notch at the top (--top) and its home bar at the bottom:
+   centred between the two, and never taller than the space left. overrides each popup's own height */
+.cms dialog[open] {
+	inset: var(--top) 0 env(safe-area-inset-bottom, 0px);
+	max-height: calc(100dvh - var(--top) - env(safe-area-inset-bottom, 0px) - 2rem);
+}
