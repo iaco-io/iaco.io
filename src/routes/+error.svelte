@@ -1,10 +1,11 @@
 <script>
-	// unknown urls go to the home page
-	import { onMount } from 'svelte';
+	// unknown urls go to the home page. waits a tick: on a link inside the site, the address bar changes
+	// to the unknown url only after this page is shown, and replacing earlier would just reload the old page
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 
-	onMount(() => page.status === 404 && goto('/', { replaceState: true }));
+	$effect(() => {
+		if (page.status === 404) setTimeout(() => location.replace('/'));
+	});
 </script>
 
 <main><p role="status">{page.status === 404 ? 'taking you home…' : page.error?.message}</p></main>

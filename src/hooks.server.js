@@ -13,6 +13,8 @@ export function handle({ event, resolve }) {
 		`<link rel="icon" href="${app.base}/icon.svg" type="image/svg+xml" />`,
 		`<link rel="manifest" href="${app.base}/manifest.webmanifest" />`,
 		`<meta name="apple-mobile-web-app-title" content="${app.name}" />`
-	].join('\n\t\t');
-	return resolve(event, { transformPageChunk: ({ html }) => html.replace('%app.install%', tags) });
+	];
+	// the 404 page (served for any address that doesn't exist) sends the visitor straight home
+	if (event.url.pathname === '/[fallback]') tags.unshift(`<script>location.replace('/')</script>`);
+	return resolve(event, { transformPageChunk: ({ html }) => html.replace('%app.install%', tags.join('\n\t\t')) });
 }

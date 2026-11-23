@@ -12,17 +12,20 @@
 	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string, icon: { src: string, mask: boolean } }[], categories: { tag: string, name: string, icon: { src: string, mask: boolean } }[], order: string[] } }} */
 	let { children, data } = $props();
 
+	// a link to a page that doesn't exist has no data (the error page then sends the visitor home)
+	const order = $derived(data.order ?? []);
+
 	// in the order set in the cms; links not in it keep their usual place after the others
 	const rank = (/** @type {string} */ href) => {
-		const i = data.order.indexOf(href);
-		return i < 0 ? data.order.length : i;
+		const i = order.indexOf(href);
+		return i < 0 ? order.length : i;
 	};
 	const links = $derived(
 		[
 			{ href: '/', label: 'iaco.io', icon: Waves },
 			{ href: '/#latest', label: 'latest', icon: Newspaper },
-			...data.categories.map(({ tag, name, icon }) => ({ href: tagUrl(tag), label: name, picture: icon })),
-			...data.pages.map((p) => ({ href: p.url, label: p.title, picture: p.icon }))
+			...(data.categories ?? []).map(({ tag, name, icon }) => ({ href: tagUrl(tag), label: name, picture: icon })),
+			...(data.pages ?? []).map((p) => ({ href: p.url, label: p.title, picture: p.icon }))
 		].toSorted((a, b) => rank(a.href) - rank(b.href))
 	);
 
