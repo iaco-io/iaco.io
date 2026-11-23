@@ -1,6 +1,6 @@
 <script>
 	// everything with one tag (or category): its posts newest first, then its pages
-	import { Tag, BookBookmark } from '@lucide/svelte';
+	import { Tag } from '@lucide/svelte';
 	import Tp from '#lib/Tp.svelte';
 	import { focusFade } from '#lib/focusFade.js';
 
@@ -14,10 +14,14 @@
 
 <main>
 	<header>
-		<span class="kind">
-			{#if data.category}<BookBookmark size={18} strokeWidth={1.75} /> category{:else}<Tag size={18} strokeWidth={1.75} /> tag{/if}
-		</span>
 		<h1>{data.name}</h1>
+		<!-- the category's icon (a tag's for a plain tag) and how many things it holds -->
+		<span class="kind" aria-label="{data.category ? 'category' : 'tag'}, {data.items.length} {data.items.length === 1 ? 'item' : 'items'}">
+			{#if data.icon?.mask}<span class="icon" style:--icon="url({JSON.stringify(data.icon.src)})"></span>
+			{:else if data.icon}<img class="icon" src={data.icon.src} alt="" />
+			{:else}<Tag size={18} strokeWidth={1.75} />{/if}
+			• {data.items.length}
+		</span>
 	</header>
 	<ul use:focusFade>
 		{#each data.items as item (item.url)}
@@ -48,12 +52,24 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
-		font-size: 0.85rem;
+		margin-top: 0.6rem;
+		font-size: 0.95rem;
 		color: var(--muted);
 	}
 
+	.icon {
+		width: 18px;
+		height: 18px;
+	}
+
+	span.icon {
+		background: currentColor;
+		-webkit-mask: var(--icon) center / contain no-repeat;
+		mask: var(--icon) center / contain no-repeat;
+	}
+
 	h1 {
-		margin: 0.4rem 0 0;
+		margin: 0;
 		font-family: var(--title);
 		font-style: italic;
 		font-weight: 600;

@@ -1,6 +1,6 @@
 import { cleanTag } from './tags.js';
 // build-time only: reads src/{posts,pages,redirects}/*.md, images from src/media/
-import { parse, urls, normalize } from './markdown.js';
+import { parse, urls, normalize, isIcon } from './markdown.js';
 
 const files = import.meta.glob(['/src/posts/*.md', '/src/pages/*.md', '/src/redirects/*.md', '!**/README.md'], {
 	query: '?raw',
@@ -71,4 +71,15 @@ for (const item of [...pages, ...posts, ...redirects]) {
 		if (other) throw new Error(`${path} is used by both ${other.kind}/${other.slug} and ${item.kind}/${item.slug}`);
 		routes.set(path, item);
 	}
+}
+
+/**
+ * how a page's icon is drawn in the menu: lucide icons and one-colour svgs as a stencil in the text colour
+ * (mask), other pictures as they are
+ * @param {string} icon
+ */
+export function menuIcon(icon) {
+	const lucide = icon.match(/^lucide\/([a-z0-9-]+)$/);
+	if (lucide) return { src: `/lucide/${lucide[1]}.svg`, mask: true };
+	return { src: media[icon] ?? icon, mask: isIcon(icon) };
 }
