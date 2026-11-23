@@ -8,6 +8,7 @@
 	import Fabs from '#lib/Fabs.svelte';
 	import DayClock from '#lib/DayClock.svelte';
 	import { page } from '$app/state';
+	import { watchPhantom } from '#lib/phantom.js';
 
 	/** @type {{ children: import('svelte').Snippet, data: { pages: { url: string, title: string, icon: { src: string, mask: boolean } }[], categories: { tag: string, name: string, icon: { src: string, mask: boolean } }[], order: string[] } }} */
 	let { children, data } = $props();
@@ -30,6 +31,9 @@
 	);
 
 	let open = $state(false);
+
+	// iphone home-screen apps stop short of the bottom: things there move down (see phantom.js)
+	onMount(watchPhantom);
 
 	// links that leave the site open in a new tab (in the installed app on an iphone, apple shows them in its small
 	// built-in browser; there's no way to send them to safari). short links like /youtube/ go straight to their site
