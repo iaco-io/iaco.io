@@ -27,6 +27,7 @@
 			['visual viewport', vv ? `${Math.round(vv.height)} (top ${Math.round(vv.offsetTop)})` : '—'],
 			['fixed area', fixed],
 			['100vh / dvh / svh / lvh', [px('100vh'), px('100dvh'), px('100svh'), px('100lvh')].join(' / ')],
+			['phantom gap (fixed)', String(px('var(--phantom)'))],
 			['safe top / bottom', `${px('env(safe-area-inset-top, 0px)')} / ${px('env(safe-area-inset-bottom, 0px)')}`],
 			['scrollY', String(Math.round(scrollY))]
 		];

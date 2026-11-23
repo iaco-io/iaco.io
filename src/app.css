@@ -192,6 +192,10 @@ tp {
 	/* iOS standalone: status bar overlays content; add 16px so it blurs cleanly */
 	/* in the browser, follow whatever space safari leaves under the clock (0 when it covers it itself) */
 	--top: env(safe-area-inset-top, 0px);
+	/* iphone home-screen apps (added from safari): the page starts under the clock but isn't made taller,
+	   so it stops short of the bottom by up to the clock's height. --phantom is that shortfall, and bottom
+	   things move down by it. 0 everywhere else, and once ios measures the page right */
+	--phantom: 0px;
 	--gap: 1.25rem;
 
 	color-scheme: light dark;
@@ -351,4 +355,10 @@ a {
 	clip-path: inset(50%);
 	white-space: nowrap;
 	border: 0;
+}
+
+@media (display-mode: standalone) {
+	:root {
+		--phantom: max(0px, min(100lvh - 100dvh, env(safe-area-inset-top, 0px)));
+	}
 }

@@ -1453,7 +1453,7 @@
 		left: 0;
 		right: 0;
 		z-index: 60;
-		height: 100dvh;
+		height: calc(100dvh + var(--phantom));
 		visibility: hidden;
 		transition:
 			transform 0.35s ease,

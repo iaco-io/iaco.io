@@ -62,7 +62,7 @@
 	}
 
 	.jump {
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap));
+		bottom: calc(env(safe-area-inset-bottom) - var(--phantom) + var(--gap));
 		transition: opacity 0.3s ease;
 	}
 
@@ -72,12 +72,12 @@
 	}
 
 	.menu {
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 3.75rem);
+		bottom: calc(env(safe-area-inset-bottom) - var(--phantom) + var(--gap) + 3.75rem);
 	}
 
 	/* extra buttons stack upwards above the menu button */
 	.extra {
-		bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 7.5rem);
+		bottom: calc(env(safe-area-inset-bottom) - var(--phantom) + var(--gap) + 7.5rem);
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
@@ -105,7 +105,7 @@
 
 		/* the menu left the bottom, so the extra button sits on top of scroll */
 		.extra {
-			bottom: calc(env(safe-area-inset-bottom) + var(--gap) + 3.75rem);
+			bottom: calc(env(safe-area-inset-bottom) - var(--phantom) + var(--gap) + 3.75rem);
 		}
 	}
 </style>

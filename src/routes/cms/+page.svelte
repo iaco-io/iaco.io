@@ -1044,7 +1044,7 @@
 	main.lists {
 		display: flex;
 		flex-direction: column;
-		height: 100dvh;
+		height: calc(100dvh + var(--phantom));
 		padding-bottom: 0;
 		overflow: hidden;
 	}

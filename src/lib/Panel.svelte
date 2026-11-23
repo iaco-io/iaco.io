@@ -247,7 +247,7 @@
 		width: min(22rem, 85vw);
 		overflow: hidden;
 		/* the bleed above and below is padding, so the content sits on the visible screen */
-		padding: calc(var(--bleed) + var(--top) + 5.5rem) 2rem calc(var(--bleed) + env(safe-area-inset-bottom) + 2rem);
+		padding: calc(var(--bleed) + var(--top) + 5.5rem) 2rem calc(var(--bleed) - var(--phantom) + env(safe-area-inset-bottom) + 2rem);
 		background: var(--panel);
 		border-width: 0 0 0 1px;
 		transform: translateX(100%);
