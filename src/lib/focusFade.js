@@ -1,4 +1,4 @@
-// cards are fully opaque while their middle is in the middle part of the screen (between 30% and 70% of its
+// cards are fully opaque while their middle is in the middle part of the screen (between 25% and 75% of its
 // height), and dim (`min`) outside it. the change is instant, no fading.
 // focusFade: a Svelte action for a grid, on its children. fadeCards: for markdown, on every grid card inside
 // (they can change, so they are looked up on each update)
@@ -15,7 +15,7 @@ function fade(node, cards, min) {
 		const mid = innerHeight / 2;
 		for (const el of cards()) {
 			const r = el.getBoundingClientRect();
-			const near = Math.abs(r.top + r.height / 2 - mid) < mid * 0.4;
+			const near = Math.abs(r.top + r.height / 2 - mid) < mid * 0.5;
 			/** @type {HTMLElement} */ (el).style.opacity = near ? '1' : String(min);
 		}
 	};
