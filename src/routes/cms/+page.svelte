@@ -118,13 +118,6 @@
 		progress = i;
 	});
 
-	/** @param {Section} k */
-	function show(k) {
-		kind = k;
-		editing = null;
-		menu = false;
-		go(k);
-	}
 
 	// each list scrolls on its own and keeps its place, also after a trip to the editor
 	/** @type {Record<string, HTMLElement | undefined>} */
@@ -907,14 +900,6 @@
 					<Lock size={24} strokeWidth={1.75} /> lock
 				</button>
 			</li>
-			{#each KINDS as { kind: k, icon: Icon }}
-				<li>
-					<button class="entry" class:active={kind === k && !editing} onclick={() => show(k)}>
-						<Icon size={24} strokeWidth={1.75} />
-						{k}
-					</button>
-				</li>
-			{/each}
 			<li>
 				<button class="entry" onclick={() => ((menu = false), (tagsOpen = true))}>
 					<Tag size={24} strokeWidth={1.75} />
