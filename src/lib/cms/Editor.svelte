@@ -391,6 +391,80 @@
 		};
 	});
 
+	// on a computer: a sideways swipe on the trackpad, or dragging with the mouse on an empty spot, slides
+	// between the screens too; past a quarter of the way (or a quick flick) it goes over, else back
+	$effect(() => {
+		const SKIP = '.toolbar, .media-pop, .tray, .colours, .dialog, dialog, .previews';
+		const settle = (/** @type {number} */ from, /** @type {number} */ speed = 0) => {
+			const d = pos - from;
+			dragging = false;
+			if (Math.abs(speed) > 0.35 ? speed < 0 : d > 0.25 || (from === 1 && d > -0.25)) pos = 1;
+			else leave();
+		};
+
+		// trackpad: its sideways scrolling; the slide ends once the fingers stop, and the momentum after it is ignored
+		/** @type {number | null} */
+		let from = null;
+		let quiet = 0;
+		let locked = false;
+		const wheel = (/** @type {WheelEvent} */ e) => {
+			if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || /** @type {Element} */ (e.target).closest?.(SKIP)) return;
+			e.preventDefault(); // no "back" page swipe in the browser
+			clearTimeout(quiet);
+			const end = () => {
+				if (from !== null) settle(from);
+				from = null;
+				locked = true;
+				quiet = setTimeout(() => (locked = false), 200);
+			};
+			if (locked) return void (quiet = setTimeout(() => (locked = false), 200));
+			from ??= pos;
+			dragging = true;
+			pos = Math.min(1, Math.max(0, pos + e.deltaX / innerWidth));
+			if (Math.abs(pos - from) > 0.5) end();
+			else quiet = setTimeout(end, 150);
+		};
+
+		// mouse: dragging from anywhere that isn't for typing or clicking
+		/** @type {{ x: number, from: number, lastX: number, lastT: number, speed: number } | null} */
+		let m = null;
+		const down = (/** @type {PointerEvent} */ e) => {
+			const target = /** @type {Element} */ (e.target);
+			if (e.pointerType !== 'mouse' || e.button || target.closest?.(`${SKIP}, input, textarea, select, button, a, label, [contenteditable]`)) return;
+			m = { x: e.clientX, from: pos, lastX: e.clientX, lastT: e.timeStamp, speed: 0 };
+		};
+		const drag = (/** @type {PointerEvent} */ e) => {
+			if (!m) return;
+			const dx = e.clientX - m.x;
+			if (!dragging && Math.abs(dx) < 6) return;
+			const dt = e.timeStamp - m.lastT;
+			if (dt > 0) m.speed = m.speed * 0.5 + ((e.clientX - m.lastX) / dt) * 0.5;
+			m.lastX = e.clientX;
+			m.lastT = e.timeStamp;
+			dragging = true;
+			getSelection()?.removeAllRanges();
+			pos = Math.min(1, Math.max(0, m.from - dx / innerWidth));
+		};
+		const up = () => {
+			if (m && dragging) settle(m.from, m.speed);
+			m = null;
+		};
+
+		addEventListener('wheel', wheel, { passive: false });
+		addEventListener('pointerdown', down);
+		addEventListener('pointermove', drag);
+		addEventListener('pointerup', up);
+		addEventListener('pointercancel', up);
+		return () => {
+			clearTimeout(quiet);
+			removeEventListener('wheel', wheel);
+			removeEventListener('pointerdown', down);
+			removeEventListener('pointermove', drag);
+			removeEventListener('pointerup', up);
+			removeEventListener('pointercancel', up);
+		};
+	});
+
 	// the sitelen pona keyboard: a word goes into the open <tp> at the cursor, or into a new one
 	let keys = $state(false);
 	async function tp(/** @type {string} */ word) {
