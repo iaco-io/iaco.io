@@ -88,7 +88,8 @@
 	}
 
 	/* iphone home-screen apps that start under the clock (see phantom.js): ios moves the page's bottom edge
-	   around, so the buttons are placed from the top, which holds still, with the screen's real height */
+	   around and cuts fixed things below it, so the buttons are placed from the top, which holds still, just
+	   above the lowest that edge goes */
 	@media (max-width: 767px) {
 		:global(html.pinned) .jump,
 		:global(html.pinned) .menu,
@@ -98,15 +99,15 @@
 		}
 
 		:global(html.pinned) .jump {
-			top: calc(var(--screen-bottom) - env(safe-area-inset-bottom) - var(--gap));
+			top: calc(var(--screen-bottom) - 0.5rem);
 		}
 
 		:global(html.pinned) .menu {
-			top: calc(var(--screen-bottom) - env(safe-area-inset-bottom) - var(--gap) - 3.75rem);
+			top: calc(var(--screen-bottom) - 0.5rem - 3.75rem);
 		}
 
 		:global(html.pinned) .extra {
-			top: calc(var(--screen-bottom) - env(safe-area-inset-bottom) - var(--gap) - 7.5rem);
+			top: calc(var(--screen-bottom) - 0.5rem - 7.5rem);
 		}
 	}
 
