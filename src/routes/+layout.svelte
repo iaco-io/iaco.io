@@ -1,7 +1,7 @@
 <script>
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { Waves, Newspaper } from '@lucide/svelte';
+	import { Newspaper } from '@lucide/svelte';
 	import { tagUrl } from '#lib/tags.js';
 	import { external, destination } from '#lib/links.js';
 	import Menu from '#lib/Menu.svelte';
@@ -23,7 +23,7 @@
 	};
 	const links = $derived(
 		[
-			{ href: '/', label: 'iaco.io', icon: Waves },
+			{ href: '/', label: 'iaco.io', picture: { src: '/favicon.png', mask: false } }, // the round wave
 			{ href: '/#latest', label: 'latest', icon: Newspaper },
 			...(data.categories ?? []).map(({ tag, name, icon }) => ({ href: tagUrl(tag), label: name, picture: icon })),
 			...(data.pages ?? []).map((p) => ({ href: p.url, label: p.title, picture: p.icon }))
@@ -78,7 +78,7 @@
 
 {#if !cms}
 	<header>
-		<a class="logo" href="/">iaco.io</a>
+		<a class="logo" href="/"><img src="/favicon-64.png" alt="" width="26" height="26" />iaco.io</a>
 	</header>
 	<!-- a landmark of its own, so all content is in one (it is positioned on its own, the aside adds nothing visible) -->
 	<aside aria-label="day clock"><DayClock icon="grid" /></aside>
@@ -142,9 +142,20 @@
 	.logo {
 		/* a touch higher, so its letters line up with the middle of the clock's numbers */
 		transform: translateY(-2px);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
 		font-size: 1.25rem;
 		font-weight: 700;
 		letter-spacing: -0.03em;
 		color: var(--fg);
+	}
+
+	/* the round wave, before the name */
+	.logo img {
+		display: block;
+		width: 1.6rem;
+		height: 1.6rem;
+		transform: translateY(1px);
 	}
 </style>
