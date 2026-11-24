@@ -1,7 +1,7 @@
 <script>
 	import '#lib/cms/cms.css';
 	import { onMount, untrack } from 'svelte';
-	import { Star, ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film, Ruler } from '@lucide/svelte';
+	import { Star, ListX, PencilLine, ArrowUpNarrowWide, Tag, ListOrdered, ClipboardPaste, Lock, Feather, File as FileIcon, ExternalLink, CloudAlert, Image as ImageIcon, Music, Film } from '@lucide/svelte';
 	import Fabs from '#lib/Fabs.svelte';
 	import Panel from '#lib/Panel.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
@@ -22,7 +22,6 @@
 	import Thumb from '#lib/cms/Thumb.svelte';
 	import BeeIcon from '#lib/cms/BeeIcon.svelte';
 	import AlphabetDialog from '#lib/cms/AlphabetDialog.svelte';
-	import Viewport from '#lib/cms/Viewport.svelte';
 	import { setAlphabet, alphabet as inAlphabet } from '#lib/tp.js';
 	import savedAlphabet from '../../alphabet.json';
 	import { github, rawUrl, utf8ToBase64 } from '#lib/cms/github.js';
@@ -333,8 +332,6 @@
 		}
 	}
 
-	// how this device measures the screen (menu: screen), for layout gaps on iphones
-	let viewport = $state(false);
 
 	async function refresh() {
 		if (!api) return;
@@ -865,8 +862,6 @@
 		<AlphabetDialog setup={alphabet} onsave={saveAlphabet} onclose={() => (alphabetOpen = false)} />
 	{/if}
 
-	{#if viewport}<Viewport onclose={() => (viewport = false)} />{/if}
-
 	{#if dialog}
 		<ImageDialog {...dialog.props} {images} {resolve} ondone={dialog.done} />
 	{/if}
@@ -918,13 +913,7 @@
 					menu order
 				</button>
 			</li>
-			<li>
-				<!-- how this device measures the screen, to sort out layout gaps on iphones -->
-				<button class="entry" onclick={() => ((menu = false), (viewport = true))}>
-					<Ruler size={24} strokeWidth={1.75} />
-					screen
-				</button>
-			</li>
+
 			<li>
 				<!-- iaco's alphabet is called abelus, written in itself (a bee) -->
 				<button class="entry" onclick={() => ((menu = false), (alphabetOpen = true))}>
