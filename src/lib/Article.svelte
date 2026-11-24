@@ -19,7 +19,7 @@
 
 <article>
 	<header>
-		<h1><Tp text={item.title} /></h1>
+		<h1 class="gradient-title"><Tp text={item.title} /></h1>
 		{#if item.description}<p class="lead"><Tp text={item.description} /></p>{/if}
 		{#if item.tags?.length}
 			<!-- tags link to their pages; categories show a bookmark -->
@@ -56,7 +56,7 @@
 		margin: 0;
 		font-family: var(--title);
 		font-style: italic;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: clamp(2.4rem, 6vw, 3.6rem);
 		line-height: 1.06;
 		letter-spacing: -0.01em;

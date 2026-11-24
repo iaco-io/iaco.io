@@ -13,7 +13,7 @@
 
 <main>
 	<header>
-		<h1>{data.name}</h1>
+		<h1 class="gradient-title">{data.name}</h1>
 		<!-- the category's icon (a tag's for a plain tag) and how many things it holds -->
 		<span class="kind" aria-label="{data.category ? 'category' : 'tag'}, {data.items.length} {data.items.length === 1 ? 'item' : 'items'}">
 			{#if data.icon?.mask}<span class="icon" style:--icon="url({JSON.stringify(data.icon.src)})"></span>
@@ -61,7 +61,7 @@
 		margin: 0;
 		font-family: var(--title);
 		font-style: italic;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: clamp(2.2rem, 6vw, 3.2rem);
 		letter-spacing: -0.01em;
 	}
