@@ -355,11 +355,12 @@ a {
 	border: 0;
 }
 
-/* the titles' colour: the home page's gradient, from the text colour down to the accent. italic letters lean
-   out past their box, so a little room on the sides keeps them from being cut */
-.gradient-title {
-	padding-inline: 0.12em;
-	margin-inline: -0.12em;
+/* the titles' colour: the home page's gradient, from the text colour down to the accent. the colour is painted
+   only inside the title's box, and italic letters reach past it (the f's tail below and to the left), so the box
+   gets room all around, given back with negative margins so nothing moves */
+.gradient-title.gradient-title {
+	padding: 0.08em 0.25em 0.2em;
+	margin: -0.08em -0.25em -0.2em;
 	/* (on iaco.io a stronger blue, so the change shows even on a one-line title) */
 	background: linear-gradient(180deg, var(--fg) 10%, light-dark(#2f7fd4, #7fb6ea) 90%);
 	-webkit-background-clip: text;
