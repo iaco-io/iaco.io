@@ -35,9 +35,12 @@
 
 	$effect(() => {
 		measure();
+		// kept up to date while it's open, so it shows how things settle, not just the first moment
+		const timer = setInterval(measure, 500);
 		addEventListener('resize', measure);
 		window.visualViewport?.addEventListener('resize', measure);
 		return () => {
+			clearInterval(timer);
 			removeEventListener('resize', measure);
 			window.visualViewport?.removeEventListener('resize', measure);
 		};

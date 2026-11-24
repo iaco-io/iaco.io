@@ -55,7 +55,13 @@
 		// the page behind holds still; a long list in the menu scrolls itself
 		const still = (/** @type {Event} */ e) => !inList(e.target) && e.preventDefault();
 		addEventListener('wheel', still, { passive: false });
-		return () => removeEventListener('wheel', still);
+		// iphone home-screen apps can change the visible height right after it opens (see phantom.js): follow it
+		const follow = () => !drag && place();
+		window.visualViewport?.addEventListener('resize', follow);
+		return () => {
+			removeEventListener('wheel', still);
+			window.visualViewport?.removeEventListener('resize', follow);
+		};
 	});
 
 	// a part of the menu that scrolls on its own (marked .scrolls), with more than fits
