@@ -116,7 +116,7 @@
 			bottom: auto;
 			width: auto;
 			gap: 0.6rem;
-			padding: 0 0.6rem 0 1.25rem;
+			padding: 0 1.05rem; /* the same on both sides, so text and icon sit in the middle */
 			font: inherit;
 			font-size: 0.95rem;
 			font-weight: 500;
