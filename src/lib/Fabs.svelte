@@ -87,6 +87,29 @@
 		display: none;
 	}
 
+	/* iphone home-screen apps that start under the clock (see phantom.js): ios moves the page's bottom edge
+	   around, so the buttons are placed from the top, which holds still, with the screen's real height */
+	@media (max-width: 767px) {
+		:global(html.pinned) .jump,
+		:global(html.pinned) .menu,
+		:global(html.pinned) .extra {
+			bottom: auto;
+			translate: 0 -100%;
+		}
+
+		:global(html.pinned) .jump {
+			top: calc(var(--screen-bottom) - env(safe-area-inset-bottom) - var(--gap));
+		}
+
+		:global(html.pinned) .menu {
+			top: calc(var(--screen-bottom) - env(safe-area-inset-bottom) - var(--gap) - 3.75rem);
+		}
+
+		:global(html.pinned) .extra {
+			top: calc(var(--screen-bottom) - env(safe-area-inset-bottom) - var(--gap) - 7.5rem);
+		}
+	}
+
 	@media (min-width: 768px) {
 		.menu {
 			top: calc(var(--top) + var(--gap));

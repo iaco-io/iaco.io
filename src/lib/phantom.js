@@ -15,14 +15,21 @@ export function watchPhantom() {
 	const clock = probe('top:0;height:env(safe-area-inset-top,0px)');
 	const area = probe('top:0;bottom:0');
 	let last = -1;
+	const root = document.documentElement;
 	const update = () => {
 		let gap = 0;
-		if (matchMedia('(display-mode: standalone)').matches) {
+		// the page starts at the very top of the screen (under the clock): its top edge holds still, while ios
+		// moves its bottom edge. things that must not jump (the round buttons) are then placed from the top,
+		// with the screen's real height (--screen-bottom); html gets the class "pinned"
+		const pinned = matchMedia('(display-mode: standalone)').matches && clock.offsetHeight > 0;
+		if (pinned) {
 			const landscape = matchMedia('(orientation: landscape)').matches;
 			const full = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height);
 			gap = Math.max(0, Math.min(full - area.offsetHeight, clock.offsetHeight));
+			root.style.setProperty('--screen-bottom', `${full}px`);
 		}
-		if (gap !== last) document.documentElement.style.setProperty('--phantom', `${(last = gap)}px`);
+		root.classList.toggle('pinned', pinned);
+		if (gap !== last) root.style.setProperty('--phantom', `${(last = gap)}px`);
 	};
 	update();
 	// reports every change of the area's size, also the ones ios makes without a resize event
