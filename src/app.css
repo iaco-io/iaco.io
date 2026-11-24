@@ -360,7 +360,8 @@ a {
 .gradient-title {
 	padding-inline: 0.12em;
 	margin-inline: -0.12em;
-	background: linear-gradient(180deg, var(--fg), var(--accent));
+	/* (on iaco.io a stronger blue, so the change shows even on a one-line title) */
+	background: linear-gradient(180deg, var(--fg) 10%, light-dark(#2f7fd4, #7fb6ea) 90%);
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
