@@ -1,0 +1,17 @@
+---
+title: my habits
+description: caring for my habits is caring for myself
+icon: lucide/sprout
+---
+enc:v1:
+EpkLmebFvoaTboLg+8YuZUJDNLTId6zw312RQIlwOvrgjwNH33fjs93YCKNXC+q95v26pD2gr673
+Ues3ifWJ1jOhXGqZeZy+BbeTn0FUwjcZgHc3r6SdWgqpeSx3ggBAcEP+8VZvdJKy3bINo7LIHu8n
++RnWkuf5GbuVmVSffBDrY6JF7n/r9m2Mj2gdVpPlGipySYGfckKiuscmCNQ385LgXyRCS/tvGa+C
+0mWRgKBtafSCHMjNRKVi1no5lnf973wsAs5+1FvW8A0wfnf6mxZcm1wMQKNznZ/S5+1ef3zxQKMb
+ZJmyBpzO5IoeGDbJ+6wtlkveEsaBe391OhMzB54HJ2byNv68SVQuu7v+PpG68RC+ccGvikNUlN/p
+R/pjJHvXbb6dJ7P4wIDQmBMKO0JuV/CMVsnh5HIqQgrD+rzRWm6gk9FwsOWPf8FsYU3ROueleBNu
+vgRR6/LLBqo7xVgWwvcbJrl6j1d7lBbRdyJMqyP1hQjqaaqsj55HToSqzGaTtGbsuUsnDtEJ+Oyt
+LsQB2HLCFWLF1ukZMVNzuHaF8+feVBuf+y+futQFKp3lGPbQG3bC+FKt768vrdCqy2sycICZ7+nn
+a4HUATgjamDquwFMvwzmUlokwJBZPb5aNfuSGzGKYOTfAxXnTc3PpqgYrObzQcwodKqWVAOJRtpz
+tEt0kmTLhu7t4D+98RinGUPfp3NUJocYgTIP6pMgsOu9L+vsBySo3skSZ7lY0fidqlfLR2mGXdf0
+34S+uo2JI91wxwb1
