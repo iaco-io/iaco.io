@@ -272,4 +272,42 @@
 		text-align: center;
 		color: var(--muted);
 	}
+
+	/* footnotes: small raised numbers in the text; the notes at the end, under a thin line */
+	.prose :global(.footnote-ref) {
+		line-height: 0;
+	}
+
+	.prose :global(.footnote-ref a) {
+		padding: 0 0.1em;
+		font-size: 0.75em;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.prose :global(.footnotes) {
+		margin-top: 2.5rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--glass-edge);
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+
+	.prose :global(.footnotes ol) {
+		margin: 0;
+		padding-left: 1.4rem;
+	}
+
+	.prose :global(.footnotes li) {
+		margin: 0.35rem 0;
+	}
+
+	.prose :global(.footnote-back) {
+		text-decoration: none;
+	}
+
+	/* a jump to a note, or back, stops clear of the top bar */
+	.prose :global([id^='fn']) {
+		scroll-margin-top: 6rem;
+	}
 </style>

@@ -171,6 +171,60 @@ function grid(source, resolve, inner, inlineOf) {
 }
 
 /**
+ * footnotes: [^1] (or any name, [^note]) in the text, and on a line of its own anywhere, "[^1]: the note" (more
+ * lines of it indented). the notes go to the end of the page, numbered in the order they're first used, each with
+ * a way back to where it was used. code blocks are left alone
+ * @param {string} source @param {(md: string) => string} inline
+ */
+function footnotes(source, inline) {
+	/** @type {Map<string, string>} */
+	const notes = new Map();
+	const lines = [];
+	let fence = false;
+	/** @type {string | null} */
+	let current = null;
+	for (const line of source.split('\n')) {
+		if (/^\s*```/.test(line)) fence = !fence;
+		const note = !fence && line.match(/^\[\^([^\]\s]+)\]:\s?(.*)$/);
+		if (note) {
+			notes.set(note[1], note[2]);
+			current = note[1];
+			continue;
+		}
+		if (current && /^( {2,}|\t)\S/.test(line)) {
+			notes.set(current, `${notes.get(current)} ${line.trim()}`);
+			continue;
+		}
+		current = null;
+		lines.push(line);
+	}
+	if (!notes.size) return { text: source, end: '' };
+
+	/** @type {string[]} */
+	const order = [];
+	const id = (/** @type {string} */ name) => name.replace(/[^\w-]/g, '');
+	fence = false;
+	const text = lines
+		.map((line) => {
+			if (/^\s*```/.test(line)) fence = !fence;
+			if (fence) return line;
+			return line.replace(/\[\^([^\]\s]+)\]/g, (all, name) => {
+				if (!notes.has(name)) return all;
+				const first = !order.includes(name);
+				if (first) order.push(name);
+				const n = order.indexOf(name) + 1;
+				return `<sup class="footnote-ref"><a href="#fn-${id(name)}"${first ? ` id="fnref-${id(name)}"` : ''} aria-label="note ${n}">${n}</a></sup>`;
+			});
+		})
+		.join('\n');
+	if (!order.length) return { text, end: '' };
+	const items = order
+		.map((name) => `<li id="fn-${id(name)}">${inline(/** @type {string} */ (notes.get(name)))} <a class="footnote-back" href="#fnref-${id(name)}" aria-label="back to the text">↩</a></li>`)
+		.join('');
+	return { text, end: `<section class="footnotes" aria-label="notes"><ol>${items}</ol></section>` };
+}
+
+/**
  * markdown to html; relative image and link paths go through `resolve`
  * @param {string} source @param {(path: string) => string} resolve
  */
@@ -204,5 +258,6 @@ export function render(source, resolve = (path) => path) {
 			}
 		}
 	});
-	return newTabs(/** @type {string} */ (marked.parse(accessible(source), { async: false })));
+	const { text, end } = footnotes(accessible(source), (md) => /** @type {string} */ (marked.parseInline(md, { async: false })));
+	return newTabs(/** @type {string} */ (marked.parse(text, { async: false })) + end);
 }
