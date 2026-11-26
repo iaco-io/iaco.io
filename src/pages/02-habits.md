@@ -1,12 +1,12 @@
 ---
 title: my habits
-description: my habits and my tracking
+description: caring for my habits is caring for myself
 draft: true
 icon: lucide/sprout
 ---
 enc:v1:
-HkY8sw+ICoxhOweBRMAsPLlA8o92eyRurNUKiz4H0+y4aYSXciLHJBPHWRS/sUh4PnLJeSJXKWL9
-73zVrH39/0gXGBw0ePLaHhuGW4NlhW+EPqTm+gnKqsjRA+rWynAQyU0bfWdnvHe6wVzkv1o8xdkh
-SxUQLr5t3/XTAwgXYHtNMorWl89b+CdS3x3NEUdEA1C81h/+imk2FpKr0M1Wec+f/pS9IZBdRhrd
-HAxGJEf4CXeGwpR6THg/rSA+4SzfHceqH/iqxzXn4HzmdyFddo/0xl1NsqTztAjE9qt6z9n5N6o5
-/0HppT4lIUy6js8rVzRRyPn5PdLAOCPhY7retJ2q6mXUbHEyEFaBJYiwQTKKuTo07ZMiUJJDaVGo
+6r6dxSxwR7XBfXxtyG43VNl5hSedmf15qHc/pbRC5rAGT2FBpmI5sKf79QJSaJwIk5/AzgJV/YCB
+Kb38KXRSY+uuZpR+wMxBPilQDyFa2NA3Pfsr/uqV/ZJ1OPB7ndTTDGWaIouijMKXYuvFPGuoRSMb
+vHld3iFQZGe6UlKvjdpX3yex3dtsD3iJAXVyYVmxbwgRvVva3DJkxGCn0LbDQPkESKxHU++6WBKF
+aBfYMCTNMLue3hOS148IYyWjxNOezH/wbJsgxXuPzC9jFW8i8Eyt9yKvINyNIRSVmk+ABONqtbWP
+KfkKcI0WUQOUTzxGHjO23+MsViYy2/L/bRodPUALAFwQ9yeAtwhaiuXtptQ7BDUPD0NRm6Z8sfKQ
