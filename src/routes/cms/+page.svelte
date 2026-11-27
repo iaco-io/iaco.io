@@ -1079,7 +1079,8 @@
 		/* 300px of room after the last item */
 		padding: 0.25rem 0.5rem 300px;
 		overflow-y: auto;
-		overscroll-behavior: contain;
+		/* sideways swipes pass on to the track, to change section */
+		overscroll-behavior-y: contain;
 		scrollbar-width: none;
 	}
 
