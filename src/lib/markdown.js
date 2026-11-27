@@ -226,7 +226,7 @@ function footnotes(source, inline) {
 
 /**
  * tables without a header: rows of | a | b | with no |---| line under the first one become a table of plain
- * rows (markdown itself needs a header). code blocks are left alone
+ * rows (markdown itself needs a header). a |:-:| line above them aligns the columns (and under a header, a one-cell |:-:| aligns them all). code blocks are left alone
  * @param {string} source @param {(md: string) => string} inline
  */
 function bareTables(source, inline) {
@@ -237,6 +237,9 @@ function bareTables(source, inline) {
 	let fence = false;
 	for (let i = 0; i < lines.length; i++) {
 		if (/^\s*```/.test(lines[i])) fence = !fence;
+		// under a header, a one-cell |:-:| line aligns every column
+		const one = !fence && i > 0 && row(lines[i - 1]) && lines[i].trim().match(/^\|\s*(:?-+:?)\s*\|$/);
+		if (one) lines[i] = `|${lines[i - 1].trim().slice(1, -1).split(/(?<!\\)\|/).map(() => one[1]).join('|')}|`;
 		if (fence || !row(lines[i]) || (i > 0 && row(lines[i - 1])) || rule(lines[i + 1] ?? '')) {
 			out.push(lines[i]);
 			continue;
@@ -244,7 +247,11 @@ function bareTables(source, inline) {
 		const rows = [];
 		while (i < lines.length && row(lines[i])) rows.push(lines[i++]);
 		i--;
-		const cells = (/** @type {string} */ l) => l.trim().slice(1, -1).split(/(?<!\\)\|/).map((c) => `<td>${inline(c.trim())}</td>`).join('');
+		const split = (/** @type {string} */ l) => l.trim().slice(1, -1).split(/(?<!\\)\|/).map((c) => c.trim());
+		// a |:-:| line first sets the alignment: one cell for every column, or one per column
+		const aligns = rule(rows[0]) ? split(/** @type {string} */ (rows.shift())).map((c) => (c.endsWith(':') ? (c.startsWith(':') ? 'center' : 'right') : c.startsWith(':') ? 'left' : '')) : [];
+		const align = (/** @type {number} */ n) => aligns[aligns.length === 1 ? 0 : n] || '';
+		const cells = (/** @type {string} */ l) => split(l).map((c, n) => `<td${align(n) && ` align="${align(n)}"`}>${inline(c)}</td>`).join('');
 		out.push('', `<table><tbody>${rows.map((l) => `<tr>${cells(l)}</tr>`).join('')}</tbody></table>`, '');
 	}
 	return out.join('\n');

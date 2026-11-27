@@ -136,6 +136,11 @@
 	.prose :global(mark.white) { --mark: rgb(255 255 255 / 0.9); color: #0b1f38; }
 	.prose :global(mark.brown) { --mark: rgb(165 110 70 / 0.42); }
 
+	/* tables span the width, with a thin line between rows; |:-:| alignment shows through */
+	.prose :global(table) { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+	.prose :global(:is(th, td)) { padding: 0.5rem 0.75rem; border-bottom: 1px solid color-mix(in srgb, var(--fg) 14%, transparent); }
+	.prose :global(th:not([align])) { text-align: left; }
+
 	/* ```grid``` blocks: cards that fill the width, 2–3 a row on a phone */
 	.prose :global(.grid) {
 		display: grid;
