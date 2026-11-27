@@ -293,5 +293,7 @@ export function render(source, resolve = (path) => path) {
 	});
 	const inline = (/** @type {string} */ md) => /** @type {string} */ (marked.parseInline(md, { async: false }));
 	const { text, end } = footnotes(bareTables(accessible(source), inline), inline);
-	return newTabs(/** @type {string} */ (marked.parse(text, { async: false })) + end);
+	// tables sit in a box that slides sideways when they are wider than the screen
+	const html = /** @type {string} */ (marked.parse(text, { async: false })).replace(/<table>/g, '<div class="table"><table>').replace(/<\/table>/g, '</table></div>');
+	return newTabs(html + end);
 }
