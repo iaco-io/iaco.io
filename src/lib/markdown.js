@@ -225,6 +225,32 @@ function footnotes(source, inline) {
 }
 
 /**
+ * tables without a header: rows of | a | b | with no |---| line under the first one become a table of plain
+ * rows (markdown itself needs a header). code blocks are left alone
+ * @param {string} source @param {(md: string) => string} inline
+ */
+function bareTables(source, inline) {
+	const lines = source.split('\n');
+	const out = [];
+	const row = (/** @type {string} */ l) => /^\s*\|.*\|\s*$/.test(l);
+	const rule = (/** @type {string} */ l) => /^\s*\|?(\s*:?-+:?\s*\|)+\s*:?-*:?\s*\|?\s*$/.test(l);
+	let fence = false;
+	for (let i = 0; i < lines.length; i++) {
+		if (/^\s*```/.test(lines[i])) fence = !fence;
+		if (fence || !row(lines[i]) || (i > 0 && row(lines[i - 1])) || rule(lines[i + 1] ?? '')) {
+			out.push(lines[i]);
+			continue;
+		}
+		const rows = [];
+		while (i < lines.length && row(lines[i])) rows.push(lines[i++]);
+		i--;
+		const cells = (/** @type {string} */ l) => l.trim().slice(1, -1).split(/(?<!\\)\|/).map((c) => `<td>${inline(c.trim())}</td>`).join('');
+		out.push('', `<table><tbody>${rows.map((l) => `<tr>${cells(l)}</tr>`).join('')}</tbody></table>`, '');
+	}
+	return out.join('\n');
+}
+
+/**
  * markdown to html; relative image and link paths go through `resolve`
  * @param {string} source @param {(path: string) => string} resolve
  */
@@ -258,6 +284,7 @@ export function render(source, resolve = (path) => path) {
 			}
 		}
 	});
-	const { text, end } = footnotes(accessible(source), (md) => /** @type {string} */ (marked.parseInline(md, { async: false })));
+	const inline = (/** @type {string} */ md) => /** @type {string} */ (marked.parseInline(md, { async: false }));
+	const { text, end } = footnotes(bareTables(accessible(source), inline), inline);
 	return newTabs(/** @type {string} */ (marked.parse(text, { async: false })) + end);
 }
