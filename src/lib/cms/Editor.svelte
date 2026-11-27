@@ -22,14 +22,14 @@
 	 *   manage: (name: string) => Promise<string>,
 	 *   alphabet: Record<string, { to: string, on: boolean }>,
 	 *   categories: string[],
-	 *   tagsInUse: string[], siblings?: string[],
+	 *   tagsInUse: string[], taken?: Map<string, string>,
 	 *   ondelete: () => Promise<void>,
 	 *   onback: () => void,
 	 *   partial: boolean,
 	 *   ondiscard: () => void
 	 * }}
 	 */
-	let { item = $bindable(), images, resolve, ask, manage, alphabet, categories, tagsInUse, siblings = [], onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
+	let { item = $bindable(), images, resolve, ask, manage, alphabet, categories, tagsInUse, taken = new Map(), onsave, onupload, ondelete, onback, partial, ondiscard } = $props();
 
 	let busy = $state('');
 	/** @type {HTMLTextAreaElement | undefined} */
@@ -40,10 +40,16 @@
 	// a number in front, when used, has a fixed width: 001- for posts, 01- for pages
 	const digits = $derived(item.kind === 'posts' ? 3 : item.kind === 'pages' ? 2 : 0);
 	const badNumber = $derived(!!digits && (item.name.match(/^(\d+)-/)?.[1].length ?? digits) !== digits);
-	// two posts (or pages) with the same number can't both have it as their short address: the site wouldn't build
-	const number = $derived(item.name.match(/^(\d+)-/)?.[1] ?? '');
-	const sameNumber = $derived(number ? (siblings.find((n) => n.startsWith(`${number}-`)) ?? '') : '');
-	const validName = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.name) && !badNumber && !sameNumber);
+	// an address (its own, its number or an alias) that another post, page or redirect already has: the site
+	// couldn't be built, so it's said and saving waits
+	const clash = $derived.by(() => {
+		if (!/^[a-z0-9][a-z0-9-]*$/.test(item.name) || badNumber) return null;
+		const { id, url } = urls(item.kind, item.name);
+		const own = [url, ...(id ? [`/${id}/`] : []), ...cleanAliases(item.meta.alias ?? []).map((a) => `/${a}/`)];
+		const path = own.find((p) => taken.has(p));
+		return path ? { path: path.slice(0, -1), by: taken.get(path) } : null;
+	});
+	const validName = $derived(/^[a-z0-9][a-z0-9-]*$/.test(item.name) && !badNumber && !clash);
 	const links = $derived.by(() => {
 		if (!validName) return '';
 		const { id, url } = urls(item.kind, item.name);
@@ -663,7 +669,7 @@
 			<textarea class="grow" rows="1" bind:value={() => item.meta.title, (v) => (item.meta.title = flat(v))} placeholder="title" onkeydown={oneLine} {@attach fit(() => item.meta.title)}></textarea>
 		</label>
 		<label>
-			<span class:warn={!!sameNumber}>file name {badNumber ? `→ number must be ${'0'.repeat(digits - 1)}1-` : sameNumber ? `→ ${number} is already used by ${sameNumber.replace(/^\d+-/, '')}` : links ? `→ ${links}` : ''}</span>
+			<span class:warn={!!clash}>file name {badNumber ? `→ number must be ${'0'.repeat(digits - 1)}1-` : clash ? `→ ${clash.path} is already used by ${clash.by}` : links ? `→ ${links}` : ''}</span>
 			<span class="suffix">
 				<input bind:value={item.name} placeholder="file-name" />
 				<em>.md</em>
